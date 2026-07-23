@@ -1,0 +1,19 @@
+node_modules
+# Keep environment variables out of version control
+.env
+
+/generated/prisma
+
+# Database tools
+pgsql/
+pgadmin/
+*.sqlbak
+
+# Local databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Runtime binaries
+*.dll
+*.exe

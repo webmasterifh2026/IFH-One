@@ -1,0 +1,1632 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [pg_trgm]
+}
+
+model Role {
+  id              String                    @id @default(uuid())
+  name            String                    @unique
+  description     String?
+  status          String                    @default("ACTIVE")
+  createdAt       DateTime                  @default(now())
+  updatedAt       DateTime                  @updatedAt
+  rolePermissions RolePermission[]
+  userRoles       UserRole[]
+  workflowStages  WorkflowStagePermission[]
+}
+
+model Permission {
+  id              String           @id @default(uuid())
+  module          String
+  key             String           @unique
+  description     String?
+  category        String?          // Global, Master, Workflow, Admin
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  rolePermissions RolePermission[]
+  
+  @@index([module])
+  @@index([category])
+}
+
+model RolePermission {
+  id           String     @id @default(uuid())
+  roleId       String
+  permissionId String
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, permissionId])
+  @@index([roleId])
+  @@index([permissionId])
+}
+
+model UserRole {
+  id     String @id @default(uuid())
+  userId String
+  roleId String
+  role   Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, roleId])
+  @@index([userId])
+  @@index([roleId])
+}
+
+model WorkflowStagePermission {
+  id            String  @id @default(uuid())
+  roleId        String
+  workflowStage Int
+  canView       Boolean @default(false)
+  canEdit       Boolean @default(false)
+  canApprove    Boolean @default(false)
+  canHold       Boolean @default(false)
+  canReject     Boolean @default(false)
+  canBulkUpdate Boolean @default(false)
+  canExport     Boolean @default(false)
+  canReassign   Boolean @default(false)
+  role          Role    @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, workflowStage])
+  @@index([roleId])
+  @@index([workflowStage])
+}
+
+model User {
+  id                        String                  @id @default(uuid())
+  employeeId                String                  @unique
+  fullName                  String
+  email                     String                  @unique
+  phone                     String?
+  alternatePhone            String?
+  designation               String?
+  departmentId              String?
+  dateOfBirth               DateTime?
+  gender                    String?
+  address                   String?
+  city                      String?
+  state                     String?
+  country                   String?
+  postalCode                String?
+  company                   String?
+  joiningDate               DateTime?
+  profileImage              String?
+  status                    String                  @default("ACTIVE")
+  passwordHash              String
+  passwordChangedAt         DateTime?
+  preferences               Json?
+  lastLogin                 DateTime?
+  failedLoginAttempts       Int                     @default(0)
+  lockedAt                  DateTime?
+  createdAt                 DateTime                @default(now())
+  updatedAt                 DateTime                @updatedAt
+  deletedAt                 DateTime?
+  auditLogs                 AuditLog[]              @relation("AuditLogsPerformedBy")
+  bulkOperations            BulkOperation[]         @relation("BulkOperationPerformedBy")
+  notifications             Notification[]
+  assignedConfigStages      StageConfiguration[]    @relation("StageDefaultOwners")
+
+  procurementsAssigned      Procurement[]           @relation("ProcurementAssignedTo")
+  procurementsRequested     Procurement[]           @relation("ProcurementRequestedBy")
+  attachmentsUploaded       ProcurementAttachment[] @relation("AttachmentUploadedBy")
+  historyPerformed          ProcurementHistory[]    @relation("HistoryPerformedBy")
+  remarksAuthored           ProcurementRemark[]     @relation("RemarkAuthor")
+  stagesAssigned            ProcurementStage[]      @relation("StageAssignedTo")
+  rfqsCreated               RFQ[]                   @relation("RFQCreatedBy")
+  rfqAttachmentsUploaded    RFQAttachment[]         @relation("RFQAttachmentUploadedBy")
+  rfqHistoryPerformed       RFQHistory[]            @relation("RFQHistoryPerformedBy")
+  rfqRemarksAuthored        RFQRemark[]             @relation("RFQRemarkAuthor")
+  recentlyViewedItems       RecentlyViewedItem[]
+  rejectionEmailsRejectedBy RejectionEmail[]        @relation("RejectionEmailRejectedBy")
+  sessions                  Session[]
+  Department                Department?             @relation(fields: [departmentId], references: [id])
+  userRoles                 UserRole[]
+  importHistories           ImportHistory[]
+  itemsAssigned             ProcurementItem[]       @relation("ItemAssignedTo")
+  delayLogsAsDelayer        DelayLog[]              @relation("DelayedByUser")
+  delayLogsAsOwner          DelayLog[]              @relation("DelayCurrentOwner")
+  escalationsReceived       EscalationLog[]         @relation("EscalationTarget")
+  gateEntriesCreated        GateEntry[]             @relation("GateEntryCreatedBy")
+  gateEntriesQuantityChecked GateEntry[]            @relation("GateEntryQuantityCheckedBy")
+  gateEntryItemsInspected   GateEntryItem[]         @relation("GateEntryItemInspectedBy")
+  gateEntryItemsAllocated   GateEntryItem[]         @relation("GateEntryItemAllocatedBy")
+  grnsGenerated             GRN[]                   @relation("GRNGeneratedBy")
+
+  @@index([status])
+  @@index([departmentId])
+  @@index([createdAt])
+  @@index([email])
+  @@index([employeeId])
+}
+
+model Session {
+  id           String   @id @default(uuid())
+  userId       String
+  sessionToken String   @unique
+  expiresAt    DateTime
+  ipAddress    String?
+  userAgent    String?
+  device       String?
+  os           String?
+  browser      String?
+  lastActivity DateTime @default(now())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model PasswordResetToken {
+  id        String   @id @default(uuid())
+  email     String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model AuditLog {
+  id            String   @id @default(uuid())
+  userId        String?
+  action        String
+  timestamp     DateTime @default(now())
+  performedById String
+  performedBy   User     @relation("AuditLogsPerformedBy", fields: [performedById], references: [id])
+
+  @@index([performedById])
+  @@index([timestamp])
+}
+
+model EmailLog {
+  id              String   @id @default(uuid())
+  procurementId   String?
+  workflowStage   String?
+  event           String
+  subject         String
+  recipients      String   // Stored as JSON or comma-separated
+  sentAt          DateTime @default(now())
+  deliveryStatus  String   // SUCCESS | FAILED
+  errorMessage    String?
+  
+  procurement     Procurement? @relation(fields: [procurementId], references: [id], onDelete: SetNull)
+  @@index([procurementId])
+  @@index([deliveryStatus])
+}
+
+model BulkOperation {
+  id              String   @id @default(uuid())
+  action          String
+  targetStageHint Int?
+  totalSelected   Int
+  totalEligible   Int
+  totalUpdated    Int
+  totalSkipped    Int
+  totalFailed     Int
+  remarks         String?
+  notifyUsers     Boolean  @default(false)
+  ipAddress       String?
+  performedById   String
+  performedBy     User     @relation("BulkOperationPerformedBy", fields: [performedById], references: [id])
+  durationMs      Int?
+  resultDetail    String?
+  createdAt       DateTime @default(now())
+
+  @@index([performedById])
+  @@index([createdAt])
+}
+
+model SystemHealth {
+  id        String   @id @default(uuid())
+  status    String
+  timestamp DateTime @default(now())
+}
+
+model RejectionEmail {
+  id             String      @id @default(uuid())
+  procurementId  String
+  stageNumber    Int
+  stageName      String
+  rejectedById   String
+  rejectedAt     DateTime
+  remarks        String?
+  reason         String?
+  emailSent      Boolean     @default(false)
+  emailSentAt    DateTime?
+  recipientEmail String
+  emailError     String?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  procurement    Procurement @relation(fields: [procurementId], references: [id], onDelete: Cascade)
+  rejectedBy     User        @relation("RejectionEmailRejectedBy", fields: [rejectedById], references: [id])
+
+  @@index([procurementId])
+  @@index([emailSent])
+  @@index([emailSent, createdAt])
+}
+
+model Notification {
+  id            String   @id @default(uuid())
+  userId        String
+  type          String
+  title         String
+  message       String
+  href          String?
+  procurementId String?
+  stageNumber   Int?
+  read          Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, read])
+  @@index([userId, createdAt])
+  @@index([procurementId])
+}
+
+model Procurement {
+  id                 String                  @id @default(uuid())
+  referenceNo        String                  @unique
+  title              String
+  description        String?
+  projectId          String?
+  projectName        String?
+  application        String?
+  itemType           String?
+  departmentId       String?
+  requestedById      String
+  assignedToId       String?
+  currentStage       Int                     @default(0)
+  status             String                  @default("DRAFT")
+  priority           String                  @default("NORMAL")
+  requiredDate       DateTime?
+  paintingSpec       String?
+  packingRequirement String?
+  certification      String?
+  manuals            String?
+  warrantyGuarantee  String?
+  ga                 String?
+  vendorId           String?
+  vendorName         String?
+  createdAt          DateTime                @default(now())
+  updatedAt          DateTime                @updatedAt
+  completedAt        DateTime?
+  paintingSpecRemark String?
+  assignedTo         User?                   @relation("ProcurementAssignedTo", fields: [assignedToId], references: [id])
+  requestedBy        User                    @relation("ProcurementRequestedBy", fields: [requestedById], references: [id])
+  attachments        ProcurementAttachment[]
+  history            ProcurementHistory[]
+  items              ProcurementItem[]
+  remarks            ProcurementRemark[]
+  stages             ProcurementStage[]
+  rfqs               RFQ[]
+  rejectionEmails    RejectionEmail[]
+  emailLogs          EmailLog[]
+  slaRecords         SlaRecord[]
+  delayLogs          DelayLog[]
+  reminderLogs       ReminderLog[]
+  escalationLogs     EscalationLog[]
+  gateEntries        GateEntry[]
+  grns               GRN[]
+
+  @@index([requestedById])
+  @@index([assignedToId])
+  @@index([currentStage])
+  @@index([status])
+  @@index([createdAt])
+  @@index([currentStage, status])
+  @@index([requestedById, currentStage, status])
+  @@index([projectId])
+  @@index([vendorId])
+  @@index([title(ops: raw("gin_trgm_ops"))], type: Gin)
+  @@index([vendorName(ops: raw("gin_trgm_ops"))], type: Gin)
+}
+
+model ProcurementStage {
+  id            String      @id @default(uuid())
+  procurementId String
+  stageNumber   Int
+  stageName     String
+  status        String      @default("PENDING")
+  assignedToId  String?
+  startedAt     DateTime?
+  completedAt   DateTime?
+  dueDate       DateTime?
+  slaBreached   Boolean     @default(false)
+  remarks       String?
+  actionTaken   String?
+  metadata      String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  assignedTo    User?       @relation("StageAssignedTo", fields: [assignedToId], references: [id])
+  procurement   Procurement @relation(fields: [procurementId], references: [id], onDelete: Cascade)
+
+  @@unique([procurementId, stageNumber])
+  @@index([procurementId])
+  @@index([assignedToId])
+  @@index([status])
+  @@index([stageNumber])
+  @@index([stageNumber, status])
+  @@index([assignedToId, status])
+}
+
+model ProcurementItem {
+  id             String      @id @default(uuid())
+  procurementId  String
+  skuId          String?     // FK to SKU table
+  itemCode       String?     // Denormalized for quick access
+  itemName       String
+  bbuCode        String?
+  description    String?
+  category       String?     // Denormalized from SKU
+  subGroup       String?     // Denormalized from SKU
+  unit           String?
+  quantity       Decimal     @db.Decimal(15, 3)
+  approvedRate   Decimal?    @db.Decimal(15, 2)
+  receivedQty    Decimal?    @db.Decimal(15, 3)
+  technicalSpec  String?
+  approvedMakes  String?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  attachmentName String?
+  attachmentUrl  String?
+  assignedToId   String?
+  toFrom         String?
+
+  // ─── PO Workflow Fields ───────────────────────────────────────────────────
+  poNumber       String?     // Manual PO number entered by user
+  poStatus       String?     @default("PENDING") // PENDING | APPROVED_L1 | APPROVED_L2 | REJECTED_L1 | REJECTED_L2
+  poRemarks      String?
+  poCreatedAt    DateTime?
+  poApprovedL1At DateTime?
+  poApprovedL2At DateTime?
+  poRejectedAt   DateTime?
+  poRejectedBy   String?
+  poRejectionReason String?
+
+  // ─── Vendor Acceptance (S9) Fields ───────────────────────────────────────
+  vendorAcceptanceStatus   String?  @default("PENDING") // PENDING | ACCEPTED | REJECTED
+  vendorAcceptedAt         DateTime?
+  vendorRejectedAt         DateTime?
+  vendorRejectionReason    String?
+
+  // ─── Vendor Follow-up (S10) Fields ───────────────────────────────────────
+  vendorAgreedDate         DateTime?
+  vendorFollowupStatus     String?  @default("PENDING") // PENDING | COMPLETED | DELAYED | REJECTED
+  vendorFollowupCompletedAt DateTime?
+  vendorFollowupDelayedAt  DateTime?
+  vendorFollowupRejectedAt DateTime?
+  vendorFollowupRejectionReason String?
+  crmRemarks               String?
+
+  // ─── Inspection Workflow (S12, S13, S14) Fields ──────────────────────────
+  inspectionLevel1Status   String?  @default("PENDING") // PENDING | APPROVED | REJECTED
+  inspectionLevel1At       DateTime?
+  inspectionLevel1ById     String?
+  inspectionLevel1Remarks  String?
+
+  inspectionLevel2Status   String?  @default("PENDING") // PENDING | APPROVED | REJECTED
+  inspectionLevel2At       DateTime?
+  inspectionLevel2ById     String?
+  inspectionLevel2Remarks  String?
+
+  inspectionLevel3Status   String?  @default("PENDING") // PENDING | APPROVED | REJECTED
+  inspectionLevel3At       DateTime?
+  inspectionLevel3ById     String?
+  inspectionLevel3Remarks  String?
+
+  currentInspectionLevel   Int?     @default(0) // 0=none, 1=S12, 2=S13, 3=S14
+  inspectionAttempts       Int?     @default(0) // Max 3 attempts
+  finalInspectionResult    String?  // APPROVED | REJECTED
+  debitNoteGenerated       Boolean? @default(false)
+  debitNoteGeneratedAt     DateTime?
+
+  // ─── Finance & Accounts Workflow (S16-S22) Fields ────────────────────────
+  grnNumber                String?
+  billNumber               String?
+  financeStatus            String?  @default("PENDING") // PENDING | PROCESSED | REJECTED | HOLD
+  financeRemarks           String?
+
+  sku            SKU?        @relation(fields: [skuId], references: [id], onDelete: SetNull)
+  procurement    Procurement @relation(fields: [procurementId], references: [id], onDelete: Cascade)
+  assignedTo     User?       @relation("ItemAssignedTo", fields: [assignedToId], references: [id])
+  gateEntryItems GateEntryItem[]
+
+  @@index([procurementId])
+  @@index([assignedToId])
+  @@index([skuId])
+  @@index([itemCode])
+  @@index([poNumber])
+  @@index([poStatus])
+  @@index([poCreatedAt])
+}
+
+model ProcurementAttachment {
+  id            String      @id @default(uuid())
+  procurementId String
+  stageNumber   Int?
+  fileName      String
+  fileType      String
+  fileSize      Int?
+  fileUrl       String
+  uploadedById  String
+  createdAt     DateTime    @default(now())
+  procurement   Procurement @relation(fields: [procurementId], references: [id], onDelete: Cascade)
+  uploadedBy    User        @relation("AttachmentUploadedBy", fields: [uploadedById], references: [id])
+
+  @@index([procurementId])
+  @@index([uploadedById])
+}
+
+model ProcurementRemark {
+  id            String      @id @default(uuid())
+  procurementId String
+  stageNumber   Int?
+  comment       String
+  authorId      String
+  createdAt     DateTime    @default(now())
+  author        User        @relation("RemarkAuthor", fields: [authorId], references: [id])
+  procurement   Procurement @relation(fields: [procurementId], references: [id], onDelete: Cascade)
+
+  @@index([procurementId])
+  @@index([authorId])
+  @@index([procurementId, createdAt])
+}
+
+model ProcurementHistory {
+  id            String      @id @default(uuid())
+  procurementId String
+  stageNumber   Int?
+  action        String
+  description   String
+  performedById String
+  metadata      String?
+  createdAt     DateTime    @default(now())
+  performedBy   User        @relation("HistoryPerformedBy", fields: [performedById], references: [id])
+  procurement   Procurement @relation(fields: [procurementId], references: [id], onDelete: Cascade)
+
+  @@index([procurementId])
+  @@index([performedById])
+  @@index([createdAt])
+  @@index([procurementId, createdAt])
+  // PERFORMANCE: Composite index for dashboard recent activity queries
+  @@index([action, createdAt(sort: Desc)])
+  // PERFORMANCE: Index for stage-filtered history lookups
+  @@index([procurementId, stageNumber, createdAt(sort: Desc)])
+}
+
+model Project {
+  id            String      @id @default(uuid())
+  projectId     String      @unique @map("project_id_")
+  projectName   String      @map("project_name")
+  
+  @@map("projects_db")
+  @@index([projectId(ops: raw("gin_trgm_ops"))], type: Gin, map: "project_id_trgm_idx")
+  @@index([projectName(ops: raw("gin_trgm_ops"))], type: Gin, map: "project_name_trgm_idx")
+  @@index([projectName]) // Added: B-tree index for ASC ordering in search results
+}
+
+model Vendor {
+  id            String      @id @default(uuid())
+  vendorCode    String      @unique
+  vendorName    String
+  email         String?
+  phone         String?
+  address       String?
+  status        String      @default("ACTIVE")
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  RFQVendor     RFQVendor[]
+  RFQFloatVendor RFQFloatVendor[]
+  gateEntries   GateEntry[]
+  grns          GRN[]
+
+  @@index([status])
+  @@index([vendorCode])
+  @@index([vendorName])
+}
+
+model RFQ {
+  id                  String          @id @default(uuid())
+  rfqNumber           String          @unique
+  indentId            String
+  title               String
+  description         String?
+  rfqType             String
+  status              String          @default("DRAFT")
+  submissionDeadline  DateTime?
+  expectedDelivery    DateTime?
+  commercialTerms     String?
+  deliveryTerms       String?
+  paymentTerms        String?
+  warrantyReqs        String?
+  specialInstructions String?
+  createdById         String
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+  createdBy           User            @relation("RFQCreatedBy", fields: [createdById], references: [id])
+  indent              Procurement     @relation(fields: [indentId], references: [id])
+  attachments         RFQAttachment[]
+  history             RFQHistory[]
+  items               RFQItem[]
+  remarks             RFQRemark[]
+  vendors             RFQVendor[]
+  vendorForms         VendorRFQForm[] @relation("VendorRFQForms")
+  vendorQuotations    VendorQuotation[] @relation("VendorQuotations")
+  emailLogs           RFQEmailLog[]   @relation("RFQEmailLogs")
+  activityLogs        RFQActivityLog[] @relation("RFQActivityLogs")
+
+  @@index([indentId])
+  @@index([createdById])
+  @@index([status])
+}
+
+model RFQItem {
+  id            String  @id @default(uuid())
+  rfqId         String
+  indentItemId  String
+  itemCode      String?
+  itemName      String
+  description   String?
+  unit          String?
+  quantity      Decimal @db.Decimal(15, 3)
+  technicalSpec String?
+  approvedMakes String?
+  rfq           RFQ     @relation(fields: [rfqId], references: [id], onDelete: Cascade)
+
+  @@index([rfqId])
+}
+
+model RFQVendor {
+  id            String    @id @default(uuid())
+  rfqId         String
+  vendorId      String?
+  vendorName    String
+  vendorCode    String?
+  contactPerson String?
+  email         String?
+  phone         String?
+  status        String    @default("PENDING")
+  sentDate      DateTime?
+  rfq           RFQ       @relation(fields: [rfqId], references: [id], onDelete: Cascade)
+  Vendor        Vendor?   @relation(fields: [vendorId], references: [id])
+
+  @@index([rfqId])
+  @@index([vendorId])
+}
+
+model RFQAttachment {
+  id           String   @id @default(uuid())
+  rfqId        String
+  fileName     String
+  fileType     String
+  fileSize     Int?
+  fileUrl      String
+  uploadedById String
+  createdAt    DateTime @default(now())
+  rfq          RFQ      @relation(fields: [rfqId], references: [id], onDelete: Cascade)
+  uploadedBy   User     @relation("RFQAttachmentUploadedBy", fields: [uploadedById], references: [id])
+
+  @@index([rfqId])
+}
+
+model RFQRemark {
+  id        String   @id @default(uuid())
+  rfqId     String
+  comment   String
+  authorId  String
+  createdAt DateTime @default(now())
+  author    User     @relation("RFQRemarkAuthor", fields: [authorId], references: [id])
+  rfq       RFQ      @relation(fields: [rfqId], references: [id], onDelete: Cascade)
+
+  @@index([rfqId])
+}
+
+model RFQHistory {
+  id            String   @id @default(uuid())
+  rfqId         String
+  action        String
+  description   String
+  performedById String
+  metadata      String?
+  createdAt     DateTime @default(now())
+  performedBy   User     @relation("RFQHistoryPerformedBy", fields: [performedById], references: [id])
+  rfq           RFQ      @relation(fields: [rfqId], references: [id], onDelete: Cascade)
+
+  @@index([rfqId])
+}
+
+model Department {
+  id                 String       @id
+  departmentCode     String       @unique
+  departmentName     String
+  description        String?
+  status             String       @default("ACTIVE")
+  location           String?
+  managerUserId      String?
+  parentDepartmentId String?
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime
+  Department         Department?  @relation("DepartmentToDepartment", fields: [parentDepartmentId], references: [id])
+  other_Department   Department[] @relation("DepartmentToDepartment")
+  User               User[]
+
+  @@index([departmentCode])
+  @@index([parentDepartmentId])
+  @@index([status])
+}
+
+model SKU {
+  id             String      @id @default(uuid())
+  itemCode       String      @unique
+  description    String
+  category       String?     // MECHANICAL/ELECTRICAL/PLUMBING/SAFETY
+  subGroup       String?
+  uom            String
+  status         String      @default("Active")
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  
+  // Relations
+  procurementItems ProcurementItem[]
+  recentlyViewed   RecentlyViewedItem[]
+
+  @@map("Item")
+  @@index([category(ops: raw("gin_trgm_ops"))], type: Gin, map: "item_category_trgm_idx")
+  @@index([subGroup(ops: raw("gin_trgm_ops"))], type: Gin, map: "item_subgroup_trgm_idx")
+  @@index([uom(ops: raw("gin_trgm_ops"))], type: Gin, map: "item_uom_trgm_idx")
+  @@index([category])
+  @@index([subGroup])
+  @@index([status])
+  @@index([createdAt])
+  @@index([description(ops: raw("gin_trgm_ops"))], type: Gin)
+  @@index([itemCode(ops: raw("gin_trgm_ops"))], type: Gin)
+}
+
+model SearchAnalytics {
+  id              String   @id @default(uuid())
+  query           String
+  userId          String?
+  resultCount     Int
+  responseTimeMs  Int
+  isFuzzyFallback Boolean  @default(false)
+  createdAt       DateTime @default(now())
+
+  @@index([createdAt(sort: Desc)])
+  @@index([userId])
+}
+
+model RecentlyViewedItem {
+  id       String   @id @default(uuid())
+  userId   String
+  skuId    String
+  itemCode String   // Denormalized for quick access
+  itemName String
+  viewedAt DateTime @default(now())
+  
+  sku      SKU      @relation(fields: [skuId], references: [id], onDelete: Cascade)
+  User     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, itemCode])
+  @@index([userId, viewedAt(sort: Desc)])
+  @@index([skuId])
+}
+
+model ImportHistory {
+  id             String   @id @default(uuid())
+  userId         String
+  fileName       String
+  totalRecords   Int      @default(0)
+  validRecords   Int      @default(0)
+  invalidRecords Int      @default(0)
+  duplicateCount Int      @default(0)
+  status         String   @default("COMPLETED")
+  createdAt      DateTime @default(now())
+  
+  User           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId, createdAt(sort: Desc)])
+}
+
+model StageConfiguration {
+  id             String   @id @default(uuid())
+  stageNumber    Int      @unique
+  stageName      String
+  tatHours       Int?
+  isDynamicOwner Boolean  @default(false)
+  escalateToRole String?
+  
+  // Escalation config
+  escalationL1DelayHours Int? @default(0)   // Hours after SLA breach before L1 escalation
+  escalationL2DelayHours Int? @default(4)   // Hours after L1 before L2
+  escalationL3DelayHours Int? @default(8)   // Hours after L2 before L3
+  
+  // v2.6.0 — Restrict queue visibility
+  isGloballyVisible Boolean @default(false) // If true, visible in all queues (for managers)
+  
+  defaultOwners  User[]   @relation("StageDefaultOwners")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+// ─── SLA Record ────────────────────────────────────────────────────────────────
+// Authoritative SLA tracking per stage per indent — immutable source of truth
+model SlaRecord {
+  id              String      @id @default(uuid())
+  procurementId   String
+  stageNumber     Int
+  stageName       String
+
+  // Timing
+  stageEnteredAt  DateTime
+  slaDurationHours Int
+  dueAt           DateTime
+  completedAt     DateTime?
+
+  // Computed (updated by background job)
+  elapsedHours    Float       @default(0)
+  remainingHours  Float       @default(0)
+  delayHours      Float       @default(0)
+
+  // Status: ON_TRACK | APPROACHING_SLA | SLA_BREACHED | COMPLETED_ON_TIME | COMPLETED_LATE
+  slaStatus       String      @default("ON_TRACK")
+
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  procurement     Procurement @relation(fields: [procurementId], references: [id], onDelete: Cascade)
+
+  @@unique([procurementId, stageNumber])
+  @@index([procurementId])
+  @@index([slaStatus])
+  @@index([dueAt])
+  @@index([stageNumber, slaStatus])
+}
+
+// ─── Delay Log ─────────────────────────────────────────────────────────────────
+// Records each individual delay event for a stage
+model DelayLog {
+  id              String      @id @default(uuid())
+  procurementId   String
+  stageNumber     Int
+  stageName       String
+
+  delayStartedAt  DateTime
+  delayEndedAt    DateTime?
+  delayHours      Float       @default(0)
+  
+  delayReason     String?
+  delayCategory   String?     // SLA_BREACH | HOLD | CLARIFICATION | REASSIGNMENT | OTHER
+  delayedByUserId String?
+  currentOwnerId  String?
+
+  isResolved      Boolean     @default(false)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  procurement     Procurement @relation(fields: [procurementId], references: [id], onDelete: Cascade)
+  delayedByUser   User?       @relation("DelayedByUser", fields: [delayedByUserId], references: [id])
+  currentOwner    User?       @relation("DelayCurrentOwner", fields: [currentOwnerId], references: [id])
+
+  @@index([procurementId])
+  @@index([stageNumber])
+  @@index([isResolved])
+  @@index([procurementId, stageNumber])
+}
+
+// ─── Reminder Log ──────────────────────────────────────────────────────────────
+// Prevents duplicate reminders, tracks every reminder sent
+model ReminderLog {
+  id              String      @id @default(uuid())
+  procurementId   String
+  stageNumber     Int
+  
+  reminderType    String      // PERCENT_50 | PERCENT_75 | PERCENT_90 | SLA_EXPIRED | POST_EXPIRY_24H
+  reminderNumber  Int         @default(1) // Sequence number (for POST_EXPIRY_24H: 1, 2, 3...)
+  sentAt          DateTime    @default(now())
+  recipientId     String?
+  recipientEmail  String?
+  deliveryStatus  String      @default("SENT") // SENT | FAILED | SKIPPED
+
+  createdAt       DateTime    @default(now())
+
+  procurement     Procurement @relation(fields: [procurementId], references: [id], onDelete: Cascade)
+
+  @@index([procurementId])
+  @@index([stageNumber])
+  @@index([reminderType])
+  @@index([procurementId, stageNumber, reminderType])
+}
+
+// ─── Escalation Log ────────────────────────────────────────────────────────────
+model EscalationLog {
+  id              String      @id @default(uuid())
+  procurementId   String
+  stageNumber     Int
+  stageName       String
+
+  escalationLevel Int         // 1 | 2 | 3
+  escalatedToId   String?
+  escalatedToEmail String?
+  escalatedAt     DateTime    @default(now())
+  reason          String?
+
+  notificationSent Boolean    @default(false)
+  emailSent        Boolean    @default(false)
+
+  createdAt       DateTime    @default(now())
+
+  procurement     Procurement @relation(fields: [procurementId], references: [id], onDelete: Cascade)
+  escalatedTo     User?       @relation("EscalationTarget", fields: [escalatedToId], references: [id])
+
+  @@index([procurementId])
+  @@index([stageNumber])
+  @@index([escalationLevel])
+  @@index([procurementId, stageNumber])
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Material Receipt & Gate Entry System
+// Sub-workflow that lives inside Procurement Stage 11 ("Material Receipt").
+// One Procurement (the PO/indent) can have many GateEntry records — each
+// represents one truck/vehicle delivery, which may cover some or all of the
+// PO's remaining line-item quantity (partial receipts). The authoritative
+// "remaining quantity" for a ProcurementItem is always computed as
+//   item.quantity - SUM(GateEntryItem.receivedQty WHERE status != CANCELLED)
+// across every GateEntry ever created against that item — never stored as a
+// running total, so it can never drift out of sync with history.
+// ═══════════════════════════════════════════════════════════════════════════
+
+model GateEntry {
+  id              String   @id @default(uuid())
+  entryNumber     String   @unique // e.g. GE-2026-000123, human-readable
+  procurementId   String
+  vehicleNumber   String
+  gateInAt        DateTime @default(now())
+  gateOutAt       DateTime?
+
+  // Step 2 — Quantity Verification (Store)
+  invoiceNumber   String?
+  invoiceDate     DateTime?
+  vendorId        String?
+  vendorName      String?
+
+  status          GateEntryStatus @default(GATE_ENTRY)
+
+  createdById     String   // Security guard who performed gate entry
+  quantityCheckedById String? // Store executive who performed quantity check
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  procurement     Procurement       @relation(fields: [procurementId], references: [id], onDelete: Cascade)
+  vendor          Vendor?           @relation(fields: [vendorId], references: [id], onDelete: SetNull)
+  createdBy       User              @relation("GateEntryCreatedBy", fields: [createdById], references: [id])
+  quantityCheckedBy User?           @relation("GateEntryQuantityCheckedBy", fields: [quantityCheckedById], references: [id])
+  items           GateEntryItem[]
+  grn             GRN?
+
+  @@index([procurementId])
+  @@index([vehicleNumber])
+  @@index([status])
+  @@index([createdAt])
+  @@index([invoiceNumber])
+}
+
+model GateEntryItem {
+  id                String   @id @default(uuid())
+  gateEntryId       String
+  procurementItemId String
+
+  // Step 1 (Gate Entry, informal) — quantity as declared at the gate
+  declaredQty       Decimal  @db.Decimal(15, 3)
+
+  // Step 2 (Quantity Verification, authoritative) — what Store actually counted
+  receivedQty       Decimal? @db.Decimal(15, 3)
+
+  // Step 3 (Quality Inspection)
+  qualityStatus     QualityStatus @default(PENDING)
+  rejectionReason   String?
+  toleranceMinPct   Decimal? @db.Decimal(5, 2) @default(-5)
+  toleranceMaxPct   Decimal? @db.Decimal(5, 2) @default(5)
+  actualSizeReceived String?
+  inspectedById     String?
+  inspectedAt       DateTime?
+  inspectionRemarks String?
+
+  // Step 4 (Material Allocation)
+  allocatedLocation String?
+  allocatedAt       DateTime?
+  allocatedById     String?
+
+  status            GateEntryItemStatus @default(PENDING)
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  gateEntry         GateEntry       @relation(fields: [gateEntryId], references: [id], onDelete: Cascade)
+  procurementItem   ProcurementItem @relation(fields: [procurementItemId], references: [id], onDelete: Cascade)
+  inspectedBy       User?           @relation("GateEntryItemInspectedBy", fields: [inspectedById], references: [id])
+  allocatedBy       User?           @relation("GateEntryItemAllocatedBy", fields: [allocatedById], references: [id])
+
+  @@index([gateEntryId])
+  @@index([procurementItemId])
+  @@index([qualityStatus])
+  @@index([status])
+}
+
+model GRN {
+  id              String   @id @default(uuid())
+  grnNumber       String   @unique // e.g. GRN-2026-000123
+  gateEntryId     String   @unique
+  procurementId   String
+  vendorId        String?
+  vendorName      String?
+  invoiceNumber   String?
+  invoiceDate     DateTime?
+
+  totalAcceptedQty  Decimal @db.Decimal(15, 3)
+  totalRejectedQty  Decimal @db.Decimal(15, 3)
+
+  generatedById   String
+  generatedAt     DateTime @default(now())
+
+  inventoryPosted   Boolean  @default(false)
+  inventoryPostedAt DateTime?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  gateEntry       GateEntry   @relation(fields: [gateEntryId], references: [id], onDelete: Cascade)
+  procurement     Procurement @relation(fields: [procurementId], references: [id], onDelete: Cascade)
+  vendor          Vendor?     @relation(fields: [vendorId], references: [id], onDelete: SetNull)
+  generatedBy     User        @relation("GRNGeneratedBy", fields: [generatedById], references: [id])
+
+  @@index([procurementId])
+  @@index([gateEntryId])
+  @@index([vendorId])
+  @@index([generatedAt])
+  @@index([inventoryPosted])
+}
+
+enum GateEntryStatus {
+  GATE_ENTRY          // Step 1 done, awaiting quantity check
+  QUANTITY_PENDING     // alias of GATE_ENTRY for clarity in queue filters
+  QUANTITY_VERIFIED    // Step 2 done, awaiting quality inspection
+  QUALITY_PENDING
+  QUALITY_VERIFIED     // Step 3 done for all items, awaiting allocation
+  ALLOCATION_PENDING
+  ALLOCATED            // Step 4 done for all accepted items
+  GRN_GENERATED         // Step 5 — terminal success state
+  CANCELLED
+}
+
+enum QualityStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  ACCEPTED_WITH_DEVIATION
+}
+
+enum GateEntryItemStatus {
+  PENDING
+  QUANTITY_VERIFIED
+  QUALITY_VERIFIED
+  ALLOCATED
+  COMPLETED
+  CANCELLED
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Vendor RFQ Portal — v2.9.0
+// Vendor quotation collection, submission, and negotiation workflows
+// ═══════════════════════════════════════════════════════════════════════════
+
+model VendorRFQForm {
+  id                    String                      @id @default(uuid())
+  rfqId                 String
+  vendorId              String?
+  vendorCode            String
+  vendorName            String
+  vendorEmail           String
+  contactPerson         String?
+  
+  // Secure access token for vendor
+  secureToken           String                      @unique @db.VarChar(255)
+  tokenExpiresAt        DateTime
+  
+  // Form lifecycle
+  formStatus            VendorFormStatus            @default(PENDING)
+  formOpenedAt          DateTime?
+  formSubmittedAt       DateTime?
+  
+  // Read-only data (prefilled)
+  rfqNumber             String
+  rfqDate               DateTime
+  submissionDeadline    DateTime
+  expectedDeliveryDate  DateTime?
+  deliveryLocation      String?
+  buyerName             String?
+  generalRemarks        String?
+  
+  createdAt             DateTime                    @default(now())
+  updatedAt             DateTime                    @updatedAt
+  
+  // Relations
+  rfq                   RFQ                         @relation("VendorRFQForms", fields: [rfqId], references: [id], onDelete: Cascade)
+  quotation             VendorQuotation?
+  accessLogs            VendorFormAccessLog[]
+  emailLogs             RFQEmailLog[]               @relation("VendorFormEmailLogs")
+  
+  @@unique([rfqId, vendorCode])
+  @@index([rfqId])
+  @@index([vendorEmail])
+  @@index([formStatus])
+  @@index([submissionDeadline])
+  @@index([secureToken])
+}
+
+model VendorQuotation {
+  id                    String                      @id @default(uuid())
+  vendorFormId          String                      @unique
+  rfqId                 String
+  
+  // Quotation metadata
+  quotationNumber       String                      @unique
+  submittedAt           DateTime
+  submittedByName       String?
+  submittedByDesignation String?
+  
+  // Commercial terms
+  paymentTerms          String?
+  advancePercentage     Decimal?                    @db.Decimal(5, 2)
+  creditDays            Int?
+  freightIncluded       Boolean                     @default(false)
+  insuranceIncluded     Boolean                     @default(false)
+  taxesIncluded         Boolean                     @default(false)
+  packingIncluded       Boolean                     @default(false)
+  deliveryBasis         String?
+  warranty              String?
+  warrantyMonths        Int?
+  replacementPolicy     String?
+  penaltyClauseAccepted Boolean                     @default(false)
+  complianceConfirmed   Boolean                     @default(false)
+  additionalNotes       String?
+  
+  // Vendor declaration
+  pricesValidFrom       DateTime?
+  pricesValidTo         DateTime?
+  companyName           String?
+  authorizedPerson      String?
+  designation           String?
+  digitalSignature      String?  // Base64 encoded image or signature
+  signatureTimestamp    DateTime?
+  companyLogo           String?  // URL to logo/seal
+  
+  // Overall quotation total
+  grandTotalAmount      Decimal?                    @db.Decimal(15, 2)
+  grandTotalCurrency    String                      @default("INR")
+  
+  // Status tracking
+  quotationStatus       QuotationStatus             @default(SUBMITTED)
+  quotationRemarks      String?
+  
+  createdAt             DateTime                    @default(now())
+  updatedAt             DateTime                    @updatedAt
+  
+  // Relations
+  vendorForm            VendorRFQForm               @relation(fields: [vendorFormId], references: [id], onDelete: Cascade)
+  rfq                   RFQ                         @relation("VendorQuotations", fields: [rfqId], references: [id], onDelete: Cascade)
+  lineItems             VendorQuotationLineItem[]
+  attachments           VendorQuotationAttachment[]
+  negotiationRounds     NegotiationRound[]
+  
+  @@index([rfqId])
+  @@index([vendorFormId])
+  @@index([quotationStatus])
+  @@index([submittedAt])
+  @@index([rfqId, quotationStatus])
+}
+
+model VendorQuotationLineItem {
+  id                    String                      @id @default(uuid())
+  quotationId           String
+  rfqItemId             String?
+  
+  // Product details (from RFQ)
+  itemCode              String?
+  itemName              String
+  description           String?
+  quantity              Decimal                     @db.Decimal(15, 3)
+  unitOfMeasure         String
+  
+  // Vendor quotation pricing
+  quotedRate            Decimal                     @db.Decimal(15, 2)
+  currency              String                      @default("INR")
+  discountPercentage    Decimal?                    @db.Decimal(5, 2)
+  discountAmount        Decimal?                    @db.Decimal(15, 2)
+  gstPercentage         Decimal?                    @db.Decimal(5, 2)
+  gstAmount             Decimal?                    @db.Decimal(15, 2)
+  freightCharges        Decimal?                    @db.Decimal(15, 2)
+  packingCharges        Decimal?                    @db.Decimal(15, 2)
+  totalAmount           Decimal                     @db.Decimal(15, 2)
+  
+  // Product specifications
+  brandOffered          String?
+  countryOfOrigin       String?
+  hsnCode               String?
+  moqMinimum            Decimal?                    @db.Decimal(15, 3)
+  leadTimeDays          Int?
+  deliveryTime          String?
+  warranty              String?
+  warrantyMonths        Int?
+  
+  // Vendor remarks
+  remarks               String?
+  technicalDetails      String?
+  
+  createdAt             DateTime                    @default(now())
+  updatedAt             DateTime                    @updatedAt
+  
+  // Relations
+  quotation             VendorQuotation             @relation(fields: [quotationId], references: [id], onDelete: Cascade)
+  attachments           VendorQuotationAttachment[]
+  
+  @@index([quotationId])
+  @@index([itemCode])
+  @@index([quotationId, itemCode])
+}
+
+model VendorQuotationAttachment {
+  id                    String                      @id @default(uuid())
+  quotationId           String?
+  lineItemId            String?
+  
+  documentType          DocumentType
+  fileName              String
+  fileType              String
+  fileSize              Int
+  fileUrl               String
+  uploadedAt            DateTime                    @default(now())
+  
+  // Relations
+  quotation             VendorQuotation?            @relation(fields: [quotationId], references: [id], onDelete: Cascade)
+  lineItem              VendorQuotationLineItem?    @relation(fields: [lineItemId], references: [id], onDelete: Cascade)
+  
+  @@index([quotationId])
+  @@index([lineItemId])
+  @@index([documentType])
+}
+
+model VendorFormAccessLog {
+  id                    String                      @id @default(uuid())
+  vendorFormId          String
+  
+  accessedAt            DateTime                    @default(now())
+  ipAddress             String?
+  userAgent             String?
+  actionType            AccessLogAction
+  
+  // Relations
+  vendorForm            VendorRFQForm               @relation(fields: [vendorFormId], references: [id], onDelete: Cascade)
+  
+  @@index([vendorFormId])
+  @@index([accessedAt])
+  @@index([vendorFormId, actionType])
+}
+
+model NegotiationRound {
+  id                    String                      @id @default(uuid())
+  quotationId           String
+  roundNumber           Int
+  
+  // Counter-offer details
+  requestedAdjustments  String?
+  counterOfferAmount    Decimal?                    @db.Decimal(15, 2)
+  counterOfferTerms     String?
+  sentAt                DateTime                    @default(now())
+  
+  // Vendor response
+  vendorResponseStatus  NegotiationStatus          @default(PENDING)
+  vendorResponse        String?
+  vendorResponseAt      DateTime?
+  
+  // Negotiation tracking
+  negStatus             String                     @default("OPEN")
+  remarks               String?
+  rounds                Int                        @default(1)
+  
+  createdAt             DateTime                    @default(now())
+  updatedAt             DateTime                    @updatedAt
+  
+  // Relations
+  quotation             VendorQuotation             @relation(fields: [quotationId], references: [id], onDelete: Cascade)
+  
+  @@index([quotationId])
+  @@index([roundNumber])
+  @@index([negStatus])
+  @@index([quotationId, roundNumber])
+}
+
+model RFQEmailLog {
+  id                    String                      @id @default(uuid())
+  rfqId                 String
+  vendorFormId          String?
+  
+  // Email details
+  emailType             EmailLogType
+  recipientEmail        String
+  subject               String
+  body                  String?
+  
+  // Delivery tracking
+  sentAt                DateTime                    @default(now())
+  deliveryStatus        EmailDeliveryStatus         @default(SENT)
+  bounceReason          String?
+  retryCount            Int                        @default(0)
+  lastRetryAt           DateTime?
+  
+  // Relations
+  rfq                   RFQ                         @relation("RFQEmailLogs", fields: [rfqId], references: [id], onDelete: Cascade)
+  vendorForm            VendorRFQForm?              @relation("VendorFormEmailLogs", fields: [vendorFormId], references: [id], onDelete: SetNull)
+  
+  @@index([rfqId])
+  @@index([vendorFormId])
+  @@index([emailType])
+  @@index([deliveryStatus])
+  @@index([sentAt])
+  @@index([rfqId, emailType])
+}
+
+model RFQActivityLog {
+  id                    String                      @id @default(uuid())
+  rfqId                 String
+  
+  // Activity details
+  activityType          ActivityLogType
+  description           String?
+  performedById         String?
+  performedByName       String?
+  
+  // Context
+  vendorFormId          String?
+  quotationId           String?
+  
+  metadata              String?  // JSON for extra context
+  
+  createdAt             DateTime                    @default(now())
+  
+  // Relations
+  rfq                   RFQ                         @relation("RFQActivityLogs", fields: [rfqId], references: [id], onDelete: Cascade)
+  
+  @@index([rfqId])
+  @@index([activityType])
+  @@index([createdAt])
+  @@index([rfqId, activityType])
+}
+
+// ─── Enums for Vendor RFQ Portal ─────────────────────────────────────────
+
+enum VendorFormStatus {
+  PENDING             // Form generated, email not sent yet
+  EMAIL_SENT          // Invitation email sent to vendor
+  FORM_OPENED         // Vendor opened the form link
+  IN_PROGRESS         // Vendor started filling form
+  SUBMITTED           // Vendor submitted quotation
+  VIEWED_BY_BUYER     // Procurement team viewed submission
+  UNDER_NEGOTIATION   // Counter-offer sent to vendor
+  REVISED_SUBMITTED   // Vendor submitted revised quotation
+  ACCEPTED            // Buyer accepted this vendor
+  REJECTED            // Buyer rejected this vendor
+  EXPIRED             // Submission deadline passed
+  WITHDRAWN           // Vendor withdrew submission
+}
+
+enum QuotationStatus {
+  SUBMITTED           // Initial submission
+  UNDER_REVIEW        // Procurement team reviewing
+  UNDER_NEGOTIATION   // Negotiation in progress
+  NEGOTIATION_COMPLETE // Negotiation concluded
+  SHORTLISTED         // Vendor shortlisted for PO
+  SELECTED            // Selected for PO creation
+  REJECTED            // Quotation rejected
+  WITHDRAWN           // Vendor withdrew
+  EXPIRED             // Form expired before submission
+}
+
+enum DocumentType {
+  QUOTATION
+  DATASHEET
+  TECHNICAL_SPECIFICATION
+  COMPLIANCE_CERTIFICATE
+  CERTIFICATE_OF_ORIGIN
+  BROCHURE
+  BUSINESS_LICENSE
+  GST_CERTIFICATE
+  OTHER_SUPPORTING_DOCUMENT
+}
+
+enum AccessLogAction {
+  FORM_OPENED
+  FORM_SAVED_DRAFT
+  FORM_SUBMITTED
+  FORM_VIEWED_READONLY
+  FORM_ACCESSED
+  ATTACHMENT_UPLOADED
+  ATTACHMENT_DOWNLOADED
+}
+
+enum NegotiationStatus {
+  PENDING             // Counter-offer sent, awaiting vendor response
+  ACCEPTED            // Vendor accepted counter-offer
+  REJECTED            // Vendor rejected counter-offer
+  REVISED             // Vendor submitted revised quotation
+  CLOSED              // Negotiation closed (manual action)
+}
+
+enum EmailLogType {
+  RFQ_INVITATION      // Initial RFQ invitation email
+  SUBMISSION_REMINDER // Reminder before deadline
+  DEADLINE_EXPIRED    // Notification after deadline
+  SUBMISSION_CONFIRMATION // Confirmation of vendor submission
+  COUNTER_OFFER       // Counter-offer sent to vendor
+  PROCUREMENT_NOTIFICATION // Notification to procurement team
+  VENDOR_SELECTED     // Notification that vendor was selected
+  VENDOR_REJECTED     // Notification that vendor was rejected
+}
+
+enum EmailDeliveryStatus {
+  PENDING
+  SENT
+  DELIVERED
+  BOUNCED
+  FAILED
+  OPENED
+}
+
+enum ActivityLogType {
+  RFQ_CREATED
+  FORM_GENERATED
+  FORM_EMAIL_SENT
+  FORM_OPENED_BY_VENDOR
+  QUOTATION_SUBMITTED
+  QUOTATION_VIEWED
+  NEGOTIATION_INITIATED
+  COUNTER_OFFER_SENT
+  REVISED_QUOTATION_SUBMITTED
+  VENDOR_SELECTED
+  VENDOR_REJECTED
+  VENDOR_SHORTLISTED
+  NEGOTIATION_CLOSED
+  RFQ_CLOSED
+  ATTACHMENT_UPLOADED
+}
+
+// Add relations to existing RFQ model
+// (Add these to the RFQ model definition above)
+// vendorForms       VendorRFQForm[]     @relation("VendorRFQForms")
+// vendorQuotations  VendorQuotation[]   @relation("VendorQuotations")
+// emailLogs         RFQEmailLog[]       @relation("RFQEmailLogs")
+// activityLogs      RFQActivityLog[]    @relation("RFQActivityLogs")
+
+// ═══════════════════════════════════════════════════════════════════════════
+// RFQ Float Workflow — v2.11.0
+// Multi-indent RFQ float, TCE, and negotiation
+// ═══════════════════════════════════════════════════════════════════════════
+
+model RFQFloat {
+  id                    String              @id @default(uuid())
+  rfqNumber             String              @unique
+  rfqDate               DateTime            @default(now())
+  submissionDeadline    DateTime?
+  expectedDeliveryDate  DateTime?
+  filledById            String?
+  deliveryLocation      String?
+  remarks               String?
+  status                String              @default("DRAFT")
+  createdById           String
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime            @updatedAt
+
+  items                 RFQFloatItem[]
+  vendors               RFQFloatVendor[]
+  tces                  TCE[]
+  negotiations          Negotiation[]
+  activityLogs          RFQFloatActivityLog[]
+  emailLogs             RFQFloatEmailLog[]
+
+  @@index([rfqNumber])
+  @@index([status])
+  @@index([createdById])
+}
+
+model RFQFloatItem {
+  id                  String      @id @default(uuid())
+  rfqFloatId          String
+  indentId            String
+  indentItemId        String
+  itemCode            String?
+  itemName            String
+  description         String?
+  itemRemarks         String?
+  make                String?
+  quantity            Decimal     @db.Decimal(15, 3)
+  uom                 String?
+  unitWeight          Decimal?    @db.Decimal(15, 3)
+  totalWeight         Decimal?    @db.Decimal(15, 3)
+  isAvailableInStore  Boolean     @default(false)
+  isSelected          Boolean     @default(true)
+  createdAt           DateTime    @default(now())
+
+  rfqFloat            RFQFloat    @relation(fields: [rfqFloatId], references: [id], onDelete: Cascade)
+  tceItems            TCEItem[]
+
+  @@index([rfqFloatId])
+  @@index([indentId])
+  @@index([indentItemId])
+}
+
+model RFQFloatVendor {
+  id          String      @id @default(uuid())
+  rfqFloatId  String
+  vendorId    String?
+  vendorCode  String?
+  vendorName  String
+  email       String?
+  phone       String?
+  status      String      @default("PENDING")
+  sentDate    DateTime?
+
+  rfqFloat    RFQFloat    @relation(fields: [rfqFloatId], references: [id], onDelete: Cascade)
+  vendor      Vendor?     @relation(fields: [vendorId], references: [id])
+
+  @@index([rfqFloatId])
+  @@index([vendorId])
+}
+
+model TCE {
+  id              String      @id @default(uuid())
+  rfqFloatId      String
+  vendorFormId    String?
+  vendorId        String?
+  vendorName      String
+  quotationId     String?
+  quotationNumber String?
+  submittedAt     DateTime?
+  grandTotal      Decimal?    @db.Decimal(15, 2)
+  deliveryBasis   String?
+  warranty        String?
+  remarks         String?
+  status          String      @default("PENDING")
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  rfqFloat        RFQFloat        @relation(fields: [rfqFloatId], references: [id], onDelete: Cascade)
+  items           TCEItem[]
+  attachments     TCEAttachment[]
+
+  @@index([rfqFloatId])
+  @@index([vendorId])
+}
+
+model TCEItem {
+  id                  String      @id @default(uuid())
+  tceId               String
+  rfqFloatItemId      String?
+  itemCode            String?
+  itemName            String
+  quantity            Decimal?    @db.Decimal(15, 3)
+  uom                 String?
+  quotedRate          Decimal?    @db.Decimal(15, 2)
+  discountPercentage  Decimal?    @db.Decimal(5, 2)
+  discountAmount      Decimal?    @db.Decimal(15, 2)
+  gstPercentage       Decimal?    @db.Decimal(5, 2)
+  gstAmount           Decimal?    @db.Decimal(15, 2)
+  totalAmount         Decimal?    @db.Decimal(15, 2)
+  deliveryBasis       String?
+  supplierRemark      String?
+  createdAt           DateTime    @default(now())
+
+  tce                 TCE             @relation(fields: [tceId], references: [id], onDelete: Cascade)
+  rfqFloatItem        RFQFloatItem?   @relation(fields: [rfqFloatItemId], references: [id])
+
+  @@index([tceId])
+  @@index([rfqFloatItemId])
+}
+
+model TCEAttachment {
+  id          String      @id @default(uuid())
+  tceId       String
+  fileName    String
+  fileType    String
+  fileSize    Int?
+  fileUrl     String
+  uploadedAt  DateTime    @default(now())
+
+  tce         TCE         @relation(fields: [tceId], references: [id], onDelete: Cascade)
+
+  @@index([tceId])
+}
+
+model Negotiation {
+  id              String      @id @default(uuid())
+  rfqFloatId      String
+  tceId           String?
+  vendorId        String?
+  vendorName      String
+  status          String      @default("PENDING")  // PENDING | ACTIVE | COMPLETED | CANCELLED
+  startedAt       DateTime    @default(now())
+  completedAt     DateTime?
+  remarks         String?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  rfqFloat        RFQFloat        @relation(fields: [rfqFloatId], references: [id], onDelete: Cascade)
+  items           NegotiationItem[]
+
+  @@index([rfqFloatId])
+  @@index([vendorId])
+}
+
+model NegotiationItem {
+  id                  String      @id @default(uuid())
+  negotiationId       String
+  tceItemId           String?
+  itemCode            String?
+  itemName            String
+  quantity            Decimal?    @db.Decimal(15, 3)
+  uom                 String?
+  originalRate        Decimal?    @db.Decimal(15, 2)
+  negotiatedRate      Decimal?    @db.Decimal(15, 2)
+  finalRate           Decimal?    @db.Decimal(15, 2)
+  discountPercentage  Decimal?    @db.Decimal(5, 2)
+  deliveryTerms       String?
+  paymentTerms        String?
+  remarks             String?
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
+
+  negotiation         Negotiation @relation(fields: [negotiationId], references: [id], onDelete: Cascade)
+
+  @@index([negotiationId])
+  @@index([tceItemId])
+}
+
+model RFQFloatActivityLog {
+  id              String      @id @default(uuid())
+  rfqFloatId      String
+  action          String
+  description     String?
+  performedById   String?
+  performedByName String?
+  metadata        String?
+  createdAt       DateTime    @default(now())
+
+  rfqFloat        RFQFloat    @relation(fields: [rfqFloatId], references: [id], onDelete: Cascade)
+
+  @@index([rfqFloatId])
+  @@index([action])
+}
+
+model RFQFloatEmailLog {
+  id              String      @id @default(uuid())
+  rfqFloatId      String
+  emailType       String
+  recipientEmail  String
+  subject         String
+  body            String?
+  sentAt          DateTime    @default(now())
+  deliveryStatus  String      @default("SENT")
+  bounceReason    String?
+
+  rfqFloat        RFQFloat    @relation(fields: [rfqFloatId], references: [id], onDelete: Cascade)
+
+  @@index([rfqFloatId])
+  @@index([emailType])
+  @@index([deliveryStatus])
+}

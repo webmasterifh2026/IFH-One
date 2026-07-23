@@ -1,0 +1,24 @@
+{
+  "name": "ifh-one",
+  "version": "2.10.0",
+  "private": true,
+  "packageManager": "npm@11.12.1",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "build:web": "npm --workspace apps/web run build",
+    "build:api": "npm --workspace apps/api run build",
+    "start:web": "npm --workspace apps/web run start",
+    "start:api": "npm --workspace apps/api run start:prod",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "prepare": "echo skip husky"
+  },
+  "devDependencies": {
+    "turbo": "^1.13.3"
+  }
+}

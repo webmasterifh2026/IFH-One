@@ -1,0 +1,7 @@
+{
+  "name": "@ifh/config",
+  "version": "2.0.1",
+  "private": true,
+  "main": "./index.js",
+  "dependencies": {}
+}
