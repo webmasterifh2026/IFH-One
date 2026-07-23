@@ -36,7 +36,7 @@ export class HealthController {
     ]);
     return {
       ...result,
-      version: process.env.APP_VERSION || packageJson.version || '3.0.2',
+      version: packageJson.version,
     };
   }
 
@@ -54,7 +54,7 @@ export class HealthController {
       status: 'ok',
       ts: new Date().toISOString(),
       uptime: Math.floor(process.uptime()),
-      version: process.env.APP_VERSION || packageJson.version || '3.0.2',
+      version: packageJson.version,
     };
   }
 }

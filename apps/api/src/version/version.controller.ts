@@ -8,8 +8,8 @@ export class VersionController {
   @Get('version')
   getVersion() {
     return {
-      name: 'IFH One',
-      version: process.env.APP_VERSION || packageJson.version || '3.0.2',
+      application: 'IFH One',
+      version: packageJson.version,
       environment: process.env.NODE_ENV || 'development',
       buildDate: process.env.BUILD_DATE || new Date().toISOString(),
       commit:
