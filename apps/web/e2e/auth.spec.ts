@@ -11,19 +11,25 @@ test.describe('Authentication Workflow', () => {
     // Sometimes there is a redirect to /login
     if (page.url().includes('/login')) {
       // Find the email and password inputs
-      const emailInput = page.getByPlaceholder(/email/i).or(page.locator('input[type="email"]'));
-      const passwordInput = page.getByPlaceholder(/password/i).or(page.locator('input[type="password"]'));
-      
+      const emailInput = page
+        .getByPlaceholder(/email/i)
+        .or(page.locator('input[type="email"]'));
+      const passwordInput = page
+        .getByPlaceholder(/password/i)
+        .or(page.locator('input[type="password"]'));
+
       // Enter credentials (we'll use one of the users from the rbac seed)
       await emailInput.fill('pramod.kumar@if-himenviro.in');
       await passwordInput.fill('password123'); // Assuming default password or we'll adjust later
-      
+
       // Submit the form
       const loginButton = page.getByRole('button', { name: /login|sign in/i });
       await loginButton.click();
-      
+
       // Wait for navigation to dashboard or home
-      await page.waitForURL('**/dashboard**', { timeout: 10000 }).catch(() => {});
+      await page
+        .waitForURL('**/dashboard**', { timeout: 10000 })
+        .catch(() => {});
     }
 
     // Verify successful login (e.g., presence of a logout button or dashboard text)
@@ -35,18 +41,22 @@ test.describe('Authentication Workflow', () => {
     await page.goto('/login');
     await page.waitForLoadState('networkidle');
 
-    const emailInput = page.getByPlaceholder(/email/i).or(page.locator('input[type="email"]'));
-    const passwordInput = page.getByPlaceholder(/password/i).or(page.locator('input[type="password"]'));
-    
+    const emailInput = page
+      .getByPlaceholder(/email/i)
+      .or(page.locator('input[type="email"]'));
+    const passwordInput = page
+      .getByPlaceholder(/password/i)
+      .or(page.locator('input[type="password"]'));
+
     await emailInput.fill('invalid@example.com');
     await passwordInput.fill('wrongpassword');
-    
+
     const loginButton = page.getByRole('button', { name: /login|sign in/i });
     await loginButton.click();
-    
+
     // Wait a bit for any API response
     await page.waitForTimeout(2000);
-    
+
     // Assert that we have not navigated away from the login page
     expect(page.url()).toContain('/login');
   });

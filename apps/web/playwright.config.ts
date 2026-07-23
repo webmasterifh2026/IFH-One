@@ -5,7 +5,7 @@ export default defineConfig({
   testDir: './e2e',
   timeout: 30 * 1000,
   expect: {
-    timeout: 5000
+    timeout: 5000,
   },
   fullyParallel: false, // Run sequentially for easier debugging
   forbidOnly: !!process.env.CI,
@@ -23,7 +23,7 @@ export default defineConfig({
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
-    }
+    },
   ],
   webServer: {
     command: 'cd ../.. && npm run dev',

@@ -52,7 +52,9 @@ export function getUser(): AuthUser | null {
   try {
     const raw = localStorage.getItem(USER_KEY);
     return raw ? JSON.parse(raw) : null;
-  } catch { return null; }
+  } catch {
+    return null;
+  }
 }
 
 export function saveAuth(token: string, user: AuthUser) {
@@ -73,7 +75,9 @@ export function hasRole(role: string): boolean {
   const user = getUser();
   if (!user) return false;
   const r = role.toUpperCase();
-  return user.roles.some(ur => ur.toUpperCase() === r || ur.toUpperCase().includes(r));
+  return user.roles.some(
+    (ur) => ur.toUpperCase() === r || ur.toUpperCase().includes(r)
+  );
 }
 
 export function isSuperAdmin(): boolean {

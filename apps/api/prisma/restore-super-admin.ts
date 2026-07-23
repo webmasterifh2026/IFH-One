@@ -2,7 +2,7 @@
  * Restore Super Admin User
  * ========================
  * Creates the Super Admin user with full RBAC permissions
- * 
+ *
  * Usage: npx ts-node prisma/restore-super-admin.ts
  */
 
@@ -18,7 +18,7 @@ async function main() {
     // Check if Super Admin already exists
     const existing = await prisma.user.findUnique({
       where: { email: 'admin@if-himenviro.in' },
-      include: { userRoles: true }
+      include: { userRoles: true },
     });
 
     if (existing) {
@@ -34,9 +34,9 @@ async function main() {
     const superAdminRole = await prisma.role.upsert({
       where: { name: 'SUPER_ADMIN' },
       update: {},
-      create: { 
-        name: 'SUPER_ADMIN', 
-        description: 'Super Administrator with full access' 
+      create: {
+        name: 'SUPER_ADMIN',
+        description: 'Super Administrator with full access',
       },
     });
 
@@ -44,9 +44,9 @@ async function main() {
     const adminRole = await prisma.role.upsert({
       where: { name: 'ADMIN' },
       update: {},
-      create: { 
-        name: 'ADMIN', 
-        description: 'Admin with operational access' 
+      create: {
+        name: 'ADMIN',
+        description: 'Admin with operational access',
       },
     });
 
@@ -57,30 +57,30 @@ async function main() {
     // Assign all permissions to SUPER_ADMIN and ADMIN roles
     for (const perm of permissions) {
       await prisma.rolePermission.upsert({
-        where: { 
-          roleId_permissionId: { 
-            roleId: superAdminRole.id, 
-            permissionId: perm.id 
-          } 
+        where: {
+          roleId_permissionId: {
+            roleId: superAdminRole.id,
+            permissionId: perm.id,
+          },
         },
         update: {},
-        create: { 
-          roleId: superAdminRole.id, 
-          permissionId: perm.id 
+        create: {
+          roleId: superAdminRole.id,
+          permissionId: perm.id,
         },
       });
 
       await prisma.rolePermission.upsert({
-        where: { 
-          roleId_permissionId: { 
-            roleId: adminRole.id, 
-            permissionId: perm.id 
-          } 
+        where: {
+          roleId_permissionId: {
+            roleId: adminRole.id,
+            permissionId: perm.id,
+          },
         },
         update: {},
-        create: { 
-          roleId: adminRole.id, 
-          permissionId: perm.id 
+        create: {
+          roleId: adminRole.id,
+          permissionId: perm.id,
         },
       });
     }
@@ -125,14 +125,14 @@ async function main() {
               include: {
                 rolePermissions: {
                   include: {
-                    permission: true
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
+                    permission: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     });
 
     if (verify) {
@@ -141,14 +141,15 @@ async function main() {
       console.log(`  ✅ Email: ${verify.email}`);
       console.log(`  ✅ Status: ${verify.status}`);
       console.log(`  ✅ Roles: ${verify.userRoles.length}`);
-      console.log(`  ✅ Permissions: ${verify.userRoles[0]?.role?.rolePermissions?.length || 0}`);
+      console.log(
+        `  ✅ Permissions: ${verify.userRoles[0]?.role?.rolePermissions?.length || 0}`,
+      );
     }
 
     console.log('\n✨ Super Admin restoration complete!');
     console.log('🔐 Login credentials:');
     console.log('   Email: admin@if-himenviro.in');
     console.log('   Password: admin@1234');
-
   } catch (error) {
     console.error('\n❌ Error restoring Super Admin:', error);
     process.exit(1);

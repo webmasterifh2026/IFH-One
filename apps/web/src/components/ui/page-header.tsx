@@ -7,9 +7,17 @@ interface PageHeaderProps {
   isDashboard?: boolean;
 }
 
-export function PageHeader({ title, description, actions, isDashboard = false }: PageHeaderProps) {
+export function PageHeader({
+  title,
+  description,
+  actions,
+  isDashboard = false,
+}: PageHeaderProps) {
   return (
-    <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4" style={{ marginBottom: 28 }}>
+    <div
+      className="flex flex-col sm:flex-row sm:items-start justify-between gap-4"
+      style={{ marginBottom: 28 }}
+    >
       <div>
         <h1
           className="font-display"
@@ -24,15 +32,20 @@ export function PageHeader({ title, description, actions, isDashboard = false }:
           {title}
         </h1>
         {description && (
-          <p style={{ fontSize: 13, color: 'var(--text-muted)', marginTop: 5, lineHeight: 1.55 }}>
+          <p
+            style={{
+              fontSize: 13,
+              color: 'var(--text-muted)',
+              marginTop: 5,
+              lineHeight: 1.55,
+            }}
+          >
             {description}
           </p>
         )}
       </div>
       {actions && (
-        <div className="flex items-center gap-3 flex-shrink-0">
-          {actions}
-        </div>
+        <div className="flex items-center gap-3 flex-shrink-0">{actions}</div>
       )}
     </div>
   );

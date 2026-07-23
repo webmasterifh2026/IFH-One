@@ -9,7 +9,10 @@ interface ParsedStageMetadata {
   itemFieldValues: Record<string, Record<string, any>>;
 }
 
-function parseCurrentStageMetadata(procurement: Procurement, stageNumber: number): ParsedStageMetadata {
+function parseCurrentStageMetadata(
+  procurement: Procurement,
+  stageNumber: number
+): ParsedStageMetadata {
   const stage = procurement.stages.find((s) => s.stageNumber === stageNumber);
   if (!stage?.metadata) return { fieldValues: {}, itemFieldValues: {} };
   try {
@@ -31,19 +34,30 @@ function parseCurrentStageMetadata(procurement: Procurement, stageNumber: number
  * payload builder, since this detail view can never write back to the
  * server.
  */
-export function useStageFieldValues(procurement: Procurement, config: StageConfig) {
+export function useStageFieldValues(
+  procurement: Procurement,
+  config: StageConfig
+) {
   const { fieldValues, itemFieldValues } = useMemo(
     () => parseCurrentStageMetadata(procurement, config.stageNumber),
-    [procurement, config.stageNumber],
+    [procurement, config.stageNumber]
   );
 
-  const validationContext: StageValidationContext = { procurement, fieldValues, itemFieldValues };
+  const validationContext: StageValidationContext = {
+    procurement,
+    fieldValues,
+    itemFieldValues,
+  };
 
   const validationResults = config.validationRules.map((rule) => ({
     key: rule.key,
     label: rule.label,
     passed: (() => {
-      try { return rule.check(validationContext); } catch { return false; }
+      try {
+        return rule.check(validationContext);
+      } catch {
+        return false;
+      }
     })(),
   }));
 

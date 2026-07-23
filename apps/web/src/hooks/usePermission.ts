@@ -36,7 +36,7 @@ export function usePermission() {
   const stagePermissions = user?.stagePermissions || {};
 
   const isSuperAdmin = roles.some(
-    (r) => r === 'Super Admin' || r === 'SUPER_ADMIN',
+    (r) => r === 'Super Admin' || r === 'SUPER_ADMIN'
   );
   const isAdmin =
     isSuperAdmin ||
@@ -45,7 +45,7 @@ export function usePermission() {
         r === 'Procurement Manager' ||
         r === 'Admin' ||
         r === 'ADMIN' ||
-        r === 'PROCUREMENT_MANAGER',
+        r === 'PROCUREMENT_MANAGER'
     );
 
   /** Check a flat permission key */
@@ -87,15 +87,24 @@ export function usePermission() {
     if (!sp) return false;
 
     switch (action) {
-      case 'view':        return sp.canView;
-      case 'edit':        return sp.canEdit;
-      case 'approve':     return sp.canApprove;
-      case 'hold':        return sp.canHold;
-      case 'reject':      return sp.canReject;
-      case 'bulk_update': return sp.canBulkUpdate;
-      case 'export':      return sp.canExport;
-      case 'reassign':    return sp.canReassign;
-      default:            return false;
+      case 'view':
+        return sp.canView;
+      case 'edit':
+        return sp.canEdit;
+      case 'approve':
+        return sp.canApprove;
+      case 'hold':
+        return sp.canHold;
+      case 'reject':
+        return sp.canReject;
+      case 'bulk_update':
+        return sp.canBulkUpdate;
+      case 'export':
+        return sp.canExport;
+      case 'reassign':
+        return sp.canReassign;
+      default:
+        return false;
     }
   }
 
@@ -116,8 +125,14 @@ export function usePermission() {
    */
   function getStageActions(stage: number): StageAction[] {
     const all: StageAction[] = [
-      'view', 'edit', 'approve', 'reject', 'hold',
-      'bulk_update', 'export', 'reassign',
+      'view',
+      'edit',
+      'approve',
+      'reject',
+      'hold',
+      'bulk_update',
+      'export',
+      'reassign',
     ];
     return all.filter((a) => canStage(stage, a));
   }

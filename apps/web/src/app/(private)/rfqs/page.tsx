@@ -8,7 +8,10 @@ import { DataTable, Column } from '@/components/procurement/data-table';
 import { FilterBar } from '@/components/procurement/filter-bar';
 import { KPIStats } from '@/components/procurement/kpi-stats';
 import { DetailsModal } from '@/components/procurement/details-modal';
-import { getProcurements, type ProcurementListItem } from '@/lib/api/procurement';
+import {
+  getProcurements,
+  type ProcurementListItem,
+} from '@/lib/api/procurement';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Send, Plus } from 'lucide-react';
 
@@ -16,20 +19,23 @@ export default function RFQPage() {
   const router = useRouter();
   const [records, setRecords] = useState<ProcurementListItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedRecord, setSelectedRecord] = useState<ProcurementListItem | null>(null);
+  const [selectedRecord, setSelectedRecord] =
+    useState<ProcurementListItem | null>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [filters, setFilters] = useState<Record<string, string>>({});
 
   useEffect(() => {
     getProcurements({ stage: 2, status: 'IN_PROGRESS' })
-      .then(res => setRecords(res.data))
+      .then((res) => setRecords(res.data))
       .catch(() => setRecords([]))
       .finally(() => setLoading(false));
   }, []);
 
   const kpis = useMemo(() => {
-    const pending = records.filter((r) => r.status === 'SUBMITTED' || r.status === 'IN_PROGRESS').length;
+    const pending = records.filter(
+      (r) => r.status === 'SUBMITTED' || r.status === 'IN_PROGRESS'
+    ).length;
     const completed = records.filter((r) => r.status === 'COMPLETED').length;
     return { pending, completed, responded: 0, avgTime: 0 };
   }, [records]);
@@ -42,7 +48,8 @@ export default function RFQPage() {
     if (searchTerm.trim()) {
       const q = searchTerm.toLowerCase();
       results = results.filter(
-        (r) => r.referenceNo.toLowerCase().includes(q) ||
+        (r) =>
+          r.referenceNo.toLowerCase().includes(q) ||
           r.title.toLowerCase().includes(q)
       );
     }
@@ -55,16 +62,29 @@ export default function RFQPage() {
     {
       label: 'Status',
       key: 'status',
-      values: uniqueStatuses.map((s) => ({ label: s.replace(/_/g, ' '), value: s })),
+      values: uniqueStatuses.map((s) => ({
+        label: s.replace(/_/g, ' '),
+        value: s,
+      })),
     },
   ];
 
   const columns: Column[] = [
     { key: 'referenceNo', label: 'Ref No.', sortable: true, width: 'w-24' },
     { key: 'title', label: 'Title', sortable: true },
-    { key: 'status', label: 'Status', sortable: true, render: (v) => <StatusBadge status={v} /> },
+    {
+      key: 'status',
+      label: 'Status',
+      sortable: true,
+      render: (v) => <StatusBadge status={v} />,
+    },
     { key: 'priority', label: 'Priority', sortable: true },
-    { key: 'createdAt', label: 'Created', sortable: true, render: (v) => <span>{new Date(v).toLocaleDateString('en-IN')}</span> },
+    {
+      key: 'createdAt',
+      label: 'Created',
+      sortable: true,
+      render: (v) => <span>{new Date(v).toLocaleDateString('en-IN')}</span>,
+    },
   ];
 
   return (
@@ -99,17 +119,41 @@ export default function RFQPage() {
       />
 
       {loading ? (
-        <div style={{ padding: '60px 0', textAlign: 'center', color: 'var(--text-muted)', fontSize: 13 }}>Loading...</div>
+        <div
+          style={{
+            padding: '60px 0',
+            textAlign: 'center',
+            color: 'var(--text-muted)',
+            fontSize: 13,
+          }}
+        >
+          Loading...
+        </div>
       ) : filtered.length === 0 ? (
-        <EmptyState icon={Send} headline="No Indents Found" description="Indents will appear here once they reach the RFQ Float stage." />
+        <EmptyState
+          icon={Send}
+          headline="No Indents Found"
+          description="Indents will appear here once they reach the RFQ Float stage."
+        />
       ) : (
-        <DataTable columns={columns} data={filtered} onRowClick={(r) => { setSelectedRecord(r); setIsDetailsOpen(true); }} pageSize={10} />
+        <DataTable
+          columns={columns}
+          data={filtered}
+          onRowClick={(r) => {
+            setSelectedRecord(r);
+            setIsDetailsOpen(true);
+          }}
+          pageSize={10}
+        />
       )}
 
       <DetailsModal
         record={selectedRecord}
         isOpen={isDetailsOpen}
-        onClose={() => { setIsDetailsOpen(false); setSelectedRecord(null); }}
+        onClose={() => {
+          setIsDetailsOpen(false);
+          setSelectedRecord(null);
+        }}
       />
     </div>
   );

@@ -7,8 +7,13 @@ import packageJson from './package.json';
  */
 
 const buildDate = new Date().toISOString();
-const gitCommit = process.env.VERCEL_GIT_COMMIT_SHA || process.env.GITHUB_SHA || process.env.GIT_COMMIT_SHA || 'main';
-const gitBranch = process.env.VERCEL_GIT_COMMIT_REF || process.env.GITHUB_REF_NAME || 'main';
+const gitCommit =
+  process.env.VERCEL_GIT_COMMIT_SHA ||
+  process.env.GITHUB_SHA ||
+  process.env.GIT_COMMIT_SHA ||
+  'main';
+const gitBranch =
+  process.env.VERCEL_GIT_COMMIT_REF || process.env.GITHUB_REF_NAME || 'main';
 
 const nextConfig: NextConfig = {
   env: {

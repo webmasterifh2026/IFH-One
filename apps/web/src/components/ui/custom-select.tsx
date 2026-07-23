@@ -34,8 +34,8 @@ export function CustomSelect({
         background: disabled
           ? 'var(--surface2)'
           : error
-          ? 'rgba(220,38,38,0.04)'
-          : 'var(--card)',
+            ? 'rgba(220,38,38,0.04)'
+            : 'var(--card)',
         color: value ? 'var(--text-primary)' : 'var(--text-faint)',
         fontSize: 13,
         fontFamily: 'var(--font-sans)',
@@ -50,20 +50,26 @@ export function CustomSelect({
         backgroundSize: '10px',
         transition: 'border-color 150ms, box-shadow 150ms',
       }}
-      onFocus={e => {
+      onFocus={(e) => {
         if (!disabled) {
           e.currentTarget.style.borderColor = 'var(--primary)';
           e.currentTarget.style.boxShadow = '0 0 0 3px rgba(15,123,69,0.10)';
         }
       }}
-      onBlur={e => {
+      onBlur={(e) => {
         e.currentTarget.style.borderColor = error ? '#DC2626' : 'var(--border)';
         e.currentTarget.style.boxShadow = 'none';
       }}
     >
-      <option value="" style={{ color: 'var(--text-faint)' }}>{placeholder}</option>
-      {options.map(opt => (
-        <option key={opt.value} value={opt.value} style={{ color: 'var(--text-primary)' }}>
+      <option value="" style={{ color: 'var(--text-faint)' }}>
+        {placeholder}
+      </option>
+      {options.map((opt) => (
+        <option
+          key={opt.value}
+          value={opt.value}
+          style={{ color: 'var(--text-primary)' }}
+        >
           {opt.label}
         </option>
       ))}

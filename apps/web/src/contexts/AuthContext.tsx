@@ -19,7 +19,13 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { clearAuth, getToken, getUser, saveAuth, type AuthUser } from '@/lib/auth';
+import {
+  clearAuth,
+  getToken,
+  getUser,
+  saveAuth,
+  type AuthUser,
+} from '@/lib/auth';
 import { getMe, logout as apiLogout } from '@/lib/api/auth';
 
 interface AuthContextType {

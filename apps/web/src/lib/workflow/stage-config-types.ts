@@ -12,7 +12,8 @@
  * dedicated typed columns for PO/GRN/Invoice/Tally/Payment data today.
  */
 
-export type FieldType = 'text' | 'number' | 'date' | 'select' | 'textarea' | 'checkbox';
+export type FieldType =
+  'text' | 'number' | 'date' | 'select' | 'textarea' | 'checkbox';
 
 export interface StageFieldOption {
   value: string;
@@ -71,7 +72,13 @@ export interface ItemColumnDef {
 }
 
 export interface StageKpiDef {
-  key: 'totalProcessed' | 'totalApproved' | 'totalRejected' | 'averageDelayHours' | 'approvalRate' | 'rejectionRate';
+  key:
+    | 'totalProcessed'
+    | 'totalApproved'
+    | 'totalRejected'
+    | 'averageDelayHours'
+    | 'approvalRate'
+    | 'rejectionRate';
   label: string;
   description: string;
 }
@@ -94,7 +101,16 @@ export interface StageConfig {
   validationRules: ValidationRule[];
 
   /** Summary/KPI header fields to pull from the procurement record (dot-path or computed key). */
-  summaryFields: Array<'requestedBy' | 'createdDate' | 'pendingSince' | 'project' | 'department' | 'vendor' | 'itemsCount' | 'priority'>;
+  summaryFields: Array<
+    | 'requestedBy'
+    | 'createdDate'
+    | 'pendingSince'
+    | 'project'
+    | 'department'
+    | 'vendor'
+    | 'itemsCount'
+    | 'priority'
+  >;
 
   kpis: StageKpiDef[];
 

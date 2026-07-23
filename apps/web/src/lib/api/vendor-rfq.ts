@@ -143,7 +143,9 @@ export interface NegotiationDashboard {
 /**
  * Get vendor form by secure token (public endpoint)
  */
-export async function getVendorFormByToken(token: string): Promise<VendorFormWithQuotation> {
+export async function getVendorFormByToken(
+  token: string
+): Promise<VendorFormWithQuotation> {
   return apiFetch(`/vendor-rfq-portal/form/${token}`);
 }
 
@@ -162,7 +164,7 @@ export async function submitVendorQuotation(
     deliveryBasis?: string;
     warranty?: string;
     grandTotalAmount?: number;
-  },
+  }
 ): Promise<Quotation> {
   return apiFetch('/vendor-rfq-portal/quotations/submit', {
     method: 'POST',
@@ -181,7 +183,7 @@ export async function uploadVendorAttachment(
   quotationId: string,
   file: File,
   documentType: string,
-  lineItemId?: string,
+  lineItemId?: string
 ): Promise<QuotationAttachment> {
   const formData = new FormData();
   formData.append('file', file);
@@ -208,7 +210,7 @@ export async function generateVendorForms(
     vendorName: string;
     vendorEmail: string;
     contactPerson?: string;
-  }>,
+  }>
 ): Promise<VendorFormData[]> {
   return apiFetch('/vendor-rfq-portal/forms/generate', {
     method: 'POST',
@@ -219,7 +221,9 @@ export async function generateVendorForms(
 /**
  * Get all forms for an RFQ
  */
-export async function getFormsForRFQ(rfqId: string): Promise<VendorFormWithQuotation[]> {
+export async function getFormsForRFQ(
+  rfqId: string
+): Promise<VendorFormWithQuotation[]> {
   return apiFetch(`/vendor-rfq-portal/forms/rfq/${rfqId}`);
 }
 
@@ -233,7 +237,9 @@ export async function getQuotationsForRFQ(rfqId: string): Promise<Quotation[]> {
 /**
  * Get quotation by ID
  */
-export async function getQuotationById(quotationId: string): Promise<Quotation> {
+export async function getQuotationById(
+  quotationId: string
+): Promise<Quotation> {
   return apiFetch(`/vendor-rfq-portal/quotations/${quotationId}`);
 }
 
@@ -243,7 +249,7 @@ export async function getQuotationById(quotationId: string): Promise<Quotation> 
 export async function updateQuotationStatus(
   quotationId: string,
   status: string,
-  remarks?: string,
+  remarks?: string
 ): Promise<Quotation> {
   return apiFetch(`/vendor-rfq-portal/quotations/${quotationId}/status`, {
     method: 'PATCH',
@@ -254,21 +260,27 @@ export async function updateQuotationStatus(
 /**
  * Get quotation comparison data for RFQ
  */
-export async function getQuotationComparison(rfqId: string): Promise<RFQComparisonData> {
+export async function getQuotationComparison(
+  rfqId: string
+): Promise<RFQComparisonData> {
   return apiFetch(`/vendor-rfq-portal/quotations/compare/${rfqId}`);
 }
 
 /**
  * Get negotiation dashboard data
  */
-export async function getNegotiationDashboard(rfqId: string): Promise<NegotiationDashboard> {
+export async function getNegotiationDashboard(
+  rfqId: string
+): Promise<NegotiationDashboard> {
   return apiFetch(`/vendor-rfq-portal/negotiation/dashboard/${rfqId}`);
 }
 
 /**
  * Get negotiation history for a quotation
  */
-export async function getNegotiationHistory(quotationId: string): Promise<NegotiationRound[]> {
+export async function getNegotiationHistory(
+  quotationId: string
+): Promise<NegotiationRound[]> {
   return apiFetch(`/vendor-rfq-portal/negotiation/${quotationId}/history`);
 }
 
@@ -281,7 +293,7 @@ export async function sendCounterOffer(
     requestedAdjustments?: string;
     counterOfferAmount?: number;
     counterOfferTerms?: string;
-  },
+  }
 ): Promise<NegotiationRound> {
   return apiFetch('/vendor-rfq-portal/negotiation/send-round', {
     method: 'POST',
@@ -294,7 +306,7 @@ export async function sendCounterOffer(
  */
 export async function shortlistVendor(
   quotationId: string,
-  remarks?: string,
+  remarks?: string
 ): Promise<Quotation> {
   return apiFetch(`/vendor-rfq-portal/quotations/${quotationId}/shortlist`, {
     method: 'POST',
@@ -307,7 +319,7 @@ export async function shortlistVendor(
  */
 export async function selectVendor(
   quotationId: string,
-  remarks?: string,
+  remarks?: string
 ): Promise<Quotation> {
   return apiFetch(`/vendor-rfq-portal/quotations/${quotationId}/select`, {
     method: 'POST',
@@ -320,7 +332,7 @@ export async function selectVendor(
  */
 export async function rejectVendor(
   quotationId: string,
-  reason?: string,
+  reason?: string
 ): Promise<Quotation> {
   return apiFetch(`/vendor-rfq-portal/quotations/${quotationId}/reject`, {
     method: 'POST',

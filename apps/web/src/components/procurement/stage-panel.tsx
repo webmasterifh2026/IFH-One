@@ -2,10 +2,21 @@
 
 import { useState } from 'react';
 import {
-  CheckCircle2, XCircle, AlertCircle, Clock, ChevronRight,
-  MessageSquare, Paperclip, User, Calendar, Activity
+  CheckCircle2,
+  XCircle,
+  AlertCircle,
+  Clock,
+  ChevronRight,
+  MessageSquare,
+  Paperclip,
+  User,
+  Calendar,
+  Activity,
 } from 'lucide-react';
-import { EnterpriseCard, EnterpriseCardHeader } from '@/components/ui/enterprise-card';
+import {
+  EnterpriseCard,
+  EnterpriseCardHeader,
+} from '@/components/ui/enterprise-card';
 import { StatusBadge } from '@/components/ui/status-badge';
 import type { Procurement, ProcurementStage } from '@/lib/api/procurement';
 import { getStageDefinition, formatDateTime } from '@/lib/procurement-stages';
@@ -24,15 +35,18 @@ export function StagePanel({ procurement, onUpdate }: StagePanelProps) {
   const [error, setError] = useState('');
 
   const currentStageData = procurement.stages.find(
-    (s) => s.stageNumber === procurement.currentStage,
+    (s) => s.stageNumber === procurement.currentStage
   );
   const stageDef = getStageDefinition(procurement.currentStage);
 
   const isTerminal = ['COMPLETED', 'CANCELLED', 'REJECTED'].includes(
-    procurement.status.toUpperCase(),
+    procurement.status.toUpperCase()
   );
 
-  const handleAction = async (action: string, metadata?: Record<string, unknown>) => {
+  const handleAction = async (
+    action: string,
+    metadata?: Record<string, unknown>
+  ) => {
     setError('');
     setActionLoading(action);
     try {
@@ -58,7 +72,7 @@ export function StagePanel({ procurement, onUpdate }: StagePanelProps) {
       setRemarksText('');
       // Refresh
       const updated = await import('@/lib/api/procurement').then((m) =>
-        m.getProcurement(procurement.id),
+        m.getProcurement(procurement.id)
       );
       onUpdate(updated);
     } catch (err: any) {
@@ -69,7 +83,7 @@ export function StagePanel({ procurement, onUpdate }: StagePanelProps) {
   };
 
   const currentStageRemarks = procurement.remarks.filter(
-    (r) => r.stageNumber === procurement.currentStage,
+    (r) => r.stageNumber === procurement.currentStage
   );
 
   return (
@@ -89,7 +103,9 @@ export function StagePanel({ procurement, onUpdate }: StagePanelProps) {
             <h3 className="text-[17px] font-semibold text-gray-900 tracking-tight">
               {stageDef?.name || 'Unknown Stage'}
             </h3>
-            <p className="text-[13px] text-gray-500 mt-1">{stageDef?.description}</p>
+            <p className="text-[13px] text-gray-500 mt-1">
+              {stageDef?.description}
+            </p>
           </div>
         </div>
 
@@ -99,8 +115,12 @@ export function StagePanel({ procurement, onUpdate }: StagePanelProps) {
             <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-100">
               <User className="w-3.5 h-3.5 text-gray-400" />
               <div>
-                <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wide">Assigned To</p>
-                <p className="text-[13px] font-medium text-gray-900">{currentStageData.assignedTo.fullName}</p>
+                <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wide">
+                  Assigned To
+                </p>
+                <p className="text-[13px] font-medium text-gray-900">
+                  {currentStageData.assignedTo.fullName}
+                </p>
               </div>
             </div>
           )}
@@ -108,8 +128,12 @@ export function StagePanel({ procurement, onUpdate }: StagePanelProps) {
             <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-100">
               <Calendar className="w-3.5 h-3.5 text-gray-400" />
               <div>
-                <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wide">Started</p>
-                <p className="text-[13px] font-medium text-gray-900">{formatDateTime(currentStageData.startedAt)}</p>
+                <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wide">
+                  Started
+                </p>
+                <p className="text-[13px] font-medium text-gray-900">
+                  {formatDateTime(currentStageData.startedAt)}
+                </p>
               </div>
             </div>
           )}
@@ -154,16 +178,21 @@ export function StagePanel({ procurement, onUpdate }: StagePanelProps) {
                     <button
                       onClick={() => {
                         let metadata: Record<string, unknown> | undefined;
-                        if (procurement.currentStage === 3) metadata = { rfqNumber: 'RFQ-' + Date.now() };
-                        else if (procurement.currentStage === 6) metadata = { poNumber: 'PO-' + Date.now() };
-                        else if (procurement.currentStage === 11) metadata = { grnNumber: 'GRN-' + Date.now() };
+                        if (procurement.currentStage === 3)
+                          metadata = { rfqNumber: 'RFQ-' + Date.now() };
+                        else if (procurement.currentStage === 6)
+                          metadata = { poNumber: 'PO-' + Date.now() };
+                        else if (procurement.currentStage === 11)
+                          metadata = { grnNumber: 'GRN-' + Date.now() };
                         handleAction('SUBMIT', metadata);
                       }}
                       disabled={!!actionLoading}
                       className="inline-flex items-center gap-2 h-10 px-5 rounded-xl bg-[#0F7B45] text-white text-[13px] font-semibold hover:bg-[#0A5C34] transition-colors disabled:opacity-50 shadow-sm"
                     >
                       <ChevronRight className="w-4 h-4" />
-                      {actionLoading === 'SUBMIT' ? 'Processing...' : 'Submit & Advance'}
+                      {actionLoading === 'SUBMIT'
+                        ? 'Processing...'
+                        : 'Submit & Advance'}
                     </button>
                   )}
                   {stageDef.actions.includes('APPROVE') && (
@@ -173,7 +202,9 @@ export function StagePanel({ procurement, onUpdate }: StagePanelProps) {
                       className="inline-flex items-center gap-2 h-10 px-5 rounded-xl bg-emerald-600 text-white text-[13px] font-semibold hover:bg-emerald-700 transition-colors disabled:opacity-50 shadow-sm"
                     >
                       <CheckCircle2 className="w-4 h-4" />
-                      {actionLoading === 'APPROVE' ? 'Processing...' : 'Approve'}
+                      {actionLoading === 'APPROVE'
+                        ? 'Processing...'
+                        : 'Approve'}
                     </button>
                   )}
                   {stageDef.actions.includes('REJECT') && (
@@ -193,7 +224,9 @@ export function StagePanel({ procurement, onUpdate }: StagePanelProps) {
                       className="inline-flex items-center gap-2 h-10 px-5 rounded-xl bg-white border border-yellow-200 text-yellow-600 text-[13px] font-semibold hover:bg-yellow-50 transition-colors disabled:opacity-50"
                     >
                       <AlertCircle className="w-4 h-4" />
-                      {actionLoading === 'HOLD' ? 'Processing...' : 'Put on Hold'}
+                      {actionLoading === 'HOLD'
+                        ? 'Processing...'
+                        : 'Put on Hold'}
                     </button>
                   )}
                   {stageDef.actions.includes('AVAILABLE') && (
@@ -203,7 +236,9 @@ export function StagePanel({ procurement, onUpdate }: StagePanelProps) {
                       className="inline-flex items-center gap-2 h-10 px-5 rounded-xl bg-emerald-600 text-white text-[13px] font-semibold hover:bg-emerald-700 transition-colors disabled:opacity-50 shadow-sm"
                     >
                       <CheckCircle2 className="w-4 h-4" />
-                      {actionLoading === 'AVAILABLE' ? 'Processing...' : 'Available in Store'}
+                      {actionLoading === 'AVAILABLE'
+                        ? 'Processing...'
+                        : 'Available in Store'}
                     </button>
                   )}
                   {stageDef.actions.includes('NOT_AVAILABLE') && (
@@ -213,7 +248,9 @@ export function StagePanel({ procurement, onUpdate }: StagePanelProps) {
                       className="inline-flex items-center gap-2 h-10 px-5 rounded-xl bg-orange-500 text-white text-[13px] font-semibold hover:bg-orange-600 transition-colors disabled:opacity-50 shadow-sm"
                     >
                       <ChevronRight className="w-4 h-4" />
-                      {actionLoading === 'NOT_AVAILABLE' ? 'Processing...' : 'Not Available — Float RFQ'}
+                      {actionLoading === 'NOT_AVAILABLE'
+                        ? 'Processing...'
+                        : 'Not Available — Float RFQ'}
                     </button>
                   )}
                   {stageDef.actions.includes('CANCEL') && (
@@ -236,7 +273,8 @@ export function StagePanel({ procurement, onUpdate }: StagePanelProps) {
           <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-gray-50 border border-gray-200">
             <Activity className="w-4 h-4 text-gray-400" />
             <span className="text-[13px] font-medium text-gray-600">
-              This workflow is {procurement.status.toLowerCase()}. No further actions available.
+              This workflow is {procurement.status.toLowerCase()}. No further
+              actions available.
             </span>
           </div>
         )}
@@ -259,10 +297,16 @@ export function StagePanel({ procurement, onUpdate }: StagePanelProps) {
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-0.5">
-                    <span className="text-[12px] font-semibold text-gray-900">{remark.author.fullName}</span>
-                    <span className="text-[11px] text-gray-400">{formatDateTime(remark.createdAt)}</span>
+                    <span className="text-[12px] font-semibold text-gray-900">
+                      {remark.author.fullName}
+                    </span>
+                    <span className="text-[11px] text-gray-400">
+                      {formatDateTime(remark.createdAt)}
+                    </span>
                   </div>
-                  <p className="text-[13px] text-gray-700 leading-relaxed">{remark.comment}</p>
+                  <p className="text-[13px] text-gray-700 leading-relaxed">
+                    {remark.comment}
+                  </p>
                 </div>
               </div>
             ))}

@@ -70,16 +70,29 @@ export const INDENT_VERIFICATION_TO_FROM_OPTIONS = [
 // Universal actions accepted at (almost) every stage by resolveStageTransition.
 const HOLD_ACTION: StageActionOption = { action: 'HOLD', label: 'Hold' };
 const REJECT_ACTION: StageActionOption = { action: 'REJECT', label: 'Reject' };
-const CLARIFICATION_ACTION: StageActionOption = { action: 'CLARIFICATION', label: 'Request Clarification' };
+const CLARIFICATION_ACTION: StageActionOption = {
+  action: 'CLARIFICATION',
+  label: 'Request Clarification',
+};
 
 export const STAGE_CONFIGS: StageConfig[] = [
   {
     stage: 1,
     title: 'Indent Verification',
     fields: [
-      { id: 'holdCancelled', label: 'Hold / Cancelled', type: 'select', options: INDENT_VERIFICATION_HOLD_CANCELLED_OPTIONS },
+      {
+        id: 'holdCancelled',
+        label: 'Hold / Cancelled',
+        type: 'select',
+        options: INDENT_VERIFICATION_HOLD_CANCELLED_OPTIONS,
+      },
     ],
-    actions: [{ action: 'APPROVE', label: 'Approve' }, REJECT_ACTION, HOLD_ACTION, CLARIFICATION_ACTION],
+    actions: [
+      { action: 'APPROVE', label: 'Approve' },
+      REJECT_ACTION,
+      HOLD_ACTION,
+      CLARIFICATION_ACTION,
+    ],
     responsiblePersonOptions: INDENT_VERIFICATION_RESPONSIBLE_PERSONS,
     toFromOptions: INDENT_VERIFICATION_TO_FROM_OPTIONS,
   },
@@ -101,21 +114,35 @@ export const STAGE_CONFIGS: StageConfig[] = [
     title: 'Float RFQ',
     requiresAssignedTo: false,
     fields: [],
-    actions: [{ action: 'APPROVE', label: 'RFQ Floated — Approve' }, REJECT_ACTION, HOLD_ACTION, CLARIFICATION_ACTION],
+    actions: [
+      { action: 'APPROVE', label: 'RFQ Floated — Approve' },
+      REJECT_ACTION,
+      HOLD_ACTION,
+      CLARIFICATION_ACTION,
+    ],
   },
   {
     stage: 4,
     title: 'Received Techno Commercial Offer',
     requiresAssignedTo: false,
     fields: [],
-    actions: [{ action: 'APPROVE', label: 'Offer Evaluated — Approve' }, REJECT_ACTION, HOLD_ACTION, CLARIFICATION_ACTION],
+    actions: [
+      { action: 'APPROVE', label: 'Offer Evaluated — Approve' },
+      REJECT_ACTION,
+      HOLD_ACTION,
+      CLARIFICATION_ACTION,
+    ],
   },
   {
     stage: 5,
     title: 'Negotiation & Decision',
     requiresAssignedTo: false,
     fields: [],
-    actions: [{ action: 'APPROVE', label: 'Negotiation Completed — Approve' }, REJECT_ACTION, HOLD_ACTION],
+    actions: [
+      { action: 'APPROVE', label: 'Negotiation Completed — Approve' },
+      REJECT_ACTION,
+      HOLD_ACTION,
+    ],
   },
   {
     stage: 6,
@@ -130,43 +157,86 @@ export const STAGE_CONFIGS: StageConfig[] = [
     stage: 7,
     title: 'PO Approval L1',
     fields: [],
-    actions: [{ action: 'APPROVE', label: 'Approve' }, REJECT_ACTION, HOLD_ACTION],
+    actions: [
+      { action: 'APPROVE', label: 'Approve' },
+      REJECT_ACTION,
+      HOLD_ACTION,
+    ],
   },
   {
     stage: 8,
     title: 'PO Approval L2',
     fields: [],
-    actions: [{ action: 'APPROVE', label: 'Approve' }, REJECT_ACTION, HOLD_ACTION],
+    actions: [
+      { action: 'APPROVE', label: 'Approve' },
+      REJECT_ACTION,
+      HOLD_ACTION,
+    ],
   },
   {
     stage: 9,
     title: 'Vendor Acceptance',
     fields: [
-      { id: 'acceptanceDate', label: 'Acceptance Date', type: 'date', required: true },
-      { id: 'vendorConfirmation', label: 'Vendor Confirmation', type: 'text', required: true },
+      {
+        id: 'acceptanceDate',
+        label: 'Acceptance Date',
+        type: 'date',
+        required: true,
+      },
+      {
+        id: 'vendorConfirmation',
+        label: 'Vendor Confirmation',
+        type: 'text',
+        required: true,
+      },
     ],
-    actions: [{ action: 'APPROVE', label: 'Vendor Accepted — Approve' }, REJECT_ACTION, HOLD_ACTION],
+    actions: [
+      { action: 'APPROVE', label: 'Vendor Accepted — Approve' },
+      REJECT_ACTION,
+      HOLD_ACTION,
+    ],
   },
   {
     stage: 10,
     title: 'Vendor Follow-up',
     fields: [
-      { id: 'followUpDate', label: 'Follow-up Date', type: 'date', required: true },
+      {
+        id: 'followUpDate',
+        label: 'Follow-up Date',
+        type: 'date',
+        required: true,
+      },
       { id: 'expectedDelivery', label: 'Expected Delivery', type: 'date' },
       { id: 'vendorResponse', label: 'Vendor Response', type: 'text' },
     ],
-    actions: [{ action: 'SUBMIT', label: 'Follow-up Completed — Submit' }, HOLD_ACTION],
+    actions: [
+      { action: 'SUBMIT', label: 'Follow-up Completed — Submit' },
+      HOLD_ACTION,
+    ],
   },
   {
     stage: 11,
     title: 'Material Receipt',
     fields: [
       { id: 'grnNumber', label: 'GRN Number', type: 'text', required: true },
-      { id: 'receivedQuantity', label: 'Received Quantity', type: 'text', required: true },
-      { id: 'receivedDate', label: 'Received Date', type: 'date', required: true },
+      {
+        id: 'receivedQuantity',
+        label: 'Received Quantity',
+        type: 'text',
+        required: true,
+      },
+      {
+        id: 'receivedDate',
+        label: 'Received Date',
+        type: 'date',
+        required: true,
+      },
       { id: 'warehouse', label: 'Warehouse', type: 'text', required: true },
     ],
-    actions: [{ action: 'SUBMIT', label: 'Material Received — Submit' }, HOLD_ACTION],
+    actions: [
+      { action: 'SUBMIT', label: 'Material Received — Submit' },
+      HOLD_ACTION,
+    ],
   },
   {
     stage: 12,
@@ -174,7 +244,11 @@ export const STAGE_CONFIGS: StageConfig[] = [
     fields: [
       { id: 'inspector', label: 'Inspector', type: 'text', required: true },
     ],
-    actions: [{ action: 'PASS', label: 'Pass' }, { action: 'FAIL', label: 'Fail' }, HOLD_ACTION],
+    actions: [
+      { action: 'PASS', label: 'Pass' },
+      { action: 'FAIL', label: 'Fail' },
+      HOLD_ACTION,
+    ],
   },
   {
     stage: 13,
@@ -182,7 +256,11 @@ export const STAGE_CONFIGS: StageConfig[] = [
     fields: [
       { id: 'inspector', label: 'Inspector', type: 'text', required: true },
     ],
-    actions: [{ action: 'PASS', label: 'Pass' }, { action: 'FAIL', label: 'Fail' }, HOLD_ACTION],
+    actions: [
+      { action: 'PASS', label: 'Pass' },
+      { action: 'FAIL', label: 'Fail' },
+      HOLD_ACTION,
+    ],
   },
   {
     stage: 14,
@@ -190,31 +268,59 @@ export const STAGE_CONFIGS: StageConfig[] = [
     fields: [
       { id: 'inspector', label: 'Inspector', type: 'text', required: true },
     ],
-    actions: [{ action: 'PASS', label: 'Pass' }, { action: 'FAIL', label: 'Fail' }, HOLD_ACTION],
+    actions: [
+      { action: 'PASS', label: 'Pass' },
+      { action: 'FAIL', label: 'Fail' },
+      HOLD_ACTION,
+    ],
   },
   {
     stage: 15,
     title: 'Debit Note Preparation',
     fields: [
-      { id: 'debitNoteNumber', label: 'Debit Note Number', type: 'text', required: true },
+      {
+        id: 'debitNoteNumber',
+        label: 'Debit Note Number',
+        type: 'text',
+        required: true,
+      },
     ],
-    actions: [{ action: 'SUBMIT', label: 'Debit Note Raised — Close Workflow' }],
+    actions: [
+      { action: 'SUBMIT', label: 'Debit Note Raised — Close Workflow' },
+    ],
   },
   {
     stage: 16,
     title: 'Bill To Accounts',
     fields: [
-      { id: 'dispatchDate', label: 'Dispatch Date', type: 'date', required: true },
+      {
+        id: 'dispatchDate',
+        label: 'Dispatch Date',
+        type: 'date',
+        required: true,
+      },
     ],
-    actions: [{ action: 'SUBMIT', label: 'Forward to Accounts — Submit' }, HOLD_ACTION],
+    actions: [
+      { action: 'SUBMIT', label: 'Forward to Accounts — Submit' },
+      HOLD_ACTION,
+    ],
   },
   {
     stage: 17,
     title: 'Bill To Purchase',
     fields: [
-      { id: 'receivedDate', label: 'Received Date', type: 'date', required: true },
+      {
+        id: 'receivedDate',
+        label: 'Received Date',
+        type: 'date',
+        required: true,
+      },
     ],
-    actions: [{ action: 'APPROVE', label: 'Verified by Purchase — Approve' }, REJECT_ACTION, HOLD_ACTION],
+    actions: [
+      { action: 'APPROVE', label: 'Verified by Purchase — Approve' },
+      REJECT_ACTION,
+      HOLD_ACTION,
+    ],
   },
   {
     stage: 18,
@@ -222,43 +328,98 @@ export const STAGE_CONFIGS: StageConfig[] = [
     fields: [
       { id: 'billNumber', label: 'Bill Number', type: 'text', required: true },
       { id: 'billDate', label: 'Bill Date', type: 'date', required: true },
-      { id: 'grnVerification', label: 'GRN Verification', type: 'text', required: true },
+      {
+        id: 'grnVerification',
+        label: 'GRN Verification',
+        type: 'text',
+        required: true,
+      },
       { id: 'checklist', label: 'Checklist', type: 'text' },
     ],
-    actions: [{ action: 'APPROVE', label: 'Bill Created — Approve' }, REJECT_ACTION, HOLD_ACTION],
+    actions: [
+      { action: 'APPROVE', label: 'Bill Created — Approve' },
+      REJECT_ACTION,
+      HOLD_ACTION,
+    ],
   },
   {
     stage: 19,
     title: 'Book Purchase in Tally',
     fields: [
-      { id: 'voucherNumber', label: 'Voucher Number', type: 'text', required: true },
-      { id: 'tallyReference', label: 'Tally Reference', type: 'text', required: true },
-      { id: 'postingDate', label: 'Posting Date', type: 'date', required: true },
+      {
+        id: 'voucherNumber',
+        label: 'Voucher Number',
+        type: 'text',
+        required: true,
+      },
+      {
+        id: 'tallyReference',
+        label: 'Tally Reference',
+        type: 'text',
+        required: true,
+      },
+      {
+        id: 'postingDate',
+        label: 'Posting Date',
+        type: 'date',
+        required: true,
+      },
     ],
-    actions: [{ action: 'APPROVE', label: 'Tally Entry Completed — Approve' }, REJECT_ACTION, HOLD_ACTION],
+    actions: [
+      { action: 'APPROVE', label: 'Tally Entry Completed — Approve' },
+      REJECT_ACTION,
+      HOLD_ACTION,
+    ],
   },
   {
     stage: 20,
     title: 'Bill Approval L1',
     fields: [],
-    actions: [{ action: 'APPROVE', label: 'Approve' }, REJECT_ACTION, HOLD_ACTION],
+    actions: [
+      { action: 'APPROVE', label: 'Approve' },
+      REJECT_ACTION,
+      HOLD_ACTION,
+    ],
   },
   {
     stage: 21,
     title: 'Bill Approval L2',
     fields: [],
-    actions: [{ action: 'APPROVE', label: 'Approve' }, REJECT_ACTION, HOLD_ACTION],
+    actions: [
+      { action: 'APPROVE', label: 'Approve' },
+      REJECT_ACTION,
+      HOLD_ACTION,
+    ],
   },
   {
     stage: 22,
     title: 'Payment / Advice',
     fields: [
-      { id: 'paymentDate', label: 'Payment Date', type: 'date', required: true },
-      { id: 'paymentMode', label: 'Payment Mode', type: 'text', required: true },
+      {
+        id: 'paymentDate',
+        label: 'Payment Date',
+        type: 'date',
+        required: true,
+      },
+      {
+        id: 'paymentMode',
+        label: 'Payment Mode',
+        type: 'text',
+        required: true,
+      },
       { id: 'adviceNumber', label: 'Advice Number', type: 'text' },
-      { id: 'transactionReference', label: 'Transaction Reference', type: 'text', required: true },
+      {
+        id: 'transactionReference',
+        label: 'Transaction Reference',
+        type: 'text',
+        required: true,
+      },
     ],
-    actions: [{ action: 'APPROVE', label: 'Payment Issued — Complete Workflow' }, REJECT_ACTION, HOLD_ACTION],
+    actions: [
+      { action: 'APPROVE', label: 'Payment Issued — Complete Workflow' },
+      REJECT_ACTION,
+      HOLD_ACTION,
+    ],
   },
 ];
 

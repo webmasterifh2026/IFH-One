@@ -30,8 +30,8 @@ export interface ProcurementItem {
   bbuCode?: string;
   itemName: string;
   description?: string;
-  category?: string;      // From SKU
-  subGroup?: string;      // From SKU
+  category?: string; // From SKU
+  subGroup?: string; // From SKU
   unit?: string;
   quantity: number;
   approvedRate?: number;
@@ -82,7 +82,12 @@ export interface Procurement {
   projectId?: string;
   departmentId?: string;
   requestedById: string;
-  requestedBy: { id: string; fullName: string; employeeId: string; designation?: string };
+  requestedBy: {
+    id: string;
+    fullName: string;
+    employeeId: string;
+    designation?: string;
+  };
   assignedToId?: string;
   assignedTo?: { id: string; fullName: string; employeeId: string } | null;
   currentStage: number;
@@ -100,7 +105,10 @@ export interface Procurement {
   history: ProcurementHistory[];
 }
 
-export interface ProcurementListItem extends Omit<Procurement, 'attachments' | 'remarks' | 'history'> {
+export interface ProcurementListItem extends Omit<
+  Procurement,
+  'attachments' | 'remarks' | 'history'
+> {
   projectName?: string;
   application?: string;
   itemType?: string;
@@ -138,7 +146,12 @@ export interface SlaRecord {
   elapsedHours: number;
   remainingHours: number;
   delayHours: number;
-  slaStatus: 'ON_TRACK' | 'APPROACHING_SLA' | 'SLA_BREACHED' | 'COMPLETED_ON_TIME' | 'COMPLETED_LATE';
+  slaStatus:
+    | 'ON_TRACK'
+    | 'APPROACHING_SLA'
+    | 'SLA_BREACHED'
+    | 'COMPLETED_ON_TIME'
+    | 'COMPLETED_LATE';
   createdAt: string;
   updatedAt: string;
 }
@@ -256,7 +269,7 @@ export async function performStageAction(
     vendorId?: string;
     vendorName?: string;
     metadata?: Record<string, any>;
-  },
+  }
 ): Promise<Procurement> {
   return await apiFetch(`/procurement/${id}/action`, {
     method: 'POST',
@@ -267,7 +280,7 @@ export async function performStageAction(
 export async function addRemark(
   id: string,
   comment: string,
-  stageNumber?: number,
+  stageNumber?: number
 ): Promise<ProcurementRemark> {
   return await apiFetch(`/procurement/${id}/remarks`, {
     method: 'POST',
@@ -275,15 +288,22 @@ export async function addRemark(
   });
 }
 
-export async function getProcurementRemarks(id: string): Promise<ProcurementRemark[]> {
+export async function getProcurementRemarks(
+  id: string
+): Promise<ProcurementRemark[]> {
   return await apiFetch(`/procurement/${id}/remarks`);
 }
 
-export async function getProcurementHistory(id: string): Promise<ProcurementHistory[]> {
+export async function getProcurementHistory(
+  id: string
+): Promise<ProcurementHistory[]> {
   return await apiFetch(`/procurement/${id}/history`);
 }
 
-export async function cancelProcurement(id: string, remarks: string): Promise<Procurement> {
+export async function cancelProcurement(
+  id: string,
+  remarks: string
+): Promise<Procurement> {
   return await apiFetch(`/procurement/${id}/cancel`, {
     method: 'POST',
     body: JSON.stringify({ remarks }),
@@ -318,17 +338,24 @@ export async function fetchReportRecords(params?: {
   search?: string;
   status?: string;
   stage?: number;
-}): Promise<{ data: ReportRecord[]; meta: { total: number; page: number; limit: number; totalPages: number } }> {
+}): Promise<{
+  data: ReportRecord[];
+  meta: { total: number; page: number; limit: number; totalPages: number };
+}> {
   try {
-    return await apiFetch(`/reports/indents?${new URLSearchParams(
-      Object.entries({
-        ...(params?.page ? { page: String(params.page) } : {}),
-        ...(params?.limit ? { limit: String(params.limit) } : {}),
-        ...(params?.search ? { search: params.search } : {}),
-        ...(params?.status ? { status: params.status } : {}),
-        ...(params?.stage !== undefined ? { stage: String(params.stage) } : {}),
-      }),
-    ).toString()}`);
+    return await apiFetch(
+      `/reports/indents?${new URLSearchParams(
+        Object.entries({
+          ...(params?.page ? { page: String(params.page) } : {}),
+          ...(params?.limit ? { limit: String(params.limit) } : {}),
+          ...(params?.search ? { search: params.search } : {}),
+          ...(params?.status ? { status: params.status } : {}),
+          ...(params?.stage !== undefined
+            ? { stage: String(params.stage) }
+            : {}),
+        })
+      ).toString()}`
+    );
   } catch {
     return { data: [], meta: { total: 0, page: 1, limit: 50, totalPages: 0 } };
   }
@@ -340,7 +367,10 @@ export async function getAllRecordsForReports(): Promise<ReportRecord[]> {
     const PAGE_SIZE = 200;
     // Fetch first page to get total count
     const firstPage = await apiFetch(`/procurement?limit=${PAGE_SIZE}&page=1`);
-    const firstData = firstPage?.data || firstPage?.records || (Array.isArray(firstPage) ? firstPage : []);
+    const firstData =
+      firstPage?.data ||
+      firstPage?.records ||
+      (Array.isArray(firstPage) ? firstPage : []);
     const total = firstPage?.meta?.total ?? firstData.length;
     const totalPages = Math.ceil(total / PAGE_SIZE);
 
@@ -355,7 +385,9 @@ export async function getAllRecordsForReports(): Promise<ReportRecord[]> {
       priority: r.priority ?? 'NORMAL',
       vendorName: r.vendorName,
       createdAt: r.createdAt,
-      requestedBy: { fullName: r.requestedBy?.name || r.requestedBy?.fullName || 'Unknown' },
+      requestedBy: {
+        fullName: r.requestedBy?.name || r.requestedBy?.fullName || 'Unknown',
+      },
       assignedTo: r.assignedTo ? { fullName: r.assignedTo.fullName } : null,
     });
 
@@ -363,15 +395,24 @@ export async function getAllRecordsForReports(): Promise<ReportRecord[]> {
 
     // Fetch remaining pages in parallel (up to 10 pages = 2000 records)
     if (totalPages > 1) {
-      const remainingPages = Array.from({ length: Math.min(totalPages - 1, 9) }, (_, i) => i + 2);
+      const remainingPages = Array.from(
+        { length: Math.min(totalPages - 1, 9) },
+        (_, i) => i + 2
+      );
       const pageResults = await Promise.all(
-        remainingPages.map(page =>
+        remainingPages.map((page) =>
           apiFetch(`/procurement?limit=${PAGE_SIZE}&page=${page}`)
-            .then((resp: any) => (resp?.data || resp?.records || (Array.isArray(resp) ? resp : [])).map(mapRecord))
+            .then((resp: any) =>
+              (
+                resp?.data ||
+                resp?.records ||
+                (Array.isArray(resp) ? resp : [])
+              ).map(mapRecord)
+            )
             .catch(() => [] as ReportRecord[])
         )
       );
-      pageResults.forEach(pageData => allRecords.push(...pageData));
+      pageResults.forEach((pageData) => allRecords.push(...pageData));
     }
 
     return allRecords;
@@ -428,7 +469,7 @@ export interface BulkExecuteResponse {
 }
 
 export async function previewBulkStageAction(
-  payload: BulkStageActionRequest,
+  payload: BulkStageActionRequest
 ): Promise<BulkPreviewResponse> {
   return await apiFetch('/procurement/bulk-action/preview', {
     method: 'POST',
@@ -437,7 +478,7 @@ export async function previewBulkStageAction(
 }
 
 export async function executeBulkStageAction(
-  payload: BulkStageActionRequest,
+  payload: BulkStageActionRequest
 ): Promise<BulkExecuteResponse> {
   return await apiFetch('/procurement/bulk-action', {
     method: 'POST',
@@ -448,7 +489,7 @@ export async function executeBulkStageAction(
 export async function performBulkStageAction(
   procurementIds: string[],
   action: 'APPROVE' | 'REJECT' | 'HOLD' | 'MOVE_NEXT',
-  options?: { remarks?: string; notifyUsers?: boolean; dryRun?: boolean },
+  options?: { remarks?: string; notifyUsers?: boolean; dryRun?: boolean }
 ) {
   return apiFetch('/procurement/bulk-action', {
     method: 'POST',
@@ -457,8 +498,14 @@ export async function performBulkStageAction(
 }
 
 export async function performBulkMultiStageAction(
-  updates: Array<{ procurementId: string; action: string; remarks?: string; assignedToId?: string; metadata?: any }>,
-  options?: { notifyUsers?: boolean },
+  updates: Array<{
+    procurementId: string;
+    action: string;
+    remarks?: string;
+    assignedToId?: string;
+    metadata?: any;
+  }>,
+  options?: { notifyUsers?: boolean }
 ) {
   return apiFetch('/procurement/bulk-action/multi', {
     method: 'POST',
@@ -486,7 +533,9 @@ export async function getSlaDashboardSummary(): Promise<SlaDashboardSummary> {
 }
 
 /** Fetch all SLA records for a specific procurement indent. */
-export async function getSlaRecords(procurementId: string): Promise<SlaRecord[]> {
+export async function getSlaRecords(
+  procurementId: string
+): Promise<SlaRecord[]> {
   return await apiFetch(`/procurement/${procurementId}/sla`);
 }
 
@@ -506,7 +555,11 @@ export async function duplicateProcurement(id: string): Promise<Procurement> {
 }
 
 /** Assign a stage to a user. */
-export async function assignStage(procurementId: string, stageNumber: number, assignedToId: string): Promise<Procurement> {
+export async function assignStage(
+  procurementId: string,
+  stageNumber: number,
+  assignedToId: string
+): Promise<Procurement> {
   return await apiFetch(`/procurement/${procurementId}/assign/${stageNumber}`, {
     method: 'POST',
     body: JSON.stringify({ assignedToId }),

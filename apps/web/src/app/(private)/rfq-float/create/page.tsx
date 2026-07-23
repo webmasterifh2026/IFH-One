@@ -3,9 +3,20 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { PageHeader } from '@/components/ui/page-header';
-import { Send, Plus, Search, X, Check, ChevronDown, ChevronUp } from 'lucide-react';
+import {
+  Send,
+  Plus,
+  Search,
+  X,
+  Check,
+  ChevronDown,
+  ChevronUp,
+} from 'lucide-react';
 import * as rfqFloatApi from '@/lib/api/rfq-float';
-import { getProcurements, type ProcurementListItem } from '@/lib/api/procurement';
+import {
+  getProcurements,
+  type ProcurementListItem,
+} from '@/lib/api/procurement';
 import { apiFetch } from '@/lib/api/fetch';
 
 interface VendorItem {
@@ -13,7 +24,7 @@ interface VendorItem {
   vendorCode: string;
   vendorName: string;
   email?: string;
-  phone?: string;   // kept for RFQ Float payload
+  phone?: string; // kept for RFQ Float payload
   contact?: string; // from vendors API response
   status?: string;
 }
@@ -41,7 +52,9 @@ export default function RfqFloatCreatePage() {
   const [success, setSuccess] = useState('');
 
   // ─── RFQ Details ────────────────────────────────────────────────────────
-  const [rfqDate, setRfqDate] = useState(new Date().toISOString().split('T')[0]);
+  const [rfqDate, setRfqDate] = useState(
+    new Date().toISOString().split('T')[0]
+  );
   const [submissionDeadline, setSubmissionDeadline] = useState('');
   const [expectedDeliveryDate, setExpectedDeliveryDate] = useState('');
   const [filledById, setFilledById] = useState('');
@@ -55,7 +68,9 @@ export default function RfqFloatCreatePage() {
   const [indents, setIndents] = useState<ProcurementListItem[]>([]);
   const [selectedIndents, setSelectedIndents] = useState<string[]>([]);
   const [items, setItems] = useState<any[]>([]);
-  const [selectedItems, setSelectedItems] = useState<Map<string, boolean>>(new Map());
+  const [selectedItems, setSelectedItems] = useState<Map<string, boolean>>(
+    new Map()
+  );
 
   // ─── Vendor Selection ───────────────────────────────────────────────────
   const [vendors, setVendors] = useState<VendorItem[]>([]);
@@ -95,7 +110,7 @@ export default function RfqFloatCreatePage() {
       const stage2 = stage2Res.data || [];
       // Merge and deduplicate by id
       const seen = new Set<string>();
-      const merged = [...stage3, ...stage2].filter(i => {
+      const merged = [...stage3, ...stage2].filter((i) => {
         if (seen.has(i.id)) return false;
         seen.add(i.id);
         return true;
@@ -128,13 +143,13 @@ export default function RfqFloatCreatePage() {
 
   // ─── Indent Selection Handler ──────────────────────────────────────────
   function handleIndentSelect(indentId: string) {
-    const indent = indents.find(i => i.id === indentId);
+    const indent = indents.find((i) => i.id === indentId);
     if (!indent) return;
 
     if (selectedIndents.includes(indentId)) {
       // Deselect
-      setSelectedIndents(prev => prev.filter(id => id !== indentId));
-      setItems(prev => prev.filter(item => item.indentId !== indentId));
+      setSelectedIndents((prev) => prev.filter((id) => id !== indentId));
+      setItems((prev) => prev.filter((item) => item.indentId !== indentId));
       // Remove selected items from map
       const newSelected = new Map(selectedItems);
       for (const [key] of newSelected) {
@@ -143,17 +158,20 @@ export default function RfqFloatCreatePage() {
       setSelectedItems(newSelected);
     } else {
       // Select - load items
-      setSelectedIndents(prev => [...prev, indentId]);
-      const indentItems = (indent as any).items?.map((item: any) => ({
-        ...item,
-        indentId,
-        indentItemId: item.id,
-        isAvailableInStore: false,
-        isSelected: true,
-      })) || [];
-      setItems(prev => [...prev, ...indentItems]);
+      setSelectedIndents((prev) => [...prev, indentId]);
+      const indentItems =
+        (indent as any).items?.map((item: any) => ({
+          ...item,
+          indentId,
+          indentItemId: item.id,
+          isAvailableInStore: false,
+          isSelected: true,
+        })) || [];
+      setItems((prev) => [...prev, ...indentItems]);
       indentItems.forEach((item: any) => {
-        setSelectedItems(prev => new Map(prev).set(`${indentId}:${item.id}`, true));
+        setSelectedItems((prev) =>
+          new Map(prev).set(`${indentId}:${item.id}`, true)
+        );
       });
     }
   }
@@ -161,7 +179,7 @@ export default function RfqFloatCreatePage() {
   // ─── Item Selection Handler ────────────────────────────────────────────
   function toggleItemSelection(indentId: string, itemId: string) {
     const key = `${indentId}:${itemId}`;
-    setSelectedItems(prev => {
+    setSelectedItems((prev) => {
       const next = new Map(prev);
       next.set(key, !next.get(key));
       return next;
@@ -170,48 +188,54 @@ export default function RfqFloatCreatePage() {
 
   // ─── Vendor Selection Handler ──────────────────────────────────────────
   function handleVendorSelect(vendor: VendorItem) {
-    if (selectedVendors.find(v => v.id === vendor.id)) {
-      setSelectedVendors(prev => prev.filter(v => v.id !== vendor.id));
+    if (selectedVendors.find((v) => v.id === vendor.id)) {
+      setSelectedVendors((prev) => prev.filter((v) => v.id !== vendor.id));
     } else if (selectedVendors.length < 5) {
-      setSelectedVendors(prev => [...prev, vendor]);
+      setSelectedVendors((prev) => [...prev, vendor]);
     }
   }
 
   // ─── Make Selection Handler ────────────────────────────────────────────
   function handleMakeChange(itemKey: string, makeValue: string) {
-    setItems(prev => prev.map(item => {
-      const key = `${item.indentId}:${item.indentItemId}`;
-      if (key === itemKey) {
-        return { ...item, make: makeValue };
-      }
-      return item;
-    }));
+    setItems((prev) =>
+      prev.map((item) => {
+        const key = `${item.indentId}:${item.indentItemId}`;
+        if (key === itemKey) {
+          return { ...item, make: makeValue };
+        }
+        return item;
+      })
+    );
   }
 
   // ─── Unit Weight & Remarks Handlers ────────────────────────────────────
   function handleUnitWeightChange(itemKey: string, weightValue: string) {
     const val = parseFloat(weightValue);
     const isValid = !isNaN(val) && val >= 0;
-    
-    setItems(prev => prev.map(item => {
-      const key = `${item.indentId}:${item.indentItemId}`;
-      if (key === itemKey) {
-        const unitWeight = isValid ? val : undefined;
-        const totalWeight = isValid ? val * Number(item.quantity) : undefined;
-        return { ...item, unitWeight, totalWeight };
-      }
-      return item;
-    }));
+
+    setItems((prev) =>
+      prev.map((item) => {
+        const key = `${item.indentId}:${item.indentItemId}`;
+        if (key === itemKey) {
+          const unitWeight = isValid ? val : undefined;
+          const totalWeight = isValid ? val * Number(item.quantity) : undefined;
+          return { ...item, unitWeight, totalWeight };
+        }
+        return item;
+      })
+    );
   }
 
   function handleRemarksChange(itemKey: string, remarksValue: string) {
-    setItems(prev => prev.map(item => {
-      const key = `${item.indentId}:${item.indentItemId}`;
-      if (key === itemKey) {
-        return { ...item, itemRemarks: remarksValue };
-      }
-      return item;
-    }));
+    setItems((prev) =>
+      prev.map((item) => {
+        const key = `${item.indentId}:${item.indentItemId}`;
+        if (key === itemKey) {
+          return { ...item, itemRemarks: remarksValue };
+        }
+        return item;
+      })
+    );
   }
 
   // ─── Quick Vendor Create ───────────────────────────────────────────────
@@ -223,9 +247,9 @@ export default function RfqFloatCreatePage() {
         email: quickVendorEmail.trim() || undefined,
         phone: quickVendorPhone.trim() || undefined,
       });
-      setVendors(prev => [...prev, vendor]);
+      setVendors((prev) => [...prev, vendor]);
       if (selectedVendors.length < 5) {
-        setSelectedVendors(prev => [...prev, vendor]);
+        setSelectedVendors((prev) => [...prev, vendor]);
       }
       setQuickVendorName('');
       setQuickVendorEmail('');
@@ -256,16 +280,20 @@ export default function RfqFloatCreatePage() {
       return;
     }
 
-    const activeItems = items.filter(item => {
-      const key = `${item.indentId}:${item.indentItemId}`;
-      return selectedItems.get(key) && !item.isAvailableInStore;
-    }).map(item => ({
-      ...item,
-      make: item.make || 'NA',
-    }));
+    const activeItems = items
+      .filter((item) => {
+        const key = `${item.indentId}:${item.indentItemId}`;
+        return selectedItems.get(key) && !item.isAvailableInStore;
+      })
+      .map((item) => ({
+        ...item,
+        make: item.make || 'NA',
+      }));
 
     if (activeItems.length === 0) {
-      setError('No items available for RFQ. All items may be available in store.');
+      setError(
+        'No items available for RFQ. All items may be available in store.'
+      );
       return;
     }
 
@@ -275,12 +303,16 @@ export default function RfqFloatCreatePage() {
     try {
       const result = await rfqFloatApi.createRfqFloat({
         rfqDate: rfqDate ? new Date(rfqDate).toISOString() : undefined,
-        submissionDeadline: submissionDeadline ? new Date(submissionDeadline).toISOString() : undefined,
-        expectedDeliveryDate: expectedDeliveryDate ? new Date(expectedDeliveryDate).toISOString() : undefined,
+        submissionDeadline: submissionDeadline
+          ? new Date(submissionDeadline).toISOString()
+          : undefined,
+        expectedDeliveryDate: expectedDeliveryDate
+          ? new Date(expectedDeliveryDate).toISOString()
+          : undefined,
         filledById: filledById || undefined,
         deliveryLocation: deliveryLocation || undefined,
         remarks: remarks || undefined,
-        items: activeItems.map(item => ({
+        items: activeItems.map((item) => ({
           indentId: item.indentId,
           indentItemId: item.indentItemId || item.id,
           itemCode: item.itemCode,
@@ -295,7 +327,7 @@ export default function RfqFloatCreatePage() {
           isAvailableInStore: false,
           isSelected: true,
         })),
-        vendors: selectedVendors.map(v => ({
+        vendors: selectedVendors.map((v) => ({
           vendorId: v.id,
           vendorCode: v.vendorCode,
           vendorName: v.vendorName,
@@ -326,14 +358,15 @@ export default function RfqFloatCreatePage() {
   }
 
   // ─── Filter vendors by search ──────────────────────────────────────────
-  const filteredVendors = vendors.filter(v =>
-    v.vendorName?.toLowerCase().includes(vendorSearch.toLowerCase()) ||
-    v.vendorCode?.toLowerCase().includes(vendorSearch.toLowerCase()) ||
-    v.email?.toLowerCase().includes(vendorSearch.toLowerCase())
+  const filteredVendors = vendors.filter(
+    (v) =>
+      v.vendorName?.toLowerCase().includes(vendorSearch.toLowerCase()) ||
+      v.vendorCode?.toLowerCase().includes(vendorSearch.toLowerCase()) ||
+      v.email?.toLowerCase().includes(vendorSearch.toLowerCase())
   );
 
   const toggleSection = (section: keyof typeof expandedSections) => {
-    setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }));
+    setExpandedSections((prev) => ({ ...prev, [section]: !prev[section] }));
   };
 
   return (
@@ -366,7 +399,11 @@ export default function RfqFloatCreatePage() {
           className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
         >
           <h2 className="text-lg font-semibold text-gray-900">RFQ Details</h2>
-          {expandedSections.rfqDetails ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+          {expandedSections.rfqDetails ? (
+            <ChevronUp className="w-5 h-5" />
+          ) : (
+            <ChevronDown className="w-5 h-5" />
+          )}
         </button>
 
         {expandedSections.rfqDetails && (
@@ -379,7 +416,7 @@ export default function RfqFloatCreatePage() {
                 <input
                   type="date"
                   value={rfqDate}
-                  onChange={e => setRfqDate(e.target.value)}
+                  onChange={(e) => setRfqDate(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
                 />
               </div>
@@ -390,7 +427,7 @@ export default function RfqFloatCreatePage() {
                 <input
                   type="date"
                   value={submissionDeadline}
-                  onChange={e => setSubmissionDeadline(e.target.value)}
+                  onChange={(e) => setSubmissionDeadline(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
                 />
               </div>
@@ -401,7 +438,7 @@ export default function RfqFloatCreatePage() {
                 <input
                   type="date"
                   value={expectedDeliveryDate}
-                  onChange={e => setExpectedDeliveryDate(e.target.value)}
+                  onChange={(e) => setExpectedDeliveryDate(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
                 />
               </div>
@@ -411,12 +448,14 @@ export default function RfqFloatCreatePage() {
                 </label>
                 <select
                   value={filledById}
-                  onChange={e => setFilledById(e.target.value)}
+                  onChange={(e) => setFilledById(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
                 >
                   <option value="">Select user</option>
-                  {users.map(u => (
-                    <option key={u.id} value={u.id}>{u.fullName}</option>
+                  {users.map((u) => (
+                    <option key={u.id} value={u.id}>
+                      {u.fullName}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -426,12 +465,14 @@ export default function RfqFloatCreatePage() {
                 </label>
                 <select
                   value={deliveryLocation}
-                  onChange={e => setDeliveryLocation(e.target.value)}
+                  onChange={(e) => setDeliveryLocation(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
                 >
                   <option value="">Select location</option>
-                  {DELIVERY_LOCATIONS.map(loc => (
-                    <option key={loc} value={loc}>{loc}</option>
+                  {DELIVERY_LOCATIONS.map((loc) => (
+                    <option key={loc} value={loc}>
+                      {loc}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -442,7 +483,7 @@ export default function RfqFloatCreatePage() {
               </label>
               <textarea
                 value={remarks}
-                onChange={e => setRemarks(e.target.value)}
+                onChange={(e) => setRemarks(e.target.value)}
                 rows={3}
                 placeholder="Enter any special instructions or remarks for vendors..."
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm resize-none"
@@ -460,10 +501,18 @@ export default function RfqFloatCreatePage() {
           onClick={() => toggleSection('products')}
           className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
         >
-          <h2 className="text-lg font-semibold text-gray-900">Product Selection</h2>
+          <h2 className="text-lg font-semibold text-gray-900">
+            Product Selection
+          </h2>
           <div className="flex items-center gap-2">
-            <span className="text-xs text-gray-500">{selectedIndents.length} indent(s) selected</span>
-            {expandedSections.products ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+            <span className="text-xs text-gray-500">
+              {selectedIndents.length} indent(s) selected
+            </span>
+            {expandedSections.products ? (
+              <ChevronUp className="w-5 h-5" />
+            ) : (
+              <ChevronDown className="w-5 h-5" />
+            )}
           </div>
         </button>
 
@@ -475,7 +524,7 @@ export default function RfqFloatCreatePage() {
                 Select Indents <span className="text-red-500">*</span>
               </label>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 max-h-48 overflow-y-auto border border-gray-200 rounded-lg p-2">
-                {indents.map(indent => (
+                {indents.map((indent) => (
                   <button
                     key={indent.id}
                     onClick={() => handleIndentSelect(indent.id)}
@@ -485,19 +534,29 @@ export default function RfqFloatCreatePage() {
                         : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
                     }`}
                   >
-                    <span className={`w-4 h-4 rounded border flex items-center justify-center ${
-                      selectedIndents.includes(indent.id) ? 'bg-blue-500 border-blue-500' : 'border-gray-300'
-                    }`}>
-                      {selectedIndents.includes(indent.id) && <Check className="w-3 h-3 text-white" />}
+                    <span
+                      className={`w-4 h-4 rounded border flex items-center justify-center ${
+                        selectedIndents.includes(indent.id)
+                          ? 'bg-blue-500 border-blue-500'
+                          : 'border-gray-300'
+                      }`}
+                    >
+                      {selectedIndents.includes(indent.id) && (
+                        <Check className="w-3 h-3 text-white" />
+                      )}
                     </span>
                     <div className="text-left">
                       <span className="font-medium">{indent.referenceNo}</span>
-                      <span className="block text-xs text-gray-500">{indent.title?.substring(0, 30)}</span>
+                      <span className="block text-xs text-gray-500">
+                        {indent.title?.substring(0, 30)}
+                      </span>
                     </div>
                   </button>
                 ))}
                 {indents.length === 0 && (
-                  <p className="text-sm text-gray-500 col-span-3 text-center py-4">No indents available at RFQ stage</p>
+                  <p className="text-sm text-gray-500 col-span-3 text-center py-4">
+                    No indents available at RFQ stage
+                  </p>
                 )}
               </div>
             </div>
@@ -512,76 +571,137 @@ export default function RfqFloatCreatePage() {
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="bg-gray-50">
-                        <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase">Select</th>
-                        <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase">Indent No.</th>
-                        <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase">SKU</th>
-                        <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase">Description</th>
-                        <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase">Make</th>
-                        <th className="px-3 py-2 text-right text-xs font-semibold text-gray-500 uppercase">Qty</th>
-                        <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase">UOM</th>
-                        <th className="px-3 py-2 text-right text-xs font-semibold text-gray-500 uppercase">Unit Wt.</th>
-                        <th className="px-3 py-2 text-right text-xs font-semibold text-gray-500 uppercase">Total Wt.</th>
-                        <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase">Remarks</th>
+                        <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase">
+                          Select
+                        </th>
+                        <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase">
+                          Indent No.
+                        </th>
+                        <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase">
+                          SKU
+                        </th>
+                        <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase">
+                          Description
+                        </th>
+                        <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase">
+                          Make
+                        </th>
+                        <th className="px-3 py-2 text-right text-xs font-semibold text-gray-500 uppercase">
+                          Qty
+                        </th>
+                        <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase">
+                          UOM
+                        </th>
+                        <th className="px-3 py-2 text-right text-xs font-semibold text-gray-500 uppercase">
+                          Unit Wt.
+                        </th>
+                        <th className="px-3 py-2 text-right text-xs font-semibold text-gray-500 uppercase">
+                          Total Wt.
+                        </th>
+                        <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase">
+                          Remarks
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
                       {items.map((item, idx) => {
                         const key = `${item.indentId}:${item.indentItemId}`;
                         const isSelected = selectedItems.get(key);
-                        const indent = indents.find(i => i.id === item.indentId);
+                        const indent = indents.find(
+                          (i) => i.id === item.indentId
+                        );
                         return (
-                          <tr key={key} className={`border-t border-gray-100 ${
-                            item.isAvailableInStore ? 'bg-gray-50 opacity-60' : isSelected ? 'bg-blue-50' : ''
-                          }`}>
+                          <tr
+                            key={key}
+                            className={`border-t border-gray-100 ${
+                              item.isAvailableInStore
+                                ? 'bg-gray-50 opacity-60'
+                                : isSelected
+                                  ? 'bg-blue-50'
+                                  : ''
+                            }`}
+                          >
                             <td className="px-3 py-2">
                               {item.isAvailableInStore ? (
-                                <span className="text-xs text-amber-600 font-medium">In Store</span>
+                                <span className="text-xs text-amber-600 font-medium">
+                                  In Store
+                                </span>
                               ) : (
                                 <button
-                                  onClick={() => toggleItemSelection(item.indentId, item.indentItemId)}
+                                  onClick={() =>
+                                    toggleItemSelection(
+                                      item.indentId,
+                                      item.indentItemId
+                                    )
+                                  }
                                   className={`w-5 h-5 rounded border flex items-center justify-center ${
-                                    isSelected ? 'bg-blue-500 border-blue-500' : 'border-gray-300'
+                                    isSelected
+                                      ? 'bg-blue-500 border-blue-500'
+                                      : 'border-gray-300'
                                   }`}
                                 >
-                                  {isSelected && <Check className="w-3 h-3 text-white" />}
+                                  {isSelected && (
+                                    <Check className="w-3 h-3 text-white" />
+                                  )}
                                 </button>
                               )}
                             </td>
-                            <td className="px-3 py-2 font-medium text-gray-700">{indent?.referenceNo || item.indentId?.slice(0, 8)}</td>
-                            <td className="px-3 py-2 text-gray-600">{item.itemCode || item.skuId || '—'}</td>
-                            <td className="px-3 py-2 text-gray-600 max-w-[200px] truncate">{item.itemName || item.description || '—'}</td>
+                            <td className="px-3 py-2 font-medium text-gray-700">
+                              {indent?.referenceNo ||
+                                item.indentId?.slice(0, 8)}
+                            </td>
+                            <td className="px-3 py-2 text-gray-600">
+                              {item.itemCode || item.skuId || '—'}
+                            </td>
+                            <td className="px-3 py-2 text-gray-600 max-w-[200px] truncate">
+                              {item.itemName || item.description || '—'}
+                            </td>
                             <td className="px-3 py-2">
                               <select
                                 value={item.make || item.approvedMakes || 'NA'}
-                                onChange={(e) => handleMakeChange(key, e.target.value)}
+                                onChange={(e) =>
+                                  handleMakeChange(key, e.target.value)
+                                }
                                 className="text-xs border border-gray-300 rounded px-1 py-0.5"
                               >
-                                {MAKES_OPTIONS.map(m => (
-                                  <option key={m.value} value={m.value}>{m.label}</option>
+                                {MAKES_OPTIONS.map((m) => (
+                                  <option key={m.value} value={m.value}>
+                                    {m.label}
+                                  </option>
                                 ))}
                               </select>
                             </td>
-                            <td className="px-3 py-2 text-right font-medium">{Number(item.quantity).toLocaleString()}</td>
-                            <td className="px-3 py-2 text-gray-600">{item.uom || item.unit || '—'}</td>
+                            <td className="px-3 py-2 text-right font-medium">
+                              {Number(item.quantity).toLocaleString()}
+                            </td>
+                            <td className="px-3 py-2 text-gray-600">
+                              {item.uom || item.unit || '—'}
+                            </td>
                             <td className="px-3 py-2 text-right text-gray-600">
                               <input
                                 type="number"
                                 min="0"
                                 step="0.001"
                                 value={item.unitWeight || ''}
-                                onChange={(e) => handleUnitWeightChange(key, e.target.value)}
+                                onChange={(e) =>
+                                  handleUnitWeightChange(key, e.target.value)
+                                }
                                 className="w-20 text-xs border border-gray-300 rounded px-2 py-1 text-right"
                                 placeholder="0.00"
                               />
                             </td>
                             <td className="px-3 py-2 text-right text-gray-600 font-medium bg-gray-50">
-                              {item.totalWeight ? Number(item.totalWeight).toFixed(3) : '—'}
+                              {item.totalWeight
+                                ? Number(item.totalWeight).toFixed(3)
+                                : '—'}
                             </td>
                             <td className="px-3 py-2 text-gray-500 text-xs">
                               <input
                                 type="text"
                                 value={item.itemRemarks || ''}
-                                onChange={(e) => handleRemarksChange(key, e.target.value)}
+                                onChange={(e) =>
+                                  handleRemarksChange(key, e.target.value)
+                                }
                                 className="w-full text-xs border border-gray-300 rounded px-2 py-1"
                                 placeholder="Remarks..."
                               />
@@ -606,10 +726,18 @@ export default function RfqFloatCreatePage() {
           onClick={() => toggleSection('vendors')}
           className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
         >
-          <h2 className="text-lg font-semibold text-gray-900">Vendor Selection</h2>
+          <h2 className="text-lg font-semibold text-gray-900">
+            Vendor Selection
+          </h2>
           <div className="flex items-center gap-2">
-            <span className="text-xs text-gray-500">{selectedVendors.length}/5 selected</span>
-            {expandedSections.vendors ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+            <span className="text-xs text-gray-500">
+              {selectedVendors.length}/5 selected
+            </span>
+            {expandedSections.vendors ? (
+              <ChevronUp className="w-5 h-5" />
+            ) : (
+              <ChevronDown className="w-5 h-5" />
+            )}
           </div>
         </button>
 
@@ -629,7 +757,7 @@ export default function RfqFloatCreatePage() {
                 <input
                   type="text"
                   value={vendorSearch}
-                  onChange={e => setVendorSearch(e.target.value)}
+                  onChange={(e) => setVendorSearch(e.target.value)}
                   placeholder="Search vendors..."
                   className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm"
                 />
@@ -639,26 +767,28 @@ export default function RfqFloatCreatePage() {
             {/* Quick Vendor Form */}
             {showQuickVendor && (
               <div className="bg-gray-50 rounded-lg p-4 border border-gray-200 space-y-3">
-                <h3 className="text-sm font-semibold text-gray-700">Add Vendor</h3>
+                <h3 className="text-sm font-semibold text-gray-700">
+                  Add Vendor
+                </h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   <input
                     type="text"
                     value={quickVendorName}
-                    onChange={e => setQuickVendorName(e.target.value)}
+                    onChange={(e) => setQuickVendorName(e.target.value)}
                     placeholder="Company Name *"
                     className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
                   />
                   <input
                     type="email"
                     value={quickVendorEmail}
-                    onChange={e => setQuickVendorEmail(e.target.value)}
+                    onChange={(e) => setQuickVendorEmail(e.target.value)}
                     placeholder="Email"
                     className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
                   />
                   <input
                     type="tel"
                     value={quickVendorPhone}
-                    onChange={e => setQuickVendorPhone(e.target.value)}
+                    onChange={(e) => setQuickVendorPhone(e.target.value)}
                     placeholder="Phone Number"
                     className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
                   />
@@ -688,11 +818,20 @@ export default function RfqFloatCreatePage() {
                   Selected Vendors
                 </label>
                 <div className="flex flex-wrap gap-2">
-                  {selectedVendors.map(v => (
-                    <div key={v.id} className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 border border-emerald-200 rounded-lg text-sm">
-                      <span className="font-medium text-emerald-700">{v.vendorName}</span>
+                  {selectedVendors.map((v) => (
+                    <div
+                      key={v.id}
+                      className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 border border-emerald-200 rounded-lg text-sm"
+                    >
+                      <span className="font-medium text-emerald-700">
+                        {v.vendorName}
+                      </span>
                       <button
-                        onClick={() => setSelectedVendors(prev => prev.filter(x => x.id !== v.id))}
+                        onClick={() =>
+                          setSelectedVendors((prev) =>
+                            prev.filter((x) => x.id !== v.id)
+                          )
+                        }
                         className="text-emerald-400 hover:text-red-500 transition-colors"
                       >
                         <X className="w-3.5 h-3.5" />
@@ -709,41 +848,74 @@ export default function RfqFloatCreatePage() {
                 <thead>
                   <tr className="bg-gray-50">
                     <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase w-10"></th>
-                    <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase">Vendor ID</th>
-                    <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase">Name</th>
-                    <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase">Email</th>
-                    <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase">Contact</th>
+                    <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase">
+                      Vendor ID
+                    </th>
+                    <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase">
+                      Name
+                    </th>
+                    <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase">
+                      Email
+                    </th>
+                    <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase">
+                      Contact
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredVendors.map(v => {
-                    const isSelected = selectedVendors.find(sv => sv.id === v.id);
+                  {filteredVendors.map((v) => {
+                    const isSelected = selectedVendors.find(
+                      (sv) => sv.id === v.id
+                    );
                     const isMaxed = selectedVendors.length >= 5 && !isSelected;
                     return (
                       <tr
                         key={v.id}
                         onClick={() => !isMaxed && handleVendorSelect(v)}
                         className={`border-t border-gray-100 cursor-pointer transition-colors ${
-                          isSelected ? 'bg-emerald-50' : isMaxed ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50'
+                          isSelected
+                            ? 'bg-emerald-50'
+                            : isMaxed
+                              ? 'opacity-50 cursor-not-allowed'
+                              : 'hover:bg-gray-50'
                         }`}
                       >
                         <td className="px-3 py-2">
-                          <span className={`w-4 h-4 rounded border flex items-center justify-center ${
-                            isSelected ? 'bg-emerald-500 border-emerald-500' : 'border-gray-300'
-                          }`}>
-                            {isSelected && <Check className="w-3 h-3 text-white" />}
+                          <span
+                            className={`w-4 h-4 rounded border flex items-center justify-center ${
+                              isSelected
+                                ? 'bg-emerald-500 border-emerald-500'
+                                : 'border-gray-300'
+                            }`}
+                          >
+                            {isSelected && (
+                              <Check className="w-3 h-3 text-white" />
+                            )}
                           </span>
                         </td>
-                        <td className="px-3 py-2 font-mono text-xs text-gray-500">{v.vendorCode || v.id?.slice(0, 8)}</td>
-                        <td className="px-3 py-2 font-medium text-gray-700">{v.vendorName}</td>
-                        <td className="px-3 py-2 text-gray-600">{v.email || '—'}</td>
-                        <td className="px-3 py-2 text-gray-600">{v.phone || v.contact || '—'}</td>
+                        <td className="px-3 py-2 font-mono text-xs text-gray-500">
+                          {v.vendorCode || v.id?.slice(0, 8)}
+                        </td>
+                        <td className="px-3 py-2 font-medium text-gray-700">
+                          {v.vendorName}
+                        </td>
+                        <td className="px-3 py-2 text-gray-600">
+                          {v.email || '—'}
+                        </td>
+                        <td className="px-3 py-2 text-gray-600">
+                          {v.phone || v.contact || '—'}
+                        </td>
                       </tr>
                     );
                   })}
                   {filteredVendors.length === 0 && (
                     <tr>
-                      <td colSpan={5} className="px-3 py-8 text-center text-gray-500">No vendors found</td>
+                      <td
+                        colSpan={5}
+                        className="px-3 py-8 text-center text-gray-500"
+                      >
+                        No vendors found
+                      </td>
                     </tr>
                   )}
                 </tbody>
@@ -760,20 +932,44 @@ export default function RfqFloatCreatePage() {
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm text-gray-600">
-              <strong className="text-gray-900">{selectedIndents.length}</strong> indent(s) selected ·
-              <strong className="text-gray-900 ml-1">{items.filter(i => selectedItems.get(`${i.indentId}:${i.indentItemId}`) && !i.isAvailableInStore).length}</strong> item(s) to float ·
-              <strong className="text-gray-900 ml-1">{selectedVendors.length}</strong> vendor(s) selected
+              <strong className="text-gray-900">
+                {selectedIndents.length}
+              </strong>{' '}
+              indent(s) selected ·
+              <strong className="text-gray-900 ml-1">
+                {
+                  items.filter(
+                    (i) =>
+                      selectedItems.get(`${i.indentId}:${i.indentItemId}`) &&
+                      !i.isAvailableInStore
+                  ).length
+                }
+              </strong>{' '}
+              item(s) to float ·
+              <strong className="text-gray-900 ml-1">
+                {selectedVendors.length}
+              </strong>{' '}
+              vendor(s) selected
             </p>
             {selectedVendors.length < 3 && (
-              <p className="text-xs text-amber-600 mt-1">⚠️ Select at least 3 vendors (minimum)</p>
+              <p className="text-xs text-amber-600 mt-1">
+                ⚠️ Select at least 3 vendors (minimum)
+              </p>
             )}
             {selectedIndents.length === 0 && (
-              <p className="text-xs text-amber-600 mt-1">⚠️ Select at least one indent</p>
+              <p className="text-xs text-amber-600 mt-1">
+                ⚠️ Select at least one indent
+              </p>
             )}
           </div>
           <button
             onClick={handleSubmit}
-            disabled={loading || selectedVendors.length < 3 || selectedIndents.length === 0 || !filledById}
+            disabled={
+              loading ||
+              selectedVendors.length < 3 ||
+              selectedIndents.length === 0 ||
+              !filledById
+            }
             className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-300 transition-colors"
           >
             <Send className="w-4 h-4" />

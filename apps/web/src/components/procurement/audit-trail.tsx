@@ -1,6 +1,15 @@
 'use client';
 
-import { Activity, CheckCircle2, XCircle, AlertCircle, ChevronRight, MessageSquare, UserPlus, Ban } from 'lucide-react';
+import {
+  Activity,
+  CheckCircle2,
+  XCircle,
+  AlertCircle,
+  ChevronRight,
+  MessageSquare,
+  UserPlus,
+  Ban,
+} from 'lucide-react';
 import type { ProcurementHistory } from '@/lib/api/procurement';
 import { formatDateTime, getStageDefinition } from '@/lib/procurement-stages';
 
@@ -10,19 +19,29 @@ interface AuditTrailProps {
 
 function ActionIcon({ action }: { action: string }) {
   switch (action.toUpperCase()) {
-    case 'APPROVED': return <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />;
-    case 'REJECTED': return <XCircle className="w-3.5 h-3.5 text-red-500" />;
+    case 'APPROVED':
+      return <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />;
+    case 'REJECTED':
+      return <XCircle className="w-3.5 h-3.5 text-red-500" />;
     case 'HELD':
-    case 'ON_HOLD': return <AlertCircle className="w-3.5 h-3.5 text-yellow-500" />;
+    case 'ON_HOLD':
+      return <AlertCircle className="w-3.5 h-3.5 text-yellow-500" />;
     case 'SUBMITTED':
-    case 'SUBMIT': return <ChevronRight className="w-3.5 h-3.5 text-blue-500" />;
-    case 'CREATED': return <Activity className="w-3.5 h-3.5 text-[#0F7B45]" />;
-    case 'REMARK_ADDED': return <MessageSquare className="w-3.5 h-3.5 text-gray-400" />;
-    case 'ASSIGNED': return <UserPlus className="w-3.5 h-3.5 text-purple-500" />;
-    case 'CANCELLED': return <Ban className="w-3.5 h-3.5 text-slate-500" />;
+    case 'SUBMIT':
+      return <ChevronRight className="w-3.5 h-3.5 text-blue-500" />;
+    case 'CREATED':
+      return <Activity className="w-3.5 h-3.5 text-[#0F7B45]" />;
+    case 'REMARK_ADDED':
+      return <MessageSquare className="w-3.5 h-3.5 text-gray-400" />;
+    case 'ASSIGNED':
+      return <UserPlus className="w-3.5 h-3.5 text-purple-500" />;
+    case 'CANCELLED':
+      return <Ban className="w-3.5 h-3.5 text-slate-500" />;
     case 'MOVE_NEXT':
-    case 'MOVED': return <ChevronRight className="w-3.5 h-3.5 text-blue-500" />;
-    default: return <Activity className="w-3.5 h-3.5 text-gray-400" />;
+    case 'MOVED':
+      return <ChevronRight className="w-3.5 h-3.5 text-blue-500" />;
+    default:
+      return <Activity className="w-3.5 h-3.5 text-gray-400" />;
   }
 }
 
@@ -58,7 +77,7 @@ export function AuditTrail({ history }: AuditTrailProps) {
 
   // Sort newest first for display
   const sorted = [...history].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   );
 
   return (
@@ -68,9 +87,10 @@ export function AuditTrail({ history }: AuditTrailProps) {
 
       <div className="space-y-4">
         {sorted.map((entry, idx) => {
-          const stageDef = entry.stageNumber !== null && entry.stageNumber !== undefined
-            ? getStageDefinition(entry.stageNumber)
-            : undefined;
+          const stageDef =
+            entry.stageNumber !== null && entry.stageNumber !== undefined
+              ? getStageDefinition(entry.stageNumber)
+              : undefined;
 
           return (
             <div key={entry.id} className="flex gap-4 relative">
@@ -87,10 +107,14 @@ export function AuditTrail({ history }: AuditTrailProps) {
                       {entry.performedBy.fullName}
                     </span>
                     <span className="text-[13px] text-gray-500 mx-1.5">·</span>
-                    <span className="text-[13px] text-gray-600">{actionLabel(entry.action)}</span>
+                    <span className="text-[13px] text-gray-600">
+                      {actionLabel(entry.action)}
+                    </span>
                     {stageDef && (
                       <>
-                        <span className="text-[13px] text-gray-400 mx-1.5">at</span>
+                        <span className="text-[13px] text-gray-400 mx-1.5">
+                          at
+                        </span>
                         <span className="text-[12px] font-medium text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded-md">
                           Stage {entry.stageNumber}: {stageDef.shortName}
                         </span>
@@ -101,7 +125,9 @@ export function AuditTrail({ history }: AuditTrailProps) {
                     {formatDateTime(entry.createdAt)}
                   </span>
                 </div>
-                <p className="text-[12px] text-gray-500 mt-0.5 leading-relaxed">{entry.description}</p>
+                <p className="text-[12px] text-gray-500 mt-0.5 leading-relaxed">
+                  {entry.description}
+                </p>
               </div>
             </div>
           );

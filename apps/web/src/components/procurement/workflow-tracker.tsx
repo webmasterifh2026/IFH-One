@@ -55,7 +55,14 @@ function getLineStyle(stageStatus: string) {
   }
 }
 
-const GROUP_ORDER = ['requisition', 'sourcing', 'order', 'receipt', 'finance', 'complete'];
+const GROUP_ORDER = [
+  'requisition',
+  'sourcing',
+  'order',
+  'receipt',
+  'finance',
+  'complete',
+];
 const GROUP_LABELS: Record<string, string> = {
   requisition: 'Requisition',
   sourcing: 'Sourcing',
@@ -65,7 +72,12 @@ const GROUP_LABELS: Record<string, string> = {
   complete: 'Complete',
 };
 
-export function WorkflowTracker({ currentStage, stages, status, compact = false }: WorkflowTrackerProps) {
+export function WorkflowTracker({
+  currentStage,
+  stages,
+  status,
+  compact = false,
+}: WorkflowTrackerProps) {
   const stageMap = new Map(stages.map((s) => [s.stageNumber, s]));
   const groups = getStageGroups();
 
@@ -75,10 +87,14 @@ export function WorkflowTracker({ currentStage, stages, status, compact = false 
       <div className="flex items-center gap-0 overflow-x-auto pb-1">
         {GROUP_ORDER.map((group, gi) => {
           const groupStages = groups[group] || [];
-          const groupStageDefs = PROCUREMENT_STAGES.filter((s) => s.group === group);
+          const groupStageDefs = PROCUREMENT_STAGES.filter(
+            (s) => s.group === group
+          );
           const allCompleted = groupStageDefs.every((s) => {
             const st = stageMap.get(s.number);
-            return st && ['COMPLETED', 'APPROVED'].includes(st.status.toUpperCase());
+            return (
+              st && ['COMPLETED', 'APPROVED'].includes(st.status.toUpperCase())
+            );
           });
           const anyInProgress = groupStageDefs.some((s) => {
             const st = stageMap.get(s.number);
@@ -95,20 +111,40 @@ export function WorkflowTracker({ currentStage, stages, status, compact = false 
 
           let circleStyle = 'bg-white border-gray-200 text-gray-300';
           if (anyRejected) circleStyle = 'bg-red-500 border-red-500 text-white';
-          else if (anyHeld) circleStyle = 'bg-yellow-400 border-yellow-400 text-white';
-          else if (anyInProgress) circleStyle = 'bg-blue-500 border-blue-500 text-white ring-2 ring-blue-200';
-          else if (allCompleted) circleStyle = 'bg-emerald-500 border-emerald-500 text-white';
+          else if (anyHeld)
+            circleStyle = 'bg-yellow-400 border-yellow-400 text-white';
+          else if (anyInProgress)
+            circleStyle =
+              'bg-blue-500 border-blue-500 text-white ring-2 ring-blue-200';
+          else if (allCompleted)
+            circleStyle = 'bg-emerald-500 border-emerald-500 text-white';
 
           return (
             <div key={group} className="flex items-center">
               <div className="flex flex-col items-center">
-                <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all ${circleStyle}`}>
-                  {anyRejected ? <XCircle className="w-3.5 h-3.5" /> : anyHeld ? <AlertCircle className="w-3.5 h-3.5" /> : anyInProgress ? <Clock className="w-3.5 h-3.5" /> : allCompleted ? <Check className="w-3.5 h-3.5" /> : <Minus className="w-3 h-3" />}
+                <div
+                  className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all ${circleStyle}`}
+                >
+                  {anyRejected ? (
+                    <XCircle className="w-3.5 h-3.5" />
+                  ) : anyHeld ? (
+                    <AlertCircle className="w-3.5 h-3.5" />
+                  ) : anyInProgress ? (
+                    <Clock className="w-3.5 h-3.5" />
+                  ) : allCompleted ? (
+                    <Check className="w-3.5 h-3.5" />
+                  ) : (
+                    <Minus className="w-3 h-3" />
+                  )}
                 </div>
-                <span className="text-[9px] font-semibold text-gray-400 mt-1 uppercase tracking-wide whitespace-nowrap">{GROUP_LABELS[group]}</span>
+                <span className="text-[9px] font-semibold text-gray-400 mt-1 uppercase tracking-wide whitespace-nowrap">
+                  {GROUP_LABELS[group]}
+                </span>
               </div>
               {gi < GROUP_ORDER.length - 1 && (
-                <div className={`h-0.5 w-8 mx-0.5 mb-4 ${allCompleted ? 'bg-emerald-400' : 'bg-gray-200'}`} />
+                <div
+                  className={`h-0.5 w-8 mx-0.5 mb-4 ${allCompleted ? 'bg-emerald-400' : 'bg-gray-200'}`}
+                />
               )}
             </div>
           );
@@ -121,7 +157,9 @@ export function WorkflowTracker({ currentStage, stages, status, compact = false 
   return (
     <div className="space-y-6">
       {GROUP_ORDER.map((group) => {
-        const groupStageDefs = PROCUREMENT_STAGES.filter((s) => s.group === group);
+        const groupStageDefs = PROCUREMENT_STAGES.filter(
+          (s) => s.group === group
+        );
 
         return (
           <div key={group}>
@@ -145,7 +183,9 @@ export function WorkflowTracker({ currentStage, stages, status, compact = false 
                         <StageIcon stageStatus={stageStatus} />
                       </div>
                       <div className="mt-1.5 text-center max-w-[64px]">
-                        <p className={`text-[9.5px] font-semibold leading-tight ${isCurrent ? 'text-blue-600' : 'text-gray-500'}`}>
+                        <p
+                          className={`text-[9.5px] font-semibold leading-tight ${isCurrent ? 'text-blue-600' : 'text-gray-500'}`}
+                        >
                           {stageDef.shortName}
                         </p>
                         {isCurrent && (
@@ -155,7 +195,9 @@ export function WorkflowTracker({ currentStage, stages, status, compact = false 
                     </div>
                     {/* Connector line */}
                     {idx < groupStageDefs.length - 1 && (
-                      <div className={`h-0.5 w-6 mb-6 ${getLineStyle(stageStatus)}`} />
+                      <div
+                        className={`h-0.5 w-6 mb-6 ${getLineStyle(stageStatus)}`}
+                      />
                     )}
                   </div>
                 );

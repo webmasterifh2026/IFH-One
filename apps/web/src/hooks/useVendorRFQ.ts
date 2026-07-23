@@ -13,12 +13,16 @@ const vendorRfqKeys = {
   forms: () => [...vendorRfqKeys.all, 'forms'] as const,
   formsForRfq: (rfqId: string) => [...vendorRfqKeys.forms(), rfqId] as const,
   quotations: () => [...vendorRfqKeys.all, 'quotations'] as const,
-  quotationsForRfq: (rfqId: string) => [...vendorRfqKeys.quotations(), rfqId] as const,
+  quotationsForRfq: (rfqId: string) =>
+    [...vendorRfqKeys.quotations(), rfqId] as const,
   quotationById: (id: string) => [...vendorRfqKeys.quotations(), id] as const,
-  comparison: (rfqId: string) => [...vendorRfqKeys.all, 'comparison', rfqId] as const,
+  comparison: (rfqId: string) =>
+    [...vendorRfqKeys.all, 'comparison', rfqId] as const,
   negotiation: () => [...vendorRfqKeys.all, 'negotiation'] as const,
-  negotiationDashboard: (rfqId: string) => [...vendorRfqKeys.negotiation(), 'dashboard', rfqId] as const,
-  negotiationHistory: (quotationId: string) => [...vendorRfqKeys.negotiation(), 'history', quotationId] as const,
+  negotiationDashboard: (rfqId: string) =>
+    [...vendorRfqKeys.negotiation(), 'dashboard', rfqId] as const,
+  negotiationHistory: (quotationId: string) =>
+    [...vendorRfqKeys.negotiation(), 'history', quotationId] as const,
 };
 
 // ─── Vendor Portal Queries (Public, Token-based) ──────────────────────────
@@ -130,8 +134,12 @@ export function useSubmitVendorQuotation() {
     }) => vendorRfqApi.submitVendorQuotation(vendorFormId, rfqId, data),
     onSuccess: (quotation) => {
       // Invalidate related queries
-      queryClient.invalidateQueries({ queryKey: vendorRfqKeys.quotationsForRfq(quotation.rfqId) });
-      queryClient.invalidateQueries({ queryKey: vendorRfqKeys.formsForRfq(quotation.rfqId) });
+      queryClient.invalidateQueries({
+        queryKey: vendorRfqKeys.quotationsForRfq(quotation.rfqId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: vendorRfqKeys.formsForRfq(quotation.rfqId),
+      });
     },
   });
 }
@@ -153,10 +161,18 @@ export function useUploadVendorAttachment() {
       file: File;
       documentType: string;
       lineItemId?: string;
-    }) => vendorRfqApi.uploadVendorAttachment(quotationId, file, documentType, lineItemId),
+    }) =>
+      vendorRfqApi.uploadVendorAttachment(
+        quotationId,
+        file,
+        documentType,
+        lineItemId
+      ),
     onSuccess: (_, { quotationId }) => {
       // Invalidate quotation query
-      queryClient.invalidateQueries({ queryKey: vendorRfqKeys.quotationById(quotationId) });
+      queryClient.invalidateQueries({
+        queryKey: vendorRfqKeys.quotationById(quotationId),
+      });
     },
   });
 }
@@ -168,15 +184,12 @@ export function useGenerateVendorForms() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({
-      rfqId,
-      vendors,
-    }: {
-      rfqId: string;
-      vendors: any[];
-    }) => vendorRfqApi.generateVendorForms(rfqId, vendors),
+    mutationFn: ({ rfqId, vendors }: { rfqId: string; vendors: any[] }) =>
+      vendorRfqApi.generateVendorForms(rfqId, vendors),
     onSuccess: (_, { rfqId }) => {
-      queryClient.invalidateQueries({ queryKey: vendorRfqKeys.formsForRfq(rfqId) });
+      queryClient.invalidateQueries({
+        queryKey: vendorRfqKeys.formsForRfq(rfqId),
+      });
     },
   });
 }
@@ -198,9 +211,15 @@ export function useUpdateQuotationStatus() {
       remarks?: string;
     }) => vendorRfqApi.updateQuotationStatus(quotationId, status, remarks),
     onSuccess: (quotation) => {
-      queryClient.invalidateQueries({ queryKey: vendorRfqKeys.quotationById(quotation.id) });
-      queryClient.invalidateQueries({ queryKey: vendorRfqKeys.quotationsForRfq(quotation.rfqId) });
-      queryClient.invalidateQueries({ queryKey: vendorRfqKeys.comparison(quotation.rfqId) });
+      queryClient.invalidateQueries({
+        queryKey: vendorRfqKeys.quotationById(quotation.id),
+      });
+      queryClient.invalidateQueries({
+        queryKey: vendorRfqKeys.quotationsForRfq(quotation.rfqId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: vendorRfqKeys.comparison(quotation.rfqId),
+      });
     },
   });
 }
@@ -212,16 +231,15 @@ export function useSendCounterOffer() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({
-      quotationId,
-      data,
-    }: {
-      quotationId: string;
-      data: any;
-    }) => vendorRfqApi.sendCounterOffer(quotationId, data),
+    mutationFn: ({ quotationId, data }: { quotationId: string; data: any }) =>
+      vendorRfqApi.sendCounterOffer(quotationId, data),
     onSuccess: (round) => {
-      queryClient.invalidateQueries({ queryKey: vendorRfqKeys.negotiationHistory(round.quotationId) });
-      queryClient.invalidateQueries({ queryKey: vendorRfqKeys.negotiationDashboard((round as any).rfqId) });
+      queryClient.invalidateQueries({
+        queryKey: vendorRfqKeys.negotiationHistory(round.quotationId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: vendorRfqKeys.negotiationDashboard((round as any).rfqId),
+      });
     },
   });
 }
@@ -241,10 +259,18 @@ export function useShortlistVendor() {
       remarks?: string;
     }) => vendorRfqApi.shortlistVendor(quotationId, remarks),
     onSuccess: (quotation) => {
-      queryClient.invalidateQueries({ queryKey: vendorRfqKeys.quotationById(quotation.id) });
-      queryClient.invalidateQueries({ queryKey: vendorRfqKeys.quotationsForRfq(quotation.rfqId) });
-      queryClient.invalidateQueries({ queryKey: vendorRfqKeys.comparison(quotation.rfqId) });
-      queryClient.invalidateQueries({ queryKey: vendorRfqKeys.negotiationDashboard(quotation.rfqId) });
+      queryClient.invalidateQueries({
+        queryKey: vendorRfqKeys.quotationById(quotation.id),
+      });
+      queryClient.invalidateQueries({
+        queryKey: vendorRfqKeys.quotationsForRfq(quotation.rfqId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: vendorRfqKeys.comparison(quotation.rfqId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: vendorRfqKeys.negotiationDashboard(quotation.rfqId),
+      });
     },
   });
 }
@@ -264,10 +290,18 @@ export function useSelectVendor() {
       remarks?: string;
     }) => vendorRfqApi.selectVendor(quotationId, remarks),
     onSuccess: (quotation) => {
-      queryClient.invalidateQueries({ queryKey: vendorRfqKeys.quotationById(quotation.id) });
-      queryClient.invalidateQueries({ queryKey: vendorRfqKeys.quotationsForRfq(quotation.rfqId) });
-      queryClient.invalidateQueries({ queryKey: vendorRfqKeys.comparison(quotation.rfqId) });
-      queryClient.invalidateQueries({ queryKey: vendorRfqKeys.negotiationDashboard(quotation.rfqId) });
+      queryClient.invalidateQueries({
+        queryKey: vendorRfqKeys.quotationById(quotation.id),
+      });
+      queryClient.invalidateQueries({
+        queryKey: vendorRfqKeys.quotationsForRfq(quotation.rfqId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: vendorRfqKeys.comparison(quotation.rfqId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: vendorRfqKeys.negotiationDashboard(quotation.rfqId),
+      });
     },
   });
 }
@@ -287,10 +321,18 @@ export function useRejectVendor() {
       reason?: string;
     }) => vendorRfqApi.rejectVendor(quotationId, reason),
     onSuccess: (quotation) => {
-      queryClient.invalidateQueries({ queryKey: vendorRfqKeys.quotationById(quotation.id) });
-      queryClient.invalidateQueries({ queryKey: vendorRfqKeys.quotationsForRfq(quotation.rfqId) });
-      queryClient.invalidateQueries({ queryKey: vendorRfqKeys.comparison(quotation.rfqId) });
-      queryClient.invalidateQueries({ queryKey: vendorRfqKeys.negotiationDashboard(quotation.rfqId) });
+      queryClient.invalidateQueries({
+        queryKey: vendorRfqKeys.quotationById(quotation.id),
+      });
+      queryClient.invalidateQueries({
+        queryKey: vendorRfqKeys.quotationsForRfq(quotation.rfqId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: vendorRfqKeys.comparison(quotation.rfqId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: vendorRfqKeys.negotiationDashboard(quotation.rfqId),
+      });
     },
   });
 }

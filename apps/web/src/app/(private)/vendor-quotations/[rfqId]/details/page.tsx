@@ -3,8 +3,18 @@
 import { useState } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import {
-  ArrowLeft, Download, Send, CheckCircle2, XCircle, AlertCircle, Clock,
-  MessageSquare, TrendingUp, FileText, ThumbsUp, ThumbsDown
+  ArrowLeft,
+  Download,
+  Send,
+  CheckCircle2,
+  XCircle,
+  AlertCircle,
+  Clock,
+  MessageSquare,
+  TrendingUp,
+  FileText,
+  ThumbsUp,
+  ThumbsDown,
 } from 'lucide-react';
 import Link from 'next/link';
 import {
@@ -40,12 +50,14 @@ export default function QuotationDetailsPage() {
   });
 
   const [showCounterOfferForm, setShowCounterOfferForm] = useState(false);
-  const [counterOfferAmount, setCounterOfferAmount] = useState(quotation?.grandTotalAmount || 0);
+  const [counterOfferAmount, setCounterOfferAmount] = useState(
+    quotation?.grandTotalAmount || 0
+  );
   const [counterOfferTerms, setCounterOfferTerms] = useState('');
   const [actionInProgress, setActionInProgress] = useState(false);
 
   const toggleSection = (section: keyof typeof expandedSections) => {
-    setExpandedSections(prev => ({
+    setExpandedSections((prev) => ({
       ...prev,
       [section]: !prev[section],
     }));
@@ -96,7 +108,11 @@ export default function QuotationDetailsPage() {
   };
 
   const handleReject = async () => {
-    if (!quotationId || !confirm('Are you sure you want to reject this quotation?')) return;
+    if (
+      !quotationId ||
+      !confirm('Are you sure you want to reject this quotation?')
+    )
+      return;
     setActionInProgress(true);
     try {
       await rejectMutation.mutateAsync({ quotationId });
@@ -124,8 +140,12 @@ export default function QuotationDetailsPage() {
         <div className="bg-red-50 border border-red-200 rounded-xl p-6 flex items-start gap-4">
           <AlertCircle className="w-6 h-6 text-red-600 flex-shrink-0" />
           <div>
-            <h3 className="text-lg font-semibold text-red-900">Quotation Not Found</h3>
-            <p className="text-red-800 mt-1">The requested quotation could not be found.</p>
+            <h3 className="text-lg font-semibold text-red-900">
+              Quotation Not Found
+            </h3>
+            <p className="text-red-800 mt-1">
+              The requested quotation could not be found.
+            </p>
           </div>
         </div>
       </div>
@@ -142,7 +162,8 @@ export default function QuotationDetailsPage() {
     REJECTED: 'bg-red-50 text-red-700 border-red-200',
   };
 
-  const statusClass = statusColors[quotation.quotationStatus] || statusColors.SUBMITTED;
+  const statusClass =
+    statusColors[quotation.quotationStatus] || statusColors.SUBMITTED;
 
   return (
     <div className="p-8 max-w-4xl mx-auto space-y-6">
@@ -156,7 +177,9 @@ export default function QuotationDetailsPage() {
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Quotation Details</h1>
+            <h1 className="text-3xl font-bold text-gray-900">
+              Quotation Details
+            </h1>
             <p className="text-gray-500 mt-1">{quotation.quotationNumber}</p>
           </div>
         </div>
@@ -169,20 +192,36 @@ export default function QuotationDetailsPage() {
       <EnterpriseCard className="p-6">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
           <div>
-            <p className="text-xs font-semibold text-gray-500 uppercase mb-1">Vendor</p>
-            <p className="text-lg font-semibold text-gray-900">{quotation.vendorForm?.vendorName}</p>
+            <p className="text-xs font-semibold text-gray-500 uppercase mb-1">
+              Vendor
+            </p>
+            <p className="text-lg font-semibold text-gray-900">
+              {quotation.vendorForm?.vendorName}
+            </p>
           </div>
           <div>
-            <p className="text-xs font-semibold text-gray-500 uppercase mb-1">Grand Total</p>
-            <p className="text-lg font-bold text-gray-900">₹{quotation.grandTotalAmount?.toLocaleString('en-IN')}</p>
+            <p className="text-xs font-semibold text-gray-500 uppercase mb-1">
+              Grand Total
+            </p>
+            <p className="text-lg font-bold text-gray-900">
+              ₹{quotation.grandTotalAmount?.toLocaleString('en-IN')}
+            </p>
           </div>
           <div>
-            <p className="text-xs font-semibold text-gray-500 uppercase mb-1">Submitted</p>
-            <p className="text-sm text-gray-900">{formatDate(quotation.submittedAt)}</p>
+            <p className="text-xs font-semibold text-gray-500 uppercase mb-1">
+              Submitted
+            </p>
+            <p className="text-sm text-gray-900">
+              {formatDate(quotation.submittedAt)}
+            </p>
           </div>
           <div>
-            <p className="text-xs font-semibold text-gray-500 uppercase mb-1">Payment Terms</p>
-            <p className="text-sm text-gray-900">{quotation.paymentTerms || '—'}</p>
+            <p className="text-xs font-semibold text-gray-500 uppercase mb-1">
+              Payment Terms
+            </p>
+            <p className="text-sm text-gray-900">
+              {quotation.paymentTerms || '—'}
+            </p>
           </div>
         </div>
       </EnterpriseCard>
@@ -194,19 +233,33 @@ export default function QuotationDetailsPage() {
           className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50"
         >
           <h2 className="text-lg font-semibold text-gray-900">Line Items</h2>
-          <span className="text-gray-400">{expandedSections.items ? '▼' : '▶'}</span>
+          <span className="text-gray-400">
+            {expandedSections.items ? '▼' : '▶'}
+          </span>
         </button>
         {expandedSections.items && (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-t border-gray-200 bg-gray-50/50">
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600">Item</th>
-                  <th className="px-6 py-3 text-right text-xs font-semibold text-gray-600">Qty</th>
-                  <th className="px-6 py-3 text-right text-xs font-semibold text-gray-600">Rate</th>
-                  <th className="px-6 py-3 text-right text-xs font-semibold text-gray-600">Discount</th>
-                  <th className="px-6 py-3 text-right text-xs font-semibold text-gray-600">GST</th>
-                  <th className="px-6 py-3 text-right text-xs font-semibold text-gray-600">Total</th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600">
+                    Item
+                  </th>
+                  <th className="px-6 py-3 text-right text-xs font-semibold text-gray-600">
+                    Qty
+                  </th>
+                  <th className="px-6 py-3 text-right text-xs font-semibold text-gray-600">
+                    Rate
+                  </th>
+                  <th className="px-6 py-3 text-right text-xs font-semibold text-gray-600">
+                    Discount
+                  </th>
+                  <th className="px-6 py-3 text-right text-xs font-semibold text-gray-600">
+                    GST
+                  </th>
+                  <th className="px-6 py-3 text-right text-xs font-semibold text-gray-600">
+                    Total
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
@@ -214,16 +267,28 @@ export default function QuotationDetailsPage() {
                   <tr key={item.id} className="hover:bg-gray-50/50">
                     <td className="px-6 py-3">
                       <div>
-                        <p className="font-medium text-gray-900">{item.itemName}</p>
-                        {item.itemCode && <p className="text-xs text-gray-500">{item.itemCode}</p>}
+                        <p className="font-medium text-gray-900">
+                          {item.itemName}
+                        </p>
+                        {item.itemCode && (
+                          <p className="text-xs text-gray-500">
+                            {item.itemCode}
+                          </p>
+                        )}
                       </div>
                     </td>
                     <td className="px-6 py-3 text-right text-gray-900">
                       {item.quantity} {item.unitOfMeasure}
                     </td>
-                    <td className="px-6 py-3 text-right text-gray-900">₹{item.quotedRate}</td>
-                    <td className="px-6 py-3 text-right text-gray-700">{item.discountPercentage}%</td>
-                    <td className="px-6 py-3 text-right text-gray-700">{item.gstPercentage}%</td>
+                    <td className="px-6 py-3 text-right text-gray-900">
+                      ₹{item.quotedRate}
+                    </td>
+                    <td className="px-6 py-3 text-right text-gray-700">
+                      {item.discountPercentage}%
+                    </td>
+                    <td className="px-6 py-3 text-right text-gray-700">
+                      {item.gstPercentage}%
+                    </td>
                     <td className="px-6 py-3 text-right font-semibold text-gray-900">
                       ₹{item.totalAmount?.toFixed(2)}
                     </td>
@@ -243,7 +308,9 @@ export default function QuotationDetailsPage() {
             className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50"
           >
             <h2 className="text-lg font-semibold text-gray-900">Attachments</h2>
-            <span className="text-gray-400">{expandedSections.attachments ? '▼' : '▶'}</span>
+            <span className="text-gray-400">
+              {expandedSections.attachments ? '▼' : '▶'}
+            </span>
           </button>
           {expandedSections.attachments && (
             <div className="px-6 py-4 border-t border-gray-200 space-y-2">
@@ -257,7 +324,9 @@ export default function QuotationDetailsPage() {
                 >
                   <FileText className="w-4 h-4 text-gray-400 group-hover:text-gray-600" />
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900 truncate">{att.fileName}</p>
+                    <p className="text-sm font-medium text-gray-900 truncate">
+                      {att.fileName}
+                    </p>
                     <p className="text-xs text-gray-500">{att.documentType}</p>
                   </div>
                   <Download className="w-4 h-4 text-gray-400 group-hover:text-gray-600" />
@@ -275,26 +344,40 @@ export default function QuotationDetailsPage() {
             onClick={() => toggleSection('negotiation')}
             className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50"
           >
-            <h2 className="text-lg font-semibold text-gray-900">Negotiation History</h2>
-            <span className="text-gray-400">{expandedSections.negotiation ? '▼' : '▶'}</span>
+            <h2 className="text-lg font-semibold text-gray-900">
+              Negotiation History
+            </h2>
+            <span className="text-gray-400">
+              {expandedSections.negotiation ? '▼' : '▶'}
+            </span>
           </button>
           {expandedSections.negotiation && (
             <div className="px-6 py-4 border-t border-gray-200 space-y-4">
               {negotiationHistory.map((round, idx) => (
-                <div key={round.id} className="pb-4 border-b border-gray-200 last:border-0 last:pb-0">
+                <div
+                  key={round.id}
+                  className="pb-4 border-b border-gray-200 last:border-0 last:pb-0"
+                >
                   <div className="flex items-start justify-between mb-2">
-                    <p className="font-semibold text-gray-900">Round {round.roundNumber}</p>
+                    <p className="font-semibold text-gray-900">
+                      Round {round.roundNumber}
+                    </p>
                     <span className="text-xs px-2 py-1 bg-blue-50 text-blue-700 rounded">
                       {round.vendorResponseStatus}
                     </span>
                   </div>
                   {round.counterOfferAmount && (
                     <p className="text-sm text-gray-700 mb-2">
-                      Counter-offer: <span className="font-semibold">₹{round.counterOfferAmount.toLocaleString('en-IN')}</span>
+                      Counter-offer:{' '}
+                      <span className="font-semibold">
+                        ₹{round.counterOfferAmount.toLocaleString('en-IN')}
+                      </span>
                     </p>
                   )}
                   {round.counterOfferTerms && (
-                    <p className="text-sm text-gray-700">{round.counterOfferTerms}</p>
+                    <p className="text-sm text-gray-700">
+                      {round.counterOfferTerms}
+                    </p>
                   )}
                 </div>
               ))}
@@ -304,47 +387,57 @@ export default function QuotationDetailsPage() {
       )}
 
       {/* Counter-Offer Form */}
-      {showCounterOfferForm && quotation.quotationStatus !== 'SELECTED' && quotation.quotationStatus !== 'REJECTED' && (
-        <EnterpriseCard className="p-6 border-2 border-blue-200 bg-blue-50/50">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Send Counter-Offer</h3>
-          <div className="space-y-4">
-            <div>
-              <label className="text-sm font-semibold text-gray-700 block mb-2">Counter-Offer Amount</label>
-              <input
-                type="number"
-                value={counterOfferAmount}
-                onChange={(e) => setCounterOfferAmount(parseFloat(e.target.value))}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-              />
+      {showCounterOfferForm &&
+        quotation.quotationStatus !== 'SELECTED' &&
+        quotation.quotationStatus !== 'REJECTED' && (
+          <EnterpriseCard className="p-6 border-2 border-blue-200 bg-blue-50/50">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              Send Counter-Offer
+            </h3>
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm font-semibold text-gray-700 block mb-2">
+                  Counter-Offer Amount
+                </label>
+                <input
+                  type="number"
+                  value={counterOfferAmount}
+                  onChange={(e) =>
+                    setCounterOfferAmount(parseFloat(e.target.value))
+                  }
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-semibold text-gray-700 block mb-2">
+                  Terms & Conditions
+                </label>
+                <textarea
+                  value={counterOfferTerms}
+                  onChange={(e) => setCounterOfferTerms(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg min-h-[100px] resize-none"
+                  placeholder="Enter any additional terms or conditions..."
+                />
+              </div>
+              <div className="flex gap-3 justify-end">
+                <button
+                  onClick={() => setShowCounterOfferForm(false)}
+                  className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 font-semibold hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleCounterOffer}
+                  disabled={actionInProgress}
+                  className="px-4 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 disabled:bg-gray-400 flex items-center gap-2"
+                >
+                  <Send className="w-4 h-4" />
+                  Send Offer
+                </button>
+              </div>
             </div>
-            <div>
-              <label className="text-sm font-semibold text-gray-700 block mb-2">Terms & Conditions</label>
-              <textarea
-                value={counterOfferTerms}
-                onChange={(e) => setCounterOfferTerms(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg min-h-[100px] resize-none"
-                placeholder="Enter any additional terms or conditions..."
-              />
-            </div>
-            <div className="flex gap-3 justify-end">
-              <button
-                onClick={() => setShowCounterOfferForm(false)}
-                className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 font-semibold hover:bg-gray-50"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleCounterOffer}
-                disabled={actionInProgress}
-                className="px-4 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 disabled:bg-gray-400 flex items-center gap-2"
-              >
-                <Send className="w-4 h-4" />
-                Send Offer
-              </button>
-            </div>
-          </div>
-        </EnterpriseCard>
-      )}
+          </EnterpriseCard>
+        )}
 
       {/* Action Buttons */}
       <div className="flex gap-3 flex-wrap">

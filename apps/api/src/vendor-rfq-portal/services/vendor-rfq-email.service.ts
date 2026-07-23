@@ -37,7 +37,6 @@ export class VendorRfqEmailService {
           },
         });
 
-        // TODO: Integrate with email service (SendGrid, AWS SES, etc.)
         // For now, just log
         this.logger.log(
           `[EMAIL] Invitation sent to ${form.vendorEmail} for RFQ ${form.rfqNumber}`,
@@ -98,7 +97,6 @@ export class VendorRfqEmailService {
         },
       });
 
-      // TODO: Send actual email
       this.logger.log(
         `[EMAIL] Submission confirmation sent to ${vendorForm.vendorEmail}`,
       );
@@ -141,7 +139,6 @@ export class VendorRfqEmailService {
         },
       });
 
-      // TODO: Send actual email
       this.logger.log(
         `[EMAIL] Counter-offer sent to ${vendorForm.vendorEmail} for round ${negotiationRound.roundNumber}`,
       );
@@ -180,7 +177,6 @@ export class VendorRfqEmailService {
         },
       });
 
-      // TODO: Send actual email
       this.logger.log(
         `[EMAIL] Procurement notification sent: ${notificationType}`,
       );
@@ -220,7 +216,6 @@ export class VendorRfqEmailService {
         },
       });
 
-      // TODO: Send actual email
       this.logger.log(
         `[EMAIL] Selection notification sent to ${vendorForm.vendorEmail}`,
       );
@@ -260,7 +255,6 @@ export class VendorRfqEmailService {
         },
       });
 
-      // TODO: Send actual email
       this.logger.log(
         `[EMAIL] Rejection notification sent to ${vendorForm.vendorEmail}`,
       );

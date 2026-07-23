@@ -36,7 +36,8 @@ export interface GateEntryItem {
   procurementItemId: string;
   declaredQty: string | number;
   receivedQty: string | number | null;
-  qualityStatus: 'PENDING' | 'ACCEPTED' | 'REJECTED' | 'ACCEPTED_WITH_DEVIATION';
+  qualityStatus:
+    'PENDING' | 'ACCEPTED' | 'REJECTED' | 'ACCEPTED_WITH_DEVIATION';
   rejectionReason?: string | null;
   actualSizeReceived?: string | null;
   inspectionRemarks?: string | null;
@@ -82,7 +83,9 @@ export async function searchPO(query: string): Promise<POSearchResult> {
   return apiFetch(`/gate-entry/search-po?q=${encodeURIComponent(query)}`);
 }
 
-export async function uploadGateEntryFiles(files: File[]): Promise<UploadedFileRef[]> {
+export async function uploadGateEntryFiles(
+  files: File[]
+): Promise<UploadedFileRef[]> {
   const token =
     typeof window !== 'undefined' ? localStorage.getItem('ifh_token') : null;
   const formData = new FormData();
@@ -121,7 +124,10 @@ export async function listGateEntries(params?: {
   status?: string;
   page?: number;
   limit?: number;
-}): Promise<{ data: GateEntry[]; meta: { total: number; page: number; limit: number; totalPages: number } }> {
+}): Promise<{
+  data: GateEntry[];
+  meta: { total: number; page: number; limit: number; totalPages: number };
+}> {
   const qs = new URLSearchParams();
   if (params?.status) qs.set('status', params.status);
   if (params?.page) qs.set('page', String(params.page));
@@ -138,7 +144,7 @@ export async function submitQuantityCheck(
     vendorId?: string;
     vendorName: string;
     items: { gateEntryItemId: string; receivedQty: number }[];
-  },
+  }
 ): Promise<GateEntry> {
   return apiFetch(`/gate-entry/${gateEntryId}/quantity-check`, {
     method: 'POST',
@@ -156,7 +162,7 @@ export async function submitQualityCheck(
       actualSizeReceived?: string;
       inspectionRemarks?: string;
     }[];
-  },
+  }
 ): Promise<GateEntry> {
   return apiFetch(`/gate-entry/${gateEntryId}/quality-check`, {
     method: 'POST',
@@ -166,7 +172,7 @@ export async function submitQualityCheck(
 
 export async function submitAllocation(
   gateEntryId: string,
-  payload: { items: { gateEntryItemId: string; allocatedLocation?: string }[] },
+  payload: { items: { gateEntryItemId: string; allocatedLocation?: string }[] }
 ): Promise<GateEntry> {
   return apiFetch(`/gate-entry/${gateEntryId}/allocation`, {
     method: 'POST',
@@ -185,7 +191,11 @@ export interface GateEntryDashboard {
   rejectedMaterials: number;
   todaysReceipts: number;
   grnGeneratedToday: number;
-  vendorWiseReceipts: { vendorName: string; grnCount: number; totalAcceptedQty: number }[];
+  vendorWiseReceipts: {
+    vendorName: string;
+    grnCount: number;
+    totalAcceptedQty: number;
+  }[];
   projectWiseReceipts: { projectName: string; count: number }[];
 }
 

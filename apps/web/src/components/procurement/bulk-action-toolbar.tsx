@@ -1,6 +1,13 @@
 'use client';
 
-import { GitBranch, UserPlus, MessageSquare, StickyNote, Download, X } from 'lucide-react';
+import {
+  GitBranch,
+  UserPlus,
+  MessageSquare,
+  StickyNote,
+  Download,
+  X,
+} from 'lucide-react';
 
 interface BulkActionToolbarProps {
   selectedCount: number;

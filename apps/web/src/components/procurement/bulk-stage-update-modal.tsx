@@ -1,7 +1,14 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { X, AlertTriangle, CheckCircle2, XCircle, Loader2, ShieldAlert } from 'lucide-react';
+import {
+  X,
+  AlertTriangle,
+  CheckCircle2,
+  XCircle,
+  Loader2,
+  ShieldAlert,
+} from 'lucide-react';
 import { EnterpriseCard } from '@/components/ui/enterprise-card';
 import { getStageDefinition } from '@/lib/procurement-stages';
 import {
@@ -71,13 +78,23 @@ export function BulkStageUpdateModal({
 
   const stageBreakdown = useMemo(() => {
     if (!preview) return [];
-    const map = new Map<number, { stageNumber: number; name: string; count: number }>();
+    const map = new Map<
+      number,
+      { stageNumber: number; name: string; count: number }
+    >();
     for (const r of preview.eligibleRecords) {
       const existing = map.get(r.currentStage);
       if (existing) existing.count += 1;
-      else map.set(r.currentStage, { stageNumber: r.currentStage, name: r.currentStageName, count: 1 });
+      else
+        map.set(r.currentStage, {
+          stageNumber: r.currentStage,
+          name: r.currentStageName,
+          count: 1,
+        });
     }
-    return Array.from(map.values()).sort((a, b) => a.stageNumber - b.stageNumber);
+    return Array.from(map.values()).sort(
+      (a, b) => a.stageNumber - b.stageNumber
+    );
   }, [preview]);
 
   if (!isOpen) return null;
@@ -96,7 +113,9 @@ export function BulkStageUpdateModal({
       setPreview(res);
       setStep('preview');
     } catch (err: any) {
-      setPreviewError(err?.message || 'Failed to build preview. Please try again.');
+      setPreviewError(
+        err?.message || 'Failed to build preview. Please try again.'
+      );
     } finally {
       setPreviewLoading(false);
     }
@@ -134,13 +153,19 @@ export function BulkStageUpdateModal({
         <EnterpriseCard className="relative">
           <div className="flex items-center justify-between mb-6 pb-6 border-b border-gray-200">
             <div>
-              <h2 className="text-xl font-bold text-gray-900">Change Workflow Stage</h2>
+              <h2 className="text-xl font-bold text-gray-900">
+                Change Workflow Stage
+              </h2>
               <p className="text-sm text-gray-500 mt-1">
-                {selectedIds.length} {selectedIds.length === 1 ? 'Record' : 'Records'} Selected
+                {selectedIds.length}{' '}
+                {selectedIds.length === 1 ? 'Record' : 'Records'} Selected
               </p>
             </div>
             {step !== 'processing' && (
-              <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+              <button
+                onClick={onClose}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              >
                 <X className="w-5 h-5" />
               </button>
             )}
@@ -164,7 +189,9 @@ export function BulkStageUpdateModal({
                   ))}
                 </select>
                 <p className="text-[12px] text-gray-400 mt-1.5">
-                  Applied only to selected records whose current stage legally permits this action. Others will be skipped with a reason shown in the preview.
+                  Applied only to selected records whose current stage legally
+                  permits this action. Others will be skipped with a reason
+                  shown in the preview.
                 </p>
               </div>
 
@@ -224,7 +251,9 @@ export function BulkStageUpdateModal({
                   disabled={previewLoading}
                   className="inline-flex items-center gap-2 h-10 px-5 rounded-xl bg-[#0F7B45] text-white text-[13px] font-semibold hover:bg-[#0A5C34] transition-colors disabled:opacity-60"
                 >
-                  {previewLoading && <Loader2 className="w-4 h-4 animate-spin" />}
+                  {previewLoading && (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  )}
                   Preview Changes
                 </button>
               </div>
@@ -235,16 +264,28 @@ export function BulkStageUpdateModal({
             <div className="space-y-5">
               <div className="grid grid-cols-3 gap-3">
                 <div className="p-4 rounded-xl bg-gray-50 border border-gray-200 text-center">
-                  <p className="text-2xl font-bold text-gray-900">{preview.totalSelected}</p>
-                  <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide mt-1">Selected</p>
+                  <p className="text-2xl font-bold text-gray-900">
+                    {preview.totalSelected}
+                  </p>
+                  <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide mt-1">
+                    Selected
+                  </p>
                 </div>
                 <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-100 text-center">
-                  <p className="text-2xl font-bold text-emerald-700">{preview.totalEligible}</p>
-                  <p className="text-[11px] font-semibold text-emerald-600 uppercase tracking-wide mt-1">Eligible</p>
+                  <p className="text-2xl font-bold text-emerald-700">
+                    {preview.totalEligible}
+                  </p>
+                  <p className="text-[11px] font-semibold text-emerald-600 uppercase tracking-wide mt-1">
+                    Eligible
+                  </p>
                 </div>
                 <div className="p-4 rounded-xl bg-red-50 border border-red-100 text-center">
-                  <p className="text-2xl font-bold text-red-700">{preview.totalBlocked}</p>
-                  <p className="text-[11px] font-semibold text-red-500 uppercase tracking-wide mt-1">Blocked</p>
+                  <p className="text-2xl font-bold text-red-700">
+                    {preview.totalBlocked}
+                  </p>
+                  <p className="text-[11px] font-semibold text-red-500 uppercase tracking-wide mt-1">
+                    Blocked
+                  </p>
                 </div>
               </div>
 
@@ -273,8 +314,13 @@ export function BulkStageUpdateModal({
                   </p>
                   <div className="max-h-40 overflow-y-auto rounded-xl border border-gray-200 divide-y divide-gray-100">
                     {preview.blockedRecords.map((b) => (
-                      <div key={b.id} className="flex items-center justify-between px-3 py-2 text-[12px]">
-                        <span className="font-mono font-semibold text-gray-700">{b.referenceNo || b.id}</span>
+                      <div
+                        key={b.id}
+                        className="flex items-center justify-between px-3 py-2 text-[12px]"
+                      >
+                        <span className="font-mono font-semibold text-gray-700">
+                          {b.referenceNo || b.id}
+                        </span>
                         <span className="text-red-500 flex items-center gap-1">
                           <XCircle className="w-3.5 h-3.5" /> {b.reason}
                         </span>
@@ -287,7 +333,8 @@ export function BulkStageUpdateModal({
               {preview.totalEligible === 0 && (
                 <div className="flex items-start gap-2 p-3 rounded-xl bg-yellow-50 border border-yellow-100 text-[13px] text-yellow-700">
                   <ShieldAlert className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                  No selected records are eligible for this action. Adjust your selection or choose a different action.
+                  No selected records are eligible for this action. Adjust your
+                  selection or choose a different action.
                 </div>
               )}
 
@@ -307,7 +354,10 @@ export function BulkStageUpdateModal({
                   className="w-4 h-4 rounded border-gray-300 text-[#0F7B45] focus:ring-[#0F7B45]/30"
                 />
                 <span className="text-[13px] font-medium text-gray-700">
-                  I confirm I want to apply <span className="font-bold">{action}</span> to {preview.totalEligible} eligible {preview.totalEligible === 1 ? 'record' : 'records'}.
+                  I confirm I want to apply{' '}
+                  <span className="font-bold">{action}</span> to{' '}
+                  {preview.totalEligible} eligible{' '}
+                  {preview.totalEligible === 1 ? 'record' : 'records'}.
                 </span>
               </label>
 
@@ -323,7 +373,8 @@ export function BulkStageUpdateModal({
                   disabled={!confirmed || preview.totalEligible === 0}
                   className="inline-flex items-center gap-2 h-10 px-5 rounded-xl bg-[#0F7B45] text-white text-[13px] font-semibold hover:bg-[#0A5C34] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                 >
-                  Apply to {preview.totalEligible} {preview.totalEligible === 1 ? 'Record' : 'Records'}
+                  Apply to {preview.totalEligible}{' '}
+                  {preview.totalEligible === 1 ? 'Record' : 'Records'}
                 </button>
               </div>
             </div>
@@ -332,14 +383,18 @@ export function BulkStageUpdateModal({
           {step === 'processing' && (
             <div className="py-10 flex flex-col items-center justify-center gap-4">
               <Loader2 className="w-8 h-8 text-[#0F7B45] animate-spin" />
-              <p className="text-[14px] font-semibold text-gray-700">Updating Records...</p>
+              <p className="text-[14px] font-semibold text-gray-700">
+                Updating Records...
+              </p>
               <div className="w-full max-w-sm h-2 rounded-full bg-gray-100 overflow-hidden">
                 <div
                   className="h-full rounded-full bg-[#0F7B45] transition-all duration-200"
                   style={{ width: `${Math.min(progressPct, 100)}%` }}
                 />
               </div>
-              <p className="text-[12px] text-gray-400">{Math.round(Math.min(progressPct, 100))}%</p>
+              <p className="text-[12px] text-gray-400">
+                {Math.round(Math.min(progressPct, 100))}%
+              </p>
             </div>
           )}
 
@@ -349,7 +404,9 @@ export function BulkStageUpdateModal({
                 <div className="w-14 h-14 rounded-full bg-emerald-50 flex items-center justify-center">
                   <CheckCircle2 className="w-8 h-8 text-emerald-600" />
                 </div>
-                <p className="text-[15px] font-bold text-gray-900">Bulk Update Complete</p>
+                <p className="text-[15px] font-bold text-gray-900">
+                  Bulk Update Complete
+                </p>
                 <p className="text-[12px] text-gray-400">
                   Processed in {(result.durationMs / 1000).toFixed(1)}s
                 </p>
@@ -357,38 +414,65 @@ export function BulkStageUpdateModal({
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="p-4 rounded-xl bg-gray-50 border border-gray-200 text-center">
-                  <p className="text-xl font-bold text-gray-900">{result.totalSelected}</p>
-                  <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide mt-1">Total Selected</p>
+                  <p className="text-xl font-bold text-gray-900">
+                    {result.totalSelected}
+                  </p>
+                  <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide mt-1">
+                    Total Selected
+                  </p>
                 </div>
                 <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-100 text-center">
-                  <p className="text-xl font-bold text-emerald-700">{result.totalUpdated}</p>
-                  <p className="text-[11px] font-semibold text-emerald-600 uppercase tracking-wide mt-1">Updated</p>
+                  <p className="text-xl font-bold text-emerald-700">
+                    {result.totalUpdated}
+                  </p>
+                  <p className="text-[11px] font-semibold text-emerald-600 uppercase tracking-wide mt-1">
+                    Updated
+                  </p>
                 </div>
                 <div className="p-4 rounded-xl bg-yellow-50 border border-yellow-100 text-center">
-                  <p className="text-xl font-bold text-yellow-700">{result.totalSkipped}</p>
-                  <p className="text-[11px] font-semibold text-yellow-600 uppercase tracking-wide mt-1">Skipped</p>
+                  <p className="text-xl font-bold text-yellow-700">
+                    {result.totalSkipped}
+                  </p>
+                  <p className="text-[11px] font-semibold text-yellow-600 uppercase tracking-wide mt-1">
+                    Skipped
+                  </p>
                 </div>
                 <div className="p-4 rounded-xl bg-red-50 border border-red-100 text-center">
-                  <p className="text-xl font-bold text-red-700">{result.totalFailed}</p>
-                  <p className="text-[11px] font-semibold text-red-500 uppercase tracking-wide mt-1">Failed</p>
+                  <p className="text-xl font-bold text-red-700">
+                    {result.totalFailed}
+                  </p>
+                  <p className="text-[11px] font-semibold text-red-500 uppercase tracking-wide mt-1">
+                    Failed
+                  </p>
                 </div>
               </div>
 
-              {(result.skippedRecords.length > 0 || result.failedRecords.length > 0) && (
+              {(result.skippedRecords.length > 0 ||
+                result.failedRecords.length > 0) && (
                 <details className="rounded-xl border border-gray-200">
                   <summary className="px-4 py-3 text-[13px] font-semibold text-gray-700 cursor-pointer select-none">
                     View Details
                   </summary>
                   <div className="max-h-48 overflow-y-auto divide-y divide-gray-100 border-t border-gray-100">
                     {result.failedRecords.map((f) => (
-                      <div key={f.id} className="flex items-center justify-between px-4 py-2 text-[12px]">
-                        <span className="font-mono font-semibold text-gray-700">{f.referenceNo || f.id}</span>
+                      <div
+                        key={f.id}
+                        className="flex items-center justify-between px-4 py-2 text-[12px]"
+                      >
+                        <span className="font-mono font-semibold text-gray-700">
+                          {f.referenceNo || f.id}
+                        </span>
                         <span className="text-red-500">{f.reason}</span>
                       </div>
                     ))}
                     {result.skippedRecords.map((s) => (
-                      <div key={s.id} className="flex items-center justify-between px-4 py-2 text-[12px]">
-                        <span className="font-mono font-semibold text-gray-700">{s.referenceNo || s.id}</span>
+                      <div
+                        key={s.id}
+                        className="flex items-center justify-between px-4 py-2 text-[12px]"
+                      >
+                        <span className="font-mono font-semibold text-gray-700">
+                          {s.referenceNo || s.id}
+                        </span>
                         <span className="text-yellow-600">{s.reason}</span>
                       </div>
                     ))}

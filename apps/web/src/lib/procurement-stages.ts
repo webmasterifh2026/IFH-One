@@ -8,13 +8,25 @@ export interface StageDefinition {
   number: number;
   name: string;
   shortName: string;
-  group: 'requisition' | 'sourcing' | 'order' | 'receipt' | 'finance' | 'complete';
+  group:
+    'requisition' | 'sourcing' | 'order' | 'receipt' | 'finance' | 'complete';
   groupLabel: string;
   actions: StageAction[];
   description: string;
 }
 
-export type StageAction = 'SUBMIT' | 'APPROVE' | 'REJECT' | 'HOLD' | 'MOVE_NEXT' | 'RESUME' | 'AVAILABLE' | 'NOT_AVAILABLE' | 'CANCEL' | 'PASS' | 'FAIL';
+export type StageAction =
+  | 'SUBMIT'
+  | 'APPROVE'
+  | 'REJECT'
+  | 'HOLD'
+  | 'MOVE_NEXT'
+  | 'RESUME'
+  | 'AVAILABLE'
+  | 'NOT_AVAILABLE'
+  | 'CANCEL'
+  | 'PASS'
+  | 'FAIL';
 
 export const PROCUREMENT_STAGES: StageDefinition[] = [
   {
@@ -24,7 +36,8 @@ export const PROCUREMENT_STAGES: StageDefinition[] = [
     group: 'requisition',
     groupLabel: 'Requisition',
     actions: ['SUBMIT'],
-    description: 'Create the purchase indent with item details and project information.',
+    description:
+      'Create the purchase indent with item details and project information.',
   },
   {
     number: 1,
@@ -43,7 +56,8 @@ export const PROCUREMENT_STAGES: StageDefinition[] = [
     groupLabel: 'Sourcing',
     // AVAILABLE closes the workflow; NOT_AVAILABLE moves to Float RFQ
     actions: ['AVAILABLE', 'NOT_AVAILABLE', 'HOLD', 'REJECT'],
-    description: 'Check if items are available in store inventory. If available, workflow closes. If not, proceed to Float RFQ.',
+    description:
+      'Check if items are available in store inventory. If available, workflow closes. If not, proceed to Float RFQ.',
   },
   {
     number: 3,
@@ -61,7 +75,8 @@ export const PROCUREMENT_STAGES: StageDefinition[] = [
     group: 'sourcing',
     groupLabel: 'Sourcing',
     actions: ['APPROVE', 'HOLD', 'REJECT'],
-    description: 'Receive and evaluate techno-commercial offers from suppliers. Send technical offer to Engineering for comparison sheet.',
+    description:
+      'Receive and evaluate techno-commercial offers from suppliers. Send technical offer to Engineering for comparison sheet.',
   },
   {
     number: 5,
@@ -70,7 +85,8 @@ export const PROCUREMENT_STAGES: StageDefinition[] = [
     group: 'sourcing',
     groupLabel: 'Sourcing',
     actions: ['APPROVE', 'HOLD', 'REJECT'],
-    description: 'Final commercial negotiation with shortlisted vendor and selection decision.',
+    description:
+      'Final commercial negotiation with shortlisted vendor and selection decision.',
   },
   {
     number: 6,
@@ -115,7 +131,8 @@ export const PROCUREMENT_STAGES: StageDefinition[] = [
     group: 'order',
     groupLabel: 'Purchase Order',
     actions: ['SUBMIT'],
-    description: 'Track and follow up with vendor on delivery schedule and commitments.',
+    description:
+      'Track and follow up with vendor on delivery schedule and commitments.',
   },
   {
     number: 11,
@@ -134,7 +151,8 @@ export const PROCUREMENT_STAGES: StageDefinition[] = [
     groupLabel: 'Receipt',
     // PASS → Bill To Accounts (16); FAIL → Inspection 2 (13)
     actions: ['PASS', 'FAIL', 'HOLD'],
-    description: 'First quality inspection of received materials. PASS moves to billing; FAIL escalates to Inspection 2.',
+    description:
+      'First quality inspection of received materials. PASS moves to billing; FAIL escalates to Inspection 2.',
   },
   {
     number: 13,
@@ -144,7 +162,8 @@ export const PROCUREMENT_STAGES: StageDefinition[] = [
     groupLabel: 'Receipt',
     // PASS → Bill To Accounts (16); FAIL → Inspection 3 (14)
     actions: ['PASS', 'FAIL', 'HOLD'],
-    description: 'Second quality inspection. PASS moves to billing; FAIL escalates to Inspection 3.',
+    description:
+      'Second quality inspection. PASS moves to billing; FAIL escalates to Inspection 3.',
   },
   {
     number: 14,
@@ -154,7 +173,8 @@ export const PROCUREMENT_STAGES: StageDefinition[] = [
     groupLabel: 'Receipt',
     // PASS → Bill To Accounts (16); FAIL → Debit Note (15) and workflow closes REJECTED
     actions: ['PASS', 'FAIL', 'HOLD'],
-    description: 'Final quality inspection. PASS moves to billing; FAIL moves to Debit Note and closes workflow as rejected.',
+    description:
+      'Final quality inspection. PASS moves to billing; FAIL moves to Debit Note and closes workflow as rejected.',
   },
   {
     number: 15,
@@ -164,7 +184,8 @@ export const PROCUREMENT_STAGES: StageDefinition[] = [
     groupLabel: 'Finance',
     // SUBMIT closes workflow as REJECTED — do NOT proceed to billing
     actions: ['SUBMIT'],
-    description: 'Prepare debit note after all inspections failed. Closes workflow as rejected — billing stages do NOT execute.',
+    description:
+      'Prepare debit note after all inspections failed. Closes workflow as rejected — billing stages do NOT execute.',
   },
   {
     number: 16,
@@ -228,7 +249,8 @@ export const PROCUREMENT_STAGES: StageDefinition[] = [
     groupLabel: 'Finance',
     // APPROVE is used by the stage workspace DecisionPanel
     actions: ['APPROVE', 'HOLD', 'REJECT'],
-    description: 'Issue payment advice to vendor and close the procurement lifecycle.',
+    description:
+      'Issue payment advice to vendor and close the procurement lifecycle.',
   },
   {
     number: 23,
@@ -241,7 +263,9 @@ export const PROCUREMENT_STAGES: StageDefinition[] = [
   },
 ];
 
-export function getStageDefinition(stageNumber: number): StageDefinition | undefined {
+export function getStageDefinition(
+  stageNumber: number
+): StageDefinition | undefined {
   return PROCUREMENT_STAGES.find((s) => s.number === stageNumber);
 }
 
@@ -276,17 +300,37 @@ export function getStageStatusColor(status: string): string {
 
 export function getProcurementStatusColor(status: string): string {
   switch (status.toUpperCase()) {
-    case 'COMPLETED': return 'text-emerald-700 bg-emerald-50 ring-emerald-600/20';
-    case 'IN_PROGRESS': return 'text-blue-700 bg-blue-50 ring-blue-600/20';
-    case 'DRAFT': return 'text-gray-600 bg-gray-100 ring-gray-400/20';
-    case 'REJECTED': return 'text-red-700 bg-red-50 ring-red-600/20';
-    case 'ON_HOLD': return 'text-yellow-700 bg-yellow-50 ring-yellow-600/20';
-    case 'CANCELLED': return 'text-slate-600 bg-slate-100 ring-slate-400/20';
-    default: return 'text-gray-600 bg-gray-100 ring-gray-400/20';
+    case 'COMPLETED':
+      return 'text-emerald-700 bg-emerald-50 ring-emerald-600/20';
+    case 'IN_PROGRESS':
+      return 'text-blue-700 bg-blue-50 ring-blue-600/20';
+    case 'DRAFT':
+      return 'text-gray-600 bg-gray-100 ring-gray-400/20';
+    case 'REJECTED':
+      return 'text-red-700 bg-red-50 ring-red-600/20';
+    case 'ON_HOLD':
+      return 'text-yellow-700 bg-yellow-50 ring-yellow-600/20';
+    case 'CANCELLED':
+      return 'text-slate-600 bg-slate-100 ring-slate-400/20';
+    default:
+      return 'text-gray-600 bg-gray-100 ring-gray-400/20';
   }
 }
 
-const MONTH_ABBR = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const MONTH_ABBR = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+];
 
 function pad2(n: number): string {
   return String(n).padStart(2, '0');
@@ -306,8 +350,12 @@ export function formatDateTime(dateString: string): string {
   return `${pad2(d.getDate())} ${MONTH_ABBR[d.getMonth()]} ${d.getFullYear()} ${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`;
 }
 
-export function getProgressPercentage(currentStage: number, status: string): number {
+export function getProgressPercentage(
+  currentStage: number,
+  status: string
+): number {
   if (status === 'COMPLETED') return 100;
-  if (status === 'CANCELLED' || status === 'REJECTED') return Math.round((currentStage / 23) * 100);
+  if (status === 'CANCELLED' || status === 'REJECTED')
+    return Math.round((currentStage / 23) * 100);
   return Math.round((currentStage / 23) * 100);
 }

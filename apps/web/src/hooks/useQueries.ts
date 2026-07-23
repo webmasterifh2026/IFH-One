@@ -24,8 +24,8 @@ export const QK = {
 };
 
 // ─── Short stale times for live operational data ──────────────────────────────
-const LIVE = { staleTime: 30_000,      retry: 2 }; // 30s — workflow queues
-const SEMI = { staleTime: 2 * 60_000,  retry: 2 }; // 2min — dashboard/reports
+const LIVE = { staleTime: 30_000, retry: 2 }; // 30s — workflow queues
+const SEMI = { staleTime: 2 * 60_000, retry: 2 }; // 2min — dashboard/reports
 const CACHE = { staleTime: 10 * 60_000, retry: 1 }; // 10min — master data
 
 // ─── Dashboard ────────────────────────────────────────────────────────────────
@@ -65,7 +65,12 @@ export function usePendingAnalytics() {
 }
 
 // ─── Lifecycle ────────────────────────────────────────────────────────────────
-export function useLifecycle(params: { page?: number; limit?: number; search?: string; status?: string }) {
+export function useLifecycle(params: {
+  page?: number;
+  limit?: number;
+  search?: string;
+  status?: string;
+}) {
   const qs = new URLSearchParams();
   if (params.page) qs.set('page', String(params.page));
   if (params.limit) qs.set('limit', String(params.limit));
@@ -79,7 +84,13 @@ export function useLifecycle(params: { page?: number; limit?: number; search?: s
 }
 
 // ─── Procurement list ─────────────────────────────────────────────────────────
-export function useProcurements(params: { page?: number; limit?: number; search?: string; status?: string; stage?: number }) {
+export function useProcurements(params: {
+  page?: number;
+  limit?: number;
+  search?: string;
+  status?: string;
+  stage?: number;
+}) {
   const qs = new URLSearchParams();
   if (params.page) qs.set('page', String(params.page));
   if (params.limit) qs.set('limit', String(params.limit));
@@ -128,7 +139,11 @@ export function useDepartments() {
   });
 }
 
-export function useProjects(params?: { page?: number; limit?: number; search?: string }) {
+export function useProjects(params?: {
+  page?: number;
+  limit?: number;
+  search?: string;
+}) {
   const qs = new URLSearchParams();
   if (params?.page) qs.set('page', String(params.page));
   if (params?.limit) qs.set('limit', String(params.limit));
@@ -140,7 +155,11 @@ export function useProjects(params?: { page?: number; limit?: number; search?: s
   });
 }
 
-export function useVendors(params?: { page?: number; limit?: number; search?: string }) {
+export function useVendors(params?: {
+  page?: number;
+  limit?: number;
+  search?: string;
+}) {
   const qs = new URLSearchParams();
   if (params?.page) qs.set('page', String(params.page));
   if (params?.limit) qs.set('limit', String(params.limit));
@@ -152,7 +171,11 @@ export function useVendors(params?: { page?: number; limit?: number; search?: st
   });
 }
 
-export function useItems(params?: { page?: number; limit?: number; search?: string }) {
+export function useItems(params?: {
+  page?: number;
+  limit?: number;
+  search?: string;
+}) {
   const qs = new URLSearchParams();
   if (params?.page) qs.set('page', String(params.page));
   if (params?.limit) qs.set('limit', String(params.limit));
@@ -164,7 +187,11 @@ export function useItems(params?: { page?: number; limit?: number; search?: stri
   });
 }
 
-export function useUsers(params?: { page?: number; limit?: number; search?: string }) {
+export function useUsers(params?: {
+  page?: number;
+  limit?: number;
+  search?: string;
+}) {
   const qs = new URLSearchParams();
   if (params?.page) qs.set('page', String(params.page));
   if (params?.limit) qs.set('limit', String(params.limit));
@@ -201,8 +228,9 @@ export function useUnreadCount() {
 export function useAllReportRecords() {
   return useQuery({
     queryKey: ['report-records-all'],
-    queryFn: () => import('@/lib/api/procurement').then(m => m.getAllRecordsForReports()),
-    staleTime: 2 * 60_000,  // 2 min — shared across control-tower, lifecycle, pending-delays, archived
+    queryFn: () =>
+      import('@/lib/api/procurement').then((m) => m.getAllRecordsForReports()),
+    staleTime: 2 * 60_000, // 2 min — shared across control-tower, lifecycle, pending-delays, archived
     gcTime: 5 * 60_000,
   });
 }
@@ -211,12 +239,16 @@ export function useAllReportRecords() {
 export function useInvalidate() {
   const qc = useQueryClient();
   return {
-    invalidateProcurements: () => qc.invalidateQueries({ queryKey: ['procurements'] }),
+    invalidateProcurements: () =>
+      qc.invalidateQueries({ queryKey: ['procurements'] }),
     invalidateDashboard: () => qc.invalidateQueries({ queryKey: QK.dashboard }),
-    invalidateCommandCenter: () => qc.invalidateQueries({ queryKey: QK.commandCenter }),
-    invalidateReports: () => qc.invalidateQueries({ queryKey: ['report-records-all'] }),
+    invalidateCommandCenter: () =>
+      qc.invalidateQueries({ queryKey: QK.commandCenter }),
+    invalidateReports: () =>
+      qc.invalidateQueries({ queryKey: ['report-records-all'] }),
     invalidateAll: () =>
-      qc.invalidateQueries({ queryKey: ['procurements'] })
+      qc
+        .invalidateQueries({ queryKey: ['procurements'] })
         .then(() => qc.invalidateQueries({ queryKey: QK.dashboard }))
         .then(() => qc.invalidateQueries({ queryKey: QK.commandCenter }))
         .then(() => qc.invalidateQueries({ queryKey: QK.controlTower }))

@@ -18,7 +18,7 @@ describe('End-to-End Workflow Validation', () => {
 
     app = moduleFixture.createNestApplication();
     await app.init();
-    
+
     prisma = moduleFixture.get<PrismaService>(PrismaService);
   });
 
@@ -41,13 +41,14 @@ describe('End-to-End Workflow Validation', () => {
         .send({ email: 'invalid@if-himenviro.in', password: 'wrong' })
         .expect(401);
     });
-    
+
     it('/auth/login (POST) should return token for valid user', async () => {
       // Assuming Pramod Kumar is seeded
-      const res = await request(app.getHttpServer())
-        .post('/auth/login')
-        .send({ email: 'pramod.kumar@if-himenviro.in', password: 'password123' });
-        
+      const res = await request(app.getHttpServer()).post('/auth/login').send({
+        email: 'pramod.kumar@if-himenviro.in',
+        password: 'password123',
+      });
+
       if (res.status === 201 || res.status === 200) {
         expect(res.body).toHaveProperty('access_token');
       } else {
@@ -62,7 +63,7 @@ describe('End-to-End Workflow Validation', () => {
       const users = await prisma.user.findMany({ take: 1 });
       expect(users).toBeDefined();
     });
-    
+
     it('should have access to seeded Projects', async () => {
       const projects = await prisma.project.findMany({ take: 1 });
       expect(projects).toBeDefined();

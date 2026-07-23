@@ -113,7 +113,7 @@ export async function getTCEComparison(rfqFloatId: string) {
 
 export async function startNegotiation(
   rfqFloatId: string,
-  data: { tceId: string; remarks?: string },
+  data: { tceId: string; remarks?: string }
 ) {
   return apiFetch(`/api/rfq-float/${rfqFloatId}/negotiations`, {
     method: 'POST',
@@ -144,7 +144,7 @@ export async function updateNegotiation(
       paymentTerms?: string;
       remarks?: string;
     }>;
-  },
+  }
 ) {
   return apiFetch(`/api/rfq-float/negotiations/${negotiationId}`, {
     method: 'PATCH',

@@ -12,15 +12,36 @@ export const vendorAcceptanceConfig: StageConfig = {
   itemFields: [],
 
   actions: [
-    { action: 'APPROVE', label: 'Accept', intent: 'positive', minRemarksLength: 0 },
+    {
+      action: 'APPROVE',
+      label: 'Accept',
+      intent: 'positive',
+      minRemarksLength: 0,
+    },
     { action: 'HOLD', label: 'Hold', intent: 'warning', minRemarksLength: 20 },
-    { action: 'REJECT', label: 'Reject', intent: 'negative', minRemarksLength: 20 },
+    {
+      action: 'REJECT',
+      label: 'Reject',
+      intent: 'negative',
+      minRemarksLength: 20,
+    },
   ],
 
   validationRules: [
-    { key: 'remarksProvided', label: 'Remarks Provided', check: (ctx) => (ctx.fieldValues.remarks || '').trim().length > 0 },
+    {
+      key: 'remarksProvided',
+      label: 'Remarks Provided',
+      check: (ctx) => (ctx.fieldValues.remarks || '').trim().length > 0,
+    },
   ],
 
-  summaryFields: ['requestedBy', 'createdDate', 'pendingSince', 'project', 'vendor', 'itemsCount'],
+  summaryFields: [
+    'requestedBy',
+    'createdDate',
+    'pendingSince',
+    'project',
+    'vendor',
+    'itemsCount',
+  ],
   kpis: DEFAULT_KPIS,
 };

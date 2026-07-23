@@ -3,11 +3,27 @@
 import { useState } from 'react';
 import { useParams } from 'next/navigation';
 import {
-  ArrowLeft, Download, BarChart3, Search, Filter, CheckCircle2, XCircle,
-  AlertCircle, Clock, TrendingDown, DollarSign, Zap, Send, Eye, MessageSquare
+  ArrowLeft,
+  Download,
+  BarChart3,
+  Search,
+  Filter,
+  CheckCircle2,
+  XCircle,
+  AlertCircle,
+  Clock,
+  TrendingDown,
+  DollarSign,
+  Zap,
+  Send,
+  Eye,
+  MessageSquare,
 } from 'lucide-react';
 import Link from 'next/link';
-import { useQuotationComparison, useQuotationsForRFQ } from '@/hooks/useVendorRFQ';
+import {
+  useQuotationComparison,
+  useQuotationsForRFQ,
+} from '@/hooks/useVendorRFQ';
 import { PageHeader } from '@/components/ui/page-header';
 import { EnterpriseCard } from '@/components/ui/enterprise-card';
 import { formatDate } from '@/lib/procurement-stages';
@@ -20,7 +36,9 @@ export default function VendorQuotationsPage() {
   const { data: quotations } = useQuotationsForRFQ(rfqId);
 
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortBy, setSortBy] = useState<'price' | 'delivery' | 'rating'>('price');
+  const [sortBy, setSortBy] = useState<'price' | 'delivery' | 'rating'>(
+    'price'
+  );
 
   if (isLoading) {
     return (
@@ -44,8 +62,12 @@ export default function VendorQuotationsPage() {
         <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6 flex items-start gap-4">
           <AlertCircle className="w-6 h-6 text-yellow-600 flex-shrink-0 mt-1" />
           <div>
-            <h3 className="text-lg font-semibold text-yellow-900">No Quotations Yet</h3>
-            <p className="text-yellow-800 mt-1">No vendor quotations have been submitted for this RFQ yet.</p>
+            <h3 className="text-lg font-semibold text-yellow-900">
+              No Quotations Yet
+            </h3>
+            <p className="text-yellow-800 mt-1">
+              No vendor quotations have been submitted for this RFQ yet.
+            </p>
           </div>
         </div>
       </div>
@@ -58,8 +80,10 @@ export default function VendorQuotationsPage() {
     return 0;
   });
 
-  const lowestPrice = Math.min(...sortedQuotations.map(q => q.grandTotal));
-  const fastestDelivery = Math.min(...sortedQuotations.map(q => q.leadTime || Infinity));
+  const lowestPrice = Math.min(...sortedQuotations.map((q) => q.grandTotal));
+  const fastestDelivery = Math.min(
+    ...sortedQuotations.map((q) => q.leadTime || Infinity)
+  );
 
   const stats = [
     {
@@ -100,7 +124,9 @@ export default function VendorQuotationsPage() {
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Quotation Comparison</h1>
+            <h1 className="text-3xl font-bold text-gray-900">
+              Quotation Comparison
+            </h1>
             <p className="text-gray-500 mt-1">{comparison.rfqNumber}</p>
           </div>
         </div>
@@ -113,13 +139,22 @@ export default function VendorQuotationsPage() {
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((stat) => (
-          <EnterpriseCard key={stat.label} className="flex items-center gap-3 py-4">
-            <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${stat.color}`}>
+          <EnterpriseCard
+            key={stat.label}
+            className="flex items-center gap-3 py-4"
+          >
+            <div
+              className={`w-10 h-10 rounded-lg flex items-center justify-center ${stat.color}`}
+            >
               <stat.icon className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-gray-500 uppercase">{stat.label}</p>
-              <p className="text-2xl font-bold text-gray-900 leading-none">{stat.value}</p>
+              <p className="text-sm font-semibold text-gray-500 uppercase">
+                {stat.label}
+              </p>
+              <p className="text-2xl font-bold text-gray-900 leading-none">
+                {stat.value}
+              </p>
             </div>
           </EnterpriseCard>
         ))}
@@ -155,13 +190,27 @@ export default function VendorQuotationsPage() {
         <table className="w-full text-left border-collapse ifh-table">
           <thead>
             <tr>
-              <th className="px-6 py-4 bg-gray-50/80 border-b border-gray-200 text-xs font-semibold text-gray-600 uppercase tracking-wider sticky left-0 z-10">Vendor</th>
-              <th className="px-6 py-4 bg-gray-50/80 border-b border-gray-200 text-xs font-semibold text-gray-600 uppercase tracking-wider">Total Price</th>
-              <th className="px-6 py-4 bg-gray-50/80 border-b border-gray-200 text-xs font-semibold text-gray-600 uppercase tracking-wider">Payment Terms</th>
-              <th className="px-6 py-4 bg-gray-50/80 border-b border-gray-200 text-xs font-semibold text-gray-600 uppercase tracking-wider">Delivery Basis</th>
-              <th className="px-6 py-4 bg-gray-50/80 border-b border-gray-200 text-xs font-semibold text-gray-600 uppercase tracking-wider">Lead Time</th>
-              <th className="px-6 py-4 bg-gray-50/80 border-b border-gray-200 text-xs font-semibold text-gray-600 uppercase tracking-wider">Warranty</th>
-              <th className="px-6 py-4 bg-gray-50/80 border-b border-gray-200 text-xs font-semibold text-gray-600 uppercase tracking-wider text-right">Actions</th>
+              <th className="px-6 py-4 bg-gray-50/80 border-b border-gray-200 text-xs font-semibold text-gray-600 uppercase tracking-wider sticky left-0 z-10">
+                Vendor
+              </th>
+              <th className="px-6 py-4 bg-gray-50/80 border-b border-gray-200 text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                Total Price
+              </th>
+              <th className="px-6 py-4 bg-gray-50/80 border-b border-gray-200 text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                Payment Terms
+              </th>
+              <th className="px-6 py-4 bg-gray-50/80 border-b border-gray-200 text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                Delivery Basis
+              </th>
+              <th className="px-6 py-4 bg-gray-50/80 border-b border-gray-200 text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                Lead Time
+              </th>
+              <th className="px-6 py-4 bg-gray-50/80 border-b border-gray-200 text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                Warranty
+              </th>
+              <th className="px-6 py-4 bg-gray-50/80 border-b border-gray-200 text-xs font-semibold text-gray-600 uppercase tracking-wider text-right">
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
@@ -170,37 +219,58 @@ export default function VendorQuotationsPage() {
               const isFastestDelivery = q.leadTime === fastestDelivery;
 
               return (
-                <tr key={q.quotationId} className="group hover:bg-gray-50/50 transition-colors">
+                <tr
+                  key={q.quotationId}
+                  className="group hover:bg-gray-50/50 transition-colors"
+                >
                   <td className="px-6 py-4 sticky left-0 z-9 bg-white group-hover:bg-gray-50/50">
                     <div>
-                      <p className="text-sm font-semibold text-gray-900">{q.vendorName}</p>
-                      <p className="text-xs text-gray-500 mt-0.5">{q.vendorCode}</p>
+                      <p className="text-sm font-semibold text-gray-900">
+                        {q.vendorName}
+                      </p>
+                      <p className="text-xs text-gray-500 mt-0.5">
+                        {q.vendorCode}
+                      </p>
                     </div>
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-bold text-gray-900">₹{q.grandTotal.toLocaleString('en-IN')}</span>
+                      <span className="text-sm font-bold text-gray-900">
+                        ₹{q.grandTotal.toLocaleString('en-IN')}
+                      </span>
                       {isBestPrice && (
-                        <span className="text-xs px-2 py-1 bg-emerald-100 text-emerald-700 font-semibold rounded">Best</span>
+                        <span className="text-xs px-2 py-1 bg-emerald-100 text-emerald-700 font-semibold rounded">
+                          Best
+                        </span>
                       )}
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <span className="text-sm text-gray-700">{q.paymentTerms || '—'}</span>
+                    <span className="text-sm text-gray-700">
+                      {q.paymentTerms || '—'}
+                    </span>
                   </td>
                   <td className="px-6 py-4">
-                    <span className="text-sm text-gray-700">{q.deliveryBasis || '—'}</span>
+                    <span className="text-sm text-gray-700">
+                      {q.deliveryBasis || '—'}
+                    </span>
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-gray-900">{q.leadTime || '—'} days</span>
+                      <span className="text-sm font-medium text-gray-900">
+                        {q.leadTime || '—'} days
+                      </span>
                       {isFastestDelivery && q.leadTime && (
-                        <span className="text-xs px-2 py-1 bg-blue-100 text-blue-700 font-semibold rounded">Fast</span>
+                        <span className="text-xs px-2 py-1 bg-blue-100 text-blue-700 font-semibold rounded">
+                          Fast
+                        </span>
                       )}
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <span className="text-sm text-gray-700">{q.warranty || '—'}</span>
+                    <span className="text-sm text-gray-700">
+                      {q.warranty || '—'}
+                    </span>
                   </td>
                   <td className="px-6 py-4 text-right">
                     <div className="flex items-center justify-end gap-2">
@@ -228,29 +298,47 @@ export default function VendorQuotationsPage() {
 
       {/* Product Comparison Grid */}
       <EnterpriseCard className="p-6">
-        <h2 className="text-lg font-bold text-gray-900 mb-4">Product-wise Comparison</h2>
+        <h2 className="text-lg font-bold text-gray-900 mb-4">
+          Product-wise Comparison
+        </h2>
         <div className="space-y-6">
           {comparison.quotations[0]?.lineItems?.map((_, idx) => {
             const product = {
               sku: comparison.quotations[0].lineItems[idx]?.itemCode || 'N/A',
-              name: comparison.quotations[0].lineItems[idx]?.itemName || 'Product',
+              name:
+                comparison.quotations[0].lineItems[idx]?.itemName || 'Product',
             };
 
             return (
-              <div key={idx} className="border border-gray-200 rounded-lg overflow-hidden">
+              <div
+                key={idx}
+                className="border border-gray-200 rounded-lg overflow-hidden"
+              >
                 <div className="bg-gray-50 px-4 py-3 border-b border-gray-200">
-                  <p className="text-sm font-semibold text-gray-900">{product.name}</p>
+                  <p className="text-sm font-semibold text-gray-900">
+                    {product.name}
+                  </p>
                   <p className="text-xs text-gray-500">{product.sku}</p>
                 </div>
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="border-b border-gray-100 bg-gray-50/50">
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600">Vendor</th>
-                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600">Rate</th>
-                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600">Discount</th>
-                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600">GST</th>
-                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600">Total</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600">
+                          Vendor
+                        </th>
+                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600">
+                          Rate
+                        </th>
+                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600">
+                          Discount
+                        </th>
+                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600">
+                          GST
+                        </th>
+                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600">
+                          Total
+                        </th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100">
@@ -258,11 +346,22 @@ export default function VendorQuotationsPage() {
                         const item = q.lineItems[idx];
                         if (!item) return null;
                         return (
-                          <tr key={q.quotationId} className="hover:bg-gray-50/50">
-                            <td className="px-4 py-3 text-sm text-gray-900 font-medium">{q.vendorName}</td>
-                            <td className="px-4 py-3 text-right text-sm text-gray-700">₹{item.quotedRate}</td>
-                            <td className="px-4 py-3 text-right text-sm text-gray-700">{item.discountPercentage}%</td>
-                            <td className="px-4 py-3 text-right text-sm text-gray-700">{item.gstPercentage}%</td>
+                          <tr
+                            key={q.quotationId}
+                            className="hover:bg-gray-50/50"
+                          >
+                            <td className="px-4 py-3 text-sm text-gray-900 font-medium">
+                              {q.vendorName}
+                            </td>
+                            <td className="px-4 py-3 text-right text-sm text-gray-700">
+                              ₹{item.quotedRate}
+                            </td>
+                            <td className="px-4 py-3 text-right text-sm text-gray-700">
+                              {item.discountPercentage}%
+                            </td>
+                            <td className="px-4 py-3 text-right text-sm text-gray-700">
+                              {item.gstPercentage}%
+                            </td>
                             <td className="px-4 py-3 text-right text-sm font-semibold text-gray-900">
                               ₹{item.totalAmount?.toFixed(2)}
                             </td>

@@ -4,8 +4,18 @@ import { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import {
-  ArrowLeft, Shield, Save, Users, Layers, CheckCircle2,
-  XCircle, Pencil, X, Check, UserPlus, UserMinus
+  ArrowLeft,
+  Shield,
+  Save,
+  Users,
+  Layers,
+  CheckCircle2,
+  XCircle,
+  Pencil,
+  X,
+  Check,
+  UserPlus,
+  UserMinus,
 } from 'lucide-react';
 import { EnterpriseCard } from '@/components/ui/enterprise-card';
 import { StatusBadge } from '@/components/ui/status-badge';
@@ -55,7 +65,9 @@ export default function RoleDetailPage() {
 
   // Permissions
   const [allPermissions, setAllPermissions] = useState<Permission[]>([]);
-  const [assignedPermissionIds, setAssignedPermissionIds] = useState<Set<string>>(new Set());
+  const [assignedPermissionIds, setAssignedPermissionIds] = useState<
+    Set<string>
+  >(new Set());
   const [permissionsDirty, setPermissionsDirty] = useState(false);
 
   // Workflow stages
@@ -66,7 +78,9 @@ export default function RoleDetailPage() {
   const [assignedUsers, setAssignedUsers] = useState<AssignedUser[]>([]);
 
   // Tab state
-  const [activeTab, setActiveTab] = useState<'permissions' | 'workflow' | 'users'>('permissions');
+  const [activeTab, setActiveTab] = useState<
+    'permissions' | 'workflow' | 'users'
+  >('permissions');
 
   // Saving
   const [saving, setSaving] = useState(false);
@@ -82,14 +96,18 @@ export default function RoleDetailPage() {
       setEditStatus(data.status);
 
       // Map assigned permissions
-      const ids = new Set<string>(data.rolePermissions?.map((rp: any) => rp.permission.id) || []);
+      const ids = new Set<string>(
+        data.rolePermissions?.map((rp: any) => rp.permission.id) || []
+      );
       setAssignedPermissionIds(ids);
 
       // Map workflow stages (init 22 steps)
       const existingStages = data.workflowStages || [];
       const stages: WorkflowStage[] = [];
       for (let i = 1; i <= 22; i++) {
-        const existing = existingStages.find((ws: any) => ws.workflowStage === i);
+        const existing = existingStages.find(
+          (ws: any) => ws.workflowStage === i
+        );
         stages.push({
           workflowStage: i,
           canView: existing?.canView || false,
@@ -123,7 +141,9 @@ export default function RoleDetailPage() {
   }, [fetchRole, fetchAllPermissions]);
 
   // Group permissions by module
-  const permissionsByModule = allPermissions.reduce<Record<string, Permission[]>>((acc, p) => {
+  const permissionsByModule = allPermissions.reduce<
+    Record<string, Permission[]>
+  >((acc, p) => {
     if (!acc[p.module]) acc[p.module] = [];
     acc[p.module].push(p);
     return acc;
@@ -139,9 +159,11 @@ export default function RoleDetailPage() {
 
   const toggleModuleAll = (module: string) => {
     const modulePerms = permissionsByModule[module] || [];
-    const allChecked = modulePerms.every(p => assignedPermissionIds.has(p.id));
+    const allChecked = modulePerms.every((p) =>
+      assignedPermissionIds.has(p.id)
+    );
     const next = new Set(assignedPermissionIds);
-    modulePerms.forEach(p => {
+    modulePerms.forEach((p) => {
       if (allChecked) next.delete(p.id);
       else next.add(p.id);
     });
@@ -149,10 +171,15 @@ export default function RoleDetailPage() {
     setPermissionsDirty(true);
   };
 
-  const toggleWorkflowCell = (stage: number, field: 'canView' | 'canEdit' | 'canApprove') => {
-    setWorkflowStages(prev => prev.map(ws =>
-      ws.workflowStage === stage ? { ...ws, [field]: !ws[field] } : ws
-    ));
+  const toggleWorkflowCell = (
+    stage: number,
+    field: 'canView' | 'canEdit' | 'canApprove'
+  ) => {
+    setWorkflowStages((prev) =>
+      prev.map((ws) =>
+        ws.workflowStage === stage ? { ...ws, [field]: !ws[field] } : ws
+      )
+    );
     setWorkflowDirty(true);
   };
 
@@ -177,14 +204,18 @@ export default function RoleDetailPage() {
       if (permissionsDirty) {
         await apiFetch(`/roles/${roleId}/permissions`, {
           method: 'PUT',
-          body: JSON.stringify({ permissionIds: Array.from(assignedPermissionIds) }),
+          body: JSON.stringify({
+            permissionIds: Array.from(assignedPermissionIds),
+          }),
         });
         setPermissionsDirty(false);
       }
 
       // Save workflow stages
       if (workflowDirty) {
-        const activeStages = workflowStages.filter(ws => ws.canView || ws.canEdit || ws.canApprove);
+        const activeStages = workflowStages.filter(
+          (ws) => ws.canView || ws.canEdit || ws.canApprove
+        );
         await apiFetch(`/roles/${roleId}/workflow-stages`, {
           method: 'PUT',
           body: JSON.stringify({ stages: activeStages }),
@@ -204,7 +235,7 @@ export default function RoleDetailPage() {
   const handleRemoveUser = async (userId: string) => {
     try {
       await apiFetch(`/roles/${roleId}/users/${userId}`, { method: 'DELETE' });
-      setAssignedUsers(prev => prev.filter(u => u.id !== userId));
+      setAssignedUsers((prev) => prev.filter((u) => u.id !== userId));
     } catch (err) {
       console.error(err);
     }
@@ -213,7 +244,9 @@ export default function RoleDetailPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center">
-        <p className="text-[14px] text-gray-400 font-medium">Loading role details...</p>
+        <p className="text-[14px] text-gray-400 font-medium">
+          Loading role details...
+        </p>
       </div>
     );
   }
@@ -255,7 +288,9 @@ export default function RoleDetailPage() {
                   className="text-[24px] font-bold tracking-tight text-gray-900 bg-transparent border-b-2 border-[#0F7B45] focus:outline-none pb-0.5"
                 />
               ) : (
-                <h1 className="text-[24px] font-bold tracking-tight text-gray-900">{role.name}</h1>
+                <h1 className="text-[24px] font-bold tracking-tight text-gray-900">
+                  {role.name}
+                </h1>
               )}
               <div className="flex items-center gap-3 mt-1">
                 {role.status === 'ACTIVE' ? (
@@ -269,7 +304,8 @@ export default function RoleDetailPage() {
                 )}
                 <span className="text-[12px] text-gray-400">•</span>
                 <span className="text-[12px] text-gray-500 font-medium">
-                  {assignedUsers.length} user{assignedUsers.length !== 1 ? 's' : ''} assigned
+                  {assignedUsers.length} user
+                  {assignedUsers.length !== 1 ? 's' : ''} assigned
                 </span>
               </div>
             </div>
@@ -300,7 +336,9 @@ export default function RoleDetailPage() {
 
         {/* Save Feedback */}
         {saveMsg && (
-          <div className={`rounded-xl px-4 py-3 text-[13px] font-medium mb-6 ${saveMsg.startsWith('Error') ? 'bg-red-50 text-red-700 border border-red-200/60' : 'bg-emerald-50 text-emerald-700 border border-emerald-200/60'}`}>
+          <div
+            className={`rounded-xl px-4 py-3 text-[13px] font-medium mb-6 ${saveMsg.startsWith('Error') ? 'bg-red-50 text-red-700 border border-red-200/60' : 'bg-emerald-50 text-emerald-700 border border-emerald-200/60'}`}
+          >
             {saveMsg}
           </div>
         )}
@@ -308,10 +346,14 @@ export default function RoleDetailPage() {
         {/* Role Info Card (editing mode) */}
         {editing && (
           <EnterpriseCard className="mb-6 p-6">
-            <h3 className="text-[14px] font-semibold text-gray-900 mb-4">Role Information</h3>
+            <h3 className="text-[14px] font-semibold text-gray-900 mb-4">
+              Role Information
+            </h3>
             <div className="grid grid-cols-2 gap-6">
               <div>
-                <label className="block text-[12px] font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Description</label>
+                <label className="block text-[12px] font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
+                  Description
+                </label>
                 <textarea
                   value={editDescription}
                   onChange={(e) => setEditDescription(e.target.value)}
@@ -320,7 +362,9 @@ export default function RoleDetailPage() {
                 />
               </div>
               <div>
-                <label className="block text-[12px] font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Status</label>
+                <label className="block text-[12px] font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
+                  Status
+                </label>
                 <select
                   value={editStatus}
                   onChange={(e) => setEditStatus(e.target.value)}
@@ -340,7 +384,7 @@ export default function RoleDetailPage() {
             { key: 'permissions', label: 'Permissions', icon: Shield },
             { key: 'workflow', label: 'Workflow Access', icon: Layers },
             { key: 'users', label: 'Assigned Users', icon: Users },
-          ].map(tab => (
+          ].map((tab) => (
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key as any)}
@@ -360,43 +404,76 @@ export default function RoleDetailPage() {
         {activeTab === 'permissions' && (
           <div className="space-y-4">
             {Object.entries(permissionsByModule).map(([module, perms]) => {
-              const allChecked = perms.every(p => assignedPermissionIds.has(p.id));
-              const someChecked = perms.some(p => assignedPermissionIds.has(p.id));
+              const allChecked = perms.every((p) =>
+                assignedPermissionIds.has(p.id)
+              );
+              const someChecked = perms.some((p) =>
+                assignedPermissionIds.has(p.id)
+              );
               return (
-                <EnterpriseCard noPadding key={module} className="overflow-hidden">
+                <EnterpriseCard
+                  noPadding
+                  key={module}
+                  className="overflow-hidden"
+                >
                   {/* Module Header */}
                   <div
                     className="flex items-center justify-between px-6 py-4 bg-gray-50/50 border-b border-gray-100 cursor-pointer"
                     onClick={() => toggleModuleAll(module)}
                   >
                     <div className="flex items-center gap-3">
-                      <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
-                        allChecked ? 'bg-[#0F7B45] border-[#0F7B45]' : someChecked ? 'border-[#0F7B45] bg-[#0F7B45]/10' : 'border-gray-300'
-                      }`}>
-                        {(allChecked || someChecked) && <Check className="w-3 h-3 text-white" />}
+                      <div
+                        className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
+                          allChecked
+                            ? 'bg-[#0F7B45] border-[#0F7B45]'
+                            : someChecked
+                              ? 'border-[#0F7B45] bg-[#0F7B45]/10'
+                              : 'border-gray-300'
+                        }`}
+                      >
+                        {(allChecked || someChecked) && (
+                          <Check className="w-3 h-3 text-white" />
+                        )}
                       </div>
-                      <span className="text-[14px] font-semibold text-gray-900">{module}</span>
+                      <span className="text-[14px] font-semibold text-gray-900">
+                        {module}
+                      </span>
                     </div>
                     <span className="text-[12px] text-gray-500 font-medium">
-                      {perms.filter(p => assignedPermissionIds.has(p.id)).length} / {perms.length}
+                      {
+                        perms.filter((p) => assignedPermissionIds.has(p.id))
+                          .length
+                      }{' '}
+                      / {perms.length}
                     </span>
                   </div>
                   {/* Permission Items */}
                   <div className="divide-y divide-gray-50">
-                    {perms.map(p => (
+                    {perms.map((p) => (
                       <label
                         key={p.id}
                         className="flex items-center gap-3 px-6 py-3 hover:bg-gray-50/50 transition-colors cursor-pointer"
                       >
-                        <div className={`w-4.5 h-4.5 rounded border-2 flex items-center justify-center transition-colors ${
-                          assignedPermissionIds.has(p.id) ? 'bg-[#0F7B45] border-[#0F7B45]' : 'border-gray-300'
-                        }`} style={{ width: '18px', height: '18px' }}>
-                          {assignedPermissionIds.has(p.id) && <Check className="w-3 h-3 text-white" />}
+                        <div
+                          className={`w-4.5 h-4.5 rounded border-2 flex items-center justify-center transition-colors ${
+                            assignedPermissionIds.has(p.id)
+                              ? 'bg-[#0F7B45] border-[#0F7B45]'
+                              : 'border-gray-300'
+                          }`}
+                          style={{ width: '18px', height: '18px' }}
+                        >
+                          {assignedPermissionIds.has(p.id) && (
+                            <Check className="w-3 h-3 text-white" />
+                          )}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <span className="text-[13px] font-medium text-gray-800">{p.key}</span>
+                          <span className="text-[13px] font-medium text-gray-800">
+                            {p.key}
+                          </span>
                         </div>
-                        <span className="text-[12px] text-gray-400">{p.description || ''}</span>
+                        <span className="text-[12px] text-gray-400">
+                          {p.description || ''}
+                        </span>
                         <input
                           type="checkbox"
                           className="sr-only"
@@ -416,37 +493,63 @@ export default function RoleDetailPage() {
         {activeTab === 'workflow' && (
           <EnterpriseCard noPadding className="overflow-hidden">
             <div className="px-6 py-4 bg-gray-50/50 border-b border-gray-100">
-              <h3 className="text-[14px] font-semibold text-gray-900">Workflow Stage Access Matrix</h3>
-              <p className="text-[12px] text-gray-500 mt-0.5">Define view, edit, and approval access for each procurement workflow stage.</p>
+              <h3 className="text-[14px] font-semibold text-gray-900">
+                Workflow Stage Access Matrix
+              </h3>
+              <p className="text-[12px] text-gray-500 mt-0.5">
+                Define view, edit, and approval access for each procurement
+                workflow stage.
+              </p>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-left ifh-table ifh-table">
                 <thead>
                   <tr className="border-b border-gray-100">
-                    <th className="px-6 py-3 text-[12px] font-semibold text-gray-500 uppercase tracking-wider w-32">Stage</th>
-                    <th className="px-6 py-3 text-[12px] font-semibold text-gray-500 uppercase tracking-wider text-center w-24">View</th>
-                    <th className="px-6 py-3 text-[12px] font-semibold text-gray-500 uppercase tracking-wider text-center w-24">Edit</th>
-                    <th className="px-6 py-3 text-[12px] font-semibold text-gray-500 uppercase tracking-wider text-center w-24">Approve</th>
+                    <th className="px-6 py-3 text-[12px] font-semibold text-gray-500 uppercase tracking-wider w-32">
+                      Stage
+                    </th>
+                    <th className="px-6 py-3 text-[12px] font-semibold text-gray-500 uppercase tracking-wider text-center w-24">
+                      View
+                    </th>
+                    <th className="px-6 py-3 text-[12px] font-semibold text-gray-500 uppercase tracking-wider text-center w-24">
+                      Edit
+                    </th>
+                    <th className="px-6 py-3 text-[12px] font-semibold text-gray-500 uppercase tracking-wider text-center w-24">
+                      Approve
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
                   {workflowStages.map((ws) => (
-                    <tr key={ws.workflowStage} className="hover:bg-gray-50/50 transition-colors">
+                    <tr
+                      key={ws.workflowStage}
+                      className="hover:bg-gray-50/50 transition-colors"
+                    >
                       <td className="px-6 py-3">
-                        <span className="text-[13px] font-medium text-gray-800">Step {ws.workflowStage}</span>
+                        <span className="text-[13px] font-medium text-gray-800">
+                          Step {ws.workflowStage}
+                        </span>
                       </td>
-                      {(['canView', 'canEdit', 'canApprove'] as const).map(field => (
-                        <td key={field} className="px-6 py-3 text-center">
-                          <button
-                            onClick={() => toggleWorkflowCell(ws.workflowStage, field)}
-                            className={`w-5 h-5 rounded border-2 inline-flex items-center justify-center transition-colors ${
-                              ws[field] ? 'bg-[#0F7B45] border-[#0F7B45]' : 'border-gray-300 hover:border-gray-400'
-                            }`}
-                          >
-                            {ws[field] && <Check className="w-3 h-3 text-white" />}
-                          </button>
-                        </td>
-                      ))}
+                      {(['canView', 'canEdit', 'canApprove'] as const).map(
+                        (field) => (
+                          <td key={field} className="px-6 py-3 text-center">
+                            <button
+                              onClick={() =>
+                                toggleWorkflowCell(ws.workflowStage, field)
+                              }
+                              className={`w-5 h-5 rounded border-2 inline-flex items-center justify-center transition-colors ${
+                                ws[field]
+                                  ? 'bg-[#0F7B45] border-[#0F7B45]'
+                                  : 'border-gray-300 hover:border-gray-400'
+                              }`}
+                            >
+                              {ws[field] && (
+                                <Check className="w-3 h-3 text-white" />
+                              )}
+                            </button>
+                          </td>
+                        )
+                      )}
                     </tr>
                   ))}
                 </tbody>
@@ -460,13 +563,18 @@ export default function RoleDetailPage() {
           <EnterpriseCard noPadding className="overflow-hidden">
             <div className="px-6 py-4 bg-gray-50/50 border-b border-gray-100 flex items-center justify-between">
               <div>
-                <h3 className="text-[14px] font-semibold text-gray-900">Assigned Users</h3>
-                <p className="text-[12px] text-gray-500 mt-0.5">{assignedUsers.length} user{assignedUsers.length !== 1 ? 's' : ''} assigned to this role.</p>
+                <h3 className="text-[14px] font-semibold text-gray-900">
+                  Assigned Users
+                </h3>
+                <p className="text-[12px] text-gray-500 mt-0.5">
+                  {assignedUsers.length} user
+                  {assignedUsers.length !== 1 ? 's' : ''} assigned to this role.
+                </p>
               </div>
             </div>
             {assignedUsers.length === 0 ? (
               <div className="p-6">
-                <EmptyState 
+                <EmptyState
                   icon={Users}
                   headline="No users assigned"
                   description="Assign users from the User Management module."
@@ -476,19 +584,38 @@ export default function RoleDetailPage() {
               <table className="w-full text-left ifh-table ifh-table">
                 <thead>
                   <tr className="border-b border-gray-100">
-                    <th className="px-6 py-3 text-[12px] font-semibold text-gray-500 uppercase tracking-wider">Employee</th>
-                    <th className="px-6 py-3 text-[12px] font-semibold text-gray-500 uppercase tracking-wider">Name</th>
-                    <th className="px-6 py-3 text-[12px] font-semibold text-gray-500 uppercase tracking-wider">Email</th>
-                    <th className="px-6 py-3 text-[12px] font-semibold text-gray-500 uppercase tracking-wider text-center">Status</th>
-                    <th className="px-6 py-3 text-[12px] font-semibold text-gray-500 uppercase tracking-wider text-right">Actions</th>
+                    <th className="px-6 py-3 text-[12px] font-semibold text-gray-500 uppercase tracking-wider">
+                      Employee
+                    </th>
+                    <th className="px-6 py-3 text-[12px] font-semibold text-gray-500 uppercase tracking-wider">
+                      Name
+                    </th>
+                    <th className="px-6 py-3 text-[12px] font-semibold text-gray-500 uppercase tracking-wider">
+                      Email
+                    </th>
+                    <th className="px-6 py-3 text-[12px] font-semibold text-gray-500 uppercase tracking-wider text-center">
+                      Status
+                    </th>
+                    <th className="px-6 py-3 text-[12px] font-semibold text-gray-500 uppercase tracking-wider text-right">
+                      Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
-                  {assignedUsers.map(user => (
-                    <tr key={user.id} className="hover:bg-gray-50/50 transition-colors">
-                      <td className="px-6 py-3 text-[13px] font-medium text-gray-900">{user.employeeId}</td>
-                      <td className="px-6 py-3 text-[13px] text-gray-700">{user.fullName}</td>
-                      <td className="px-6 py-3 text-[13px] text-gray-500">{user.email}</td>
+                  {assignedUsers.map((user) => (
+                    <tr
+                      key={user.id}
+                      className="hover:bg-gray-50/50 transition-colors"
+                    >
+                      <td className="px-6 py-3 text-[13px] font-medium text-gray-900">
+                        {user.employeeId}
+                      </td>
+                      <td className="px-6 py-3 text-[13px] text-gray-700">
+                        {user.fullName}
+                      </td>
+                      <td className="px-6 py-3 text-[13px] text-gray-500">
+                        {user.email}
+                      </td>
                       <td className="px-6 py-3 text-center">
                         <StatusBadge status={user.status} />
                       </td>

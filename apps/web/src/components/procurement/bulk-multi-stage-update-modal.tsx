@@ -1,8 +1,19 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { X, Loader2, CheckCircle2, AlertTriangle, ChevronDown, ChevronUp } from 'lucide-react';
-import { performBulkMultiStageAction, type ProcurementListItem, type ProcurementItem } from '@/lib/api/procurement';
+import {
+  X,
+  Loader2,
+  CheckCircle2,
+  AlertTriangle,
+  ChevronDown,
+  ChevronUp,
+} from 'lucide-react';
+import {
+  performBulkMultiStageAction,
+  type ProcurementListItem,
+  type ProcurementItem,
+} from '@/lib/api/procurement';
 import { getStageConfig } from '@/components/workflow/stage-config';
 
 interface FlattenedItem extends ProcurementItem {
@@ -39,9 +50,9 @@ export function BulkMultiStageUpdateModal({
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState('');
-  
+
   const config = getStageConfig(stageNumber);
-  
+
   const [rowData, setRowData] = useState<Record<string, RowData>>({});
 
   useEffect(() => {
@@ -72,8 +83,12 @@ export function BulkMultiStageUpdateModal({
     }
   }, [isOpen, selectedItems]);
 
-  const handleFieldChange = (itemId: string, field: keyof RowData, value: string) => {
-    setRowData(prev => ({
+  const handleFieldChange = (
+    itemId: string,
+    field: keyof RowData,
+    value: string
+  ) => {
+    setRowData((prev) => ({
       ...prev,
       [itemId]: {
         ...prev[itemId],
@@ -104,9 +119,9 @@ export function BulkMultiStageUpdateModal({
     setError('');
 
     try {
-      const updates = Object.values(rowData).map(row => {
+      const updates = Object.values(rowData).map((row) => {
         const metadata: any = {};
-        
+
         if (stageNumber === 6) {
           metadata.poNumber = row.statusOrPONumber;
         } else {
@@ -121,7 +136,9 @@ export function BulkMultiStageUpdateModal({
         };
       });
 
-      const res = await performBulkMultiStageAction(updates, { notifyUsers: true });
+      const res = await performBulkMultiStageAction(updates, {
+        notifyUsers: true,
+      });
       setResult(res);
       onComplete?.();
     } catch (err: any) {
@@ -133,11 +150,16 @@ export function BulkMultiStageUpdateModal({
 
   const getColumnLabel = () => {
     switch (stageNumber) {
-      case 3: return 'Status Float RFQ';
-      case 4: return 'Status';
-      case 5: return 'Status';
-      case 6: return 'PO Number';
-      default: return 'Status';
+      case 3:
+        return 'Status Float RFQ';
+      case 4:
+        return 'Status';
+      case 5:
+        return 'Status';
+      case 6:
+        return 'PO Number';
+      default:
+        return 'Status';
     }
   };
 
@@ -154,32 +176,49 @@ export function BulkMultiStageUpdateModal({
       <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl">
           <div className="p-6 border-b border-gray-200">
-            <h2 className="text-[18px] font-bold text-gray-900">Update Complete</h2>
+            <h2 className="text-[18px] font-bold text-gray-900">
+              Update Complete
+            </h2>
           </div>
-          
+
           <div className="p-6">
             <div className="flex flex-col items-center text-center gap-3 py-4">
               <div className="w-16 h-16 rounded-full bg-emerald-50 flex items-center justify-center">
                 <CheckCircle2 className="w-9 h-9 text-emerald-600" />
               </div>
-              <p className="text-[16px] font-bold text-gray-900">Bulk Update Complete</p>
+              <p className="text-[16px] font-bold text-gray-900">
+                Bulk Update Complete
+              </p>
               <p className="text-[13px] text-gray-500">
-                {result.totalUpdated} of {result.totalSelected} items updated successfully
+                {result.totalUpdated} of {result.totalSelected} items updated
+                successfully
               </p>
             </div>
 
             <div className="grid grid-cols-3 gap-3 mt-4">
               <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-100 text-center">
-                <p className="text-[20px] font-bold text-emerald-700">{result.totalUpdated}</p>
-                <p className="text-[11px] font-semibold text-emerald-600 uppercase tracking-wide mt-1">Updated</p>
+                <p className="text-[20px] font-bold text-emerald-700">
+                  {result.totalUpdated}
+                </p>
+                <p className="text-[11px] font-semibold text-emerald-600 uppercase tracking-wide mt-1">
+                  Updated
+                </p>
               </div>
               <div className="p-4 rounded-xl bg-yellow-50 border border-yellow-100 text-center">
-                <p className="text-[20px] font-bold text-yellow-700">{result.totalSkipped || 0}</p>
-                <p className="text-[11px] font-semibold text-yellow-600 uppercase tracking-wide mt-1">Skipped</p>
+                <p className="text-[20px] font-bold text-yellow-700">
+                  {result.totalSkipped || 0}
+                </p>
+                <p className="text-[11px] font-semibold text-yellow-600 uppercase tracking-wide mt-1">
+                  Skipped
+                </p>
               </div>
               <div className="p-4 rounded-xl bg-red-50 border border-red-100 text-center">
-                <p className="text-[20px] font-bold text-red-700">{result.totalFailed || 0}</p>
-                <p className="text-[11px] font-semibold text-red-500 uppercase tracking-wide mt-1">Failed</p>
+                <p className="text-[20px] font-bold text-red-700">
+                  {result.totalFailed || 0}
+                </p>
+                <p className="text-[11px] font-semibold text-red-500 uppercase tracking-wide mt-1">
+                  Failed
+                </p>
               </div>
             </div>
           </div>
@@ -200,14 +239,14 @@ export function BulkMultiStageUpdateModal({
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-[95vw] max-h-[90vh] flex flex-col">
-        
         {/* Header with gradient */}
         <div className="relative px-6 py-5 border-b border-gray-200 bg-gradient-to-r from-[#0F7B45] to-[#0A5C34]">
           <div className="flex items-center justify-between">
             <div className="flex-1">
               <h2 className="text-[18px] font-bold text-white">Bulk Update</h2>
               <p className="text-[13px] text-white/80 mt-1">
-                {selectedItems.length} {selectedItems.length === 1 ? 'item' : 'items'} selected
+                {selectedItems.length}{' '}
+                {selectedItems.length === 1 ? 'item' : 'items'} selected
               </p>
             </div>
             {!submitting && (
@@ -232,7 +271,9 @@ export function BulkMultiStageUpdateModal({
                 Stage {stageNumber} — {config?.title || 'Update'}
               </h3>
               <p className="text-[12px] text-gray-500 mt-0.5">
-                {isCollapsed ? 'Click to expand' : 'Update fields for all selected items'}
+                {isCollapsed
+                  ? 'Click to expand'
+                  : 'Update fields for all selected items'}
               </p>
             </div>
             {isCollapsed ? (
@@ -275,7 +316,10 @@ export function BulkMultiStageUpdateModal({
                 </thead>
                 <tbody>
                   {Object.values(rowData).map((row, idx) => (
-                    <tr key={row.itemId} className={idx % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}>
+                    <tr
+                      key={row.itemId}
+                      className={idx % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}
+                    >
                       <td className="py-2.5 px-3 text-gray-700 border-b border-gray-100">
                         {row.indentNo}
                       </td>
@@ -296,19 +340,33 @@ export function BulkMultiStageUpdateModal({
                           <input
                             type="text"
                             value={row.statusOrPONumber}
-                            onChange={(e) => handleFieldChange(row.itemId, 'statusOrPONumber', e.target.value)}
+                            onChange={(e) =>
+                              handleFieldChange(
+                                row.itemId,
+                                'statusOrPONumber',
+                                e.target.value
+                              )
+                            }
                             placeholder="Enter PO Number"
                             className="w-full h-9 px-3 text-[13px] bg-white border border-gray-300 rounded-lg focus:outline-none focus:border-[#0F7B45] focus:ring-2 focus:ring-[#0F7B45]/20"
                           />
                         ) : (
                           <select
                             value={row.statusOrPONumber}
-                            onChange={(e) => handleFieldChange(row.itemId, 'statusOrPONumber', e.target.value)}
+                            onChange={(e) =>
+                              handleFieldChange(
+                                row.itemId,
+                                'statusOrPONumber',
+                                e.target.value
+                              )
+                            }
                             className="w-full h-9 px-3 text-[13px] bg-white border border-gray-300 rounded-lg focus:outline-none focus:border-[#0F7B45] focus:ring-2 focus:ring-[#0F7B45]/20"
                           >
                             <option value="">Select...</option>
-                            {getOptions().map(opt => (
-                              <option key={opt.value} value={opt.value}>{opt.label}</option>
+                            {getOptions().map((opt) => (
+                              <option key={opt.value} value={opt.value}>
+                                {opt.label}
+                              </option>
                             ))}
                           </select>
                         )}
@@ -316,7 +374,13 @@ export function BulkMultiStageUpdateModal({
                       <td className="py-2.5 px-3 border-b border-gray-100">
                         <textarea
                           value={row.remarks}
-                          onChange={(e) => handleFieldChange(row.itemId, 'remarks', e.target.value)}
+                          onChange={(e) =>
+                            handleFieldChange(
+                              row.itemId,
+                              'remarks',
+                              e.target.value
+                            )
+                          }
                           placeholder="Add remarks..."
                           rows={2}
                           className="w-full px-3 py-2 text-[13px] bg-white border border-gray-300 rounded-lg focus:outline-none focus:border-[#0F7B45] focus:ring-2 focus:ring-[#0F7B45]/20 resize-none"
@@ -357,7 +421,9 @@ export function BulkMultiStageUpdateModal({
               className="inline-flex items-center gap-2 h-10 px-5 rounded-xl bg-[#0F7B45] text-white text-[13px] font-semibold hover:bg-[#0A5C34] transition-colors disabled:opacity-60"
             >
               {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
-              {submitting ? 'Updating...' : `Update ${selectedItems.length} ${selectedItems.length === 1 ? 'Item' : 'Items'}`}
+              {submitting
+                ? 'Updating...'
+                : `Update ${selectedItems.length} ${selectedItems.length === 1 ? 'Item' : 'Items'}`}
             </button>
           </div>
         </div>

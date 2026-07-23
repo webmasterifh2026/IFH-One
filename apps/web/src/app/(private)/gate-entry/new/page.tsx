@@ -33,7 +33,9 @@ export default function NewGateEntryPage() {
       const result = await searchPO(poQuery.trim());
       setPoResult(result);
       const initialQty: Record<string, string> = {};
-      result.items.forEach((i) => { initialQty[i.id] = ''; });
+      result.items.forEach((i) => {
+        initialQty[i.id] = '';
+      });
       setSelectedQty(initialQty);
     } catch (err: any) {
       setError(err.message || 'PO not found');
@@ -48,12 +50,27 @@ export default function NewGateEntryPage() {
 
     const items = Object.entries(selectedQty)
       .filter(([, qty]) => qty && Number(qty) > 0)
-      .map(([procurementItemId, qty]) => ({ procurementItemId, declaredQty: Number(qty) }));
+      .map(([procurementItemId, qty]) => ({
+        procurementItemId,
+        declaredQty: Number(qty),
+      }));
 
-    if (!vehicleNumber.trim()) { setError('Vehicle number is mandatory.'); return; }
-    if (items.length === 0) { setError('Select at least one item with a declared quantity.'); return; }
-    if (invoiceFiles.length === 0) { setError('Invoice photo(s) are mandatory.'); return; }
-    if (materialFiles.length === 0) { setError('Material photo(s) are mandatory.'); return; }
+    if (!vehicleNumber.trim()) {
+      setError('Vehicle number is mandatory.');
+      return;
+    }
+    if (items.length === 0) {
+      setError('Select at least one item with a declared quantity.');
+      return;
+    }
+    if (invoiceFiles.length === 0) {
+      setError('Invoice photo(s) are mandatory.');
+      return;
+    }
+    if (materialFiles.length === 0) {
+      setError('Material photo(s) are mandatory.');
+      return;
+    }
 
     setSubmitting(true);
     try {
@@ -86,7 +103,15 @@ export default function NewGateEntryPage() {
       />
 
       <div className="ifh-card" style={{ padding: 20, marginBottom: 20 }}>
-        <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', display: 'block', marginBottom: 6 }}>
+        <label
+          style={{
+            fontSize: 12,
+            fontWeight: 600,
+            color: 'var(--text-muted)',
+            display: 'block',
+            marginBottom: 6,
+          }}
+        >
           PO / Indent Reference Number
         </label>
         <div style={{ display: 'flex', gap: 10 }}>
@@ -95,12 +120,27 @@ export default function NewGateEntryPage() {
             onChange={(e) => setPoQuery(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
             placeholder="e.g. IND-2026-0123"
-            style={{ flex: 1, padding: '10px 12px', border: '1px solid var(--border)', borderRadius: 8, fontSize: 14 }}
+            style={{
+              flex: 1,
+              padding: '10px 12px',
+              border: '1px solid var(--border)',
+              borderRadius: 8,
+              fontSize: 14,
+            }}
           />
           <button
             onClick={handleSearch}
             disabled={searching}
-            style={{ padding: '10px 20px', background: 'var(--primary)', color: '#fff', border: 'none', borderRadius: 8, fontWeight: 600, fontSize: 13, cursor: 'pointer' }}
+            style={{
+              padding: '10px 20px',
+              background: 'var(--primary)',
+              color: '#fff',
+              border: 'none',
+              borderRadius: 8,
+              fontWeight: 600,
+              fontSize: 13,
+              cursor: 'pointer',
+            }}
           >
             {searching ? 'Searching…' : 'Fetch Details'}
           </button>
@@ -108,23 +148,67 @@ export default function NewGateEntryPage() {
       </div>
 
       {error && (
-        <div style={{ padding: '12px 16px', background: '#FEF2F2', border: '1px solid #FCA5A5', color: '#B91C1C', borderRadius: 8, marginBottom: 20, fontSize: 13 }}>
+        <div
+          style={{
+            padding: '12px 16px',
+            background: '#FEF2F2',
+            border: '1px solid #FCA5A5',
+            color: '#B91C1C',
+            borderRadius: 8,
+            marginBottom: 20,
+            fontSize: 13,
+          }}
+        >
           {error}
         </div>
       )}
 
       {poResult && (
         <div className="ifh-card" style={{ padding: 20, marginBottom: 20 }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 20, fontSize: 13 }}>
-            <div><span style={{ color: 'var(--text-muted)' }}>PO Reference</span><div style={{ fontWeight: 600 }}>{poResult.referenceNo}</div></div>
-            <div><span style={{ color: 'var(--text-muted)' }}>Project</span><div style={{ fontWeight: 600 }}>{poResult.projectName || '—'}</div></div>
-            <div><span style={{ color: 'var(--text-muted)' }}>Vendor</span><div style={{ fontWeight: 600 }}>{poResult.vendorName || '—'}</div></div>
-            <div><span style={{ color: 'var(--text-muted)' }}>Status</span><div style={{ fontWeight: 600 }}>{poResult.status}</div></div>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(4, 1fr)',
+              gap: 16,
+              marginBottom: 20,
+              fontSize: 13,
+            }}
+          >
+            <div>
+              <span style={{ color: 'var(--text-muted)' }}>PO Reference</span>
+              <div style={{ fontWeight: 600 }}>{poResult.referenceNo}</div>
+            </div>
+            <div>
+              <span style={{ color: 'var(--text-muted)' }}>Project</span>
+              <div style={{ fontWeight: 600 }}>
+                {poResult.projectName || '—'}
+              </div>
+            </div>
+            <div>
+              <span style={{ color: 'var(--text-muted)' }}>Vendor</span>
+              <div style={{ fontWeight: 600 }}>
+                {poResult.vendorName || '—'}
+              </div>
+            </div>
+            <div>
+              <span style={{ color: 'var(--text-muted)' }}>Status</span>
+              <div style={{ fontWeight: 600 }}>{poResult.status}</div>
+            </div>
           </div>
 
           {poResult.fullyReceived ? (
-            <div style={{ padding: 16, background: '#F0FDF4', border: '1px solid #86EFAC', borderRadius: 8, color: '#166534', fontSize: 13 }}>
-              This PO has been fully received. No further gate entries are needed.
+            <div
+              style={{
+                padding: 16,
+                background: '#F0FDF4',
+                border: '1px solid #86EFAC',
+                borderRadius: 8,
+                color: '#166534',
+                fontSize: 13,
+              }}
+            >
+              This PO has been fully received. No further gate entries are
+              needed.
             </div>
           ) : (
             <>
@@ -139,16 +223,37 @@ export default function NewGateEntryPage() {
                       <th style={{ textAlign: 'right' }}>Ordered</th>
                       <th style={{ textAlign: 'right' }}>Received</th>
                       <th style={{ textAlign: 'right' }}>Remaining</th>
-                      <th style={{ textAlign: 'right' }}>Declared Qty (This Entry)</th>
+                      <th style={{ textAlign: 'right' }}>
+                        Declared Qty (This Entry)
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
                     {poResult.items.map((item) => (
                       <tr key={item.id}>
-                        <td>{item.itemName} {item.itemCode ? <span style={{ color: 'var(--text-muted)' }}>({item.itemCode})</span> : null}</td>
-                        <td style={{ textAlign: 'right' }}>{item.orderedQty}</td>
-                        <td style={{ textAlign: 'right' }}>{item.receivedQty}</td>
-                        <td style={{ textAlign: 'right', fontWeight: 700, color: 'var(--primary)' }}>{item.remainingQty}</td>
+                        <td>
+                          {item.itemName}{' '}
+                          {item.itemCode ? (
+                            <span style={{ color: 'var(--text-muted)' }}>
+                              ({item.itemCode})
+                            </span>
+                          ) : null}
+                        </td>
+                        <td style={{ textAlign: 'right' }}>
+                          {item.orderedQty}
+                        </td>
+                        <td style={{ textAlign: 'right' }}>
+                          {item.receivedQty}
+                        </td>
+                        <td
+                          style={{
+                            textAlign: 'right',
+                            fontWeight: 700,
+                            color: 'var(--primary)',
+                          }}
+                        >
+                          {item.remainingQty}
+                        </td>
                         <td style={{ textAlign: 'right' }}>
                           <input
                             type="number"
@@ -156,8 +261,19 @@ export default function NewGateEntryPage() {
                             max={item.remainingQty}
                             step="0.001"
                             value={selectedQty[item.id] || ''}
-                            onChange={(e) => setSelectedQty((prev) => ({ ...prev, [item.id]: e.target.value }))}
-                            style={{ width: 110, padding: '6px 8px', border: '1px solid var(--border)', borderRadius: 6, textAlign: 'right' }}
+                            onChange={(e) =>
+                              setSelectedQty((prev) => ({
+                                ...prev,
+                                [item.id]: e.target.value,
+                              }))
+                            }
+                            style={{
+                              width: 110,
+                              padding: '6px 8px',
+                              border: '1px solid var(--border)',
+                              borderRadius: 6,
+                              textAlign: 'right',
+                            }}
                           />
                         </td>
                       </tr>
@@ -166,45 +282,111 @@ export default function NewGateEntryPage() {
                 </table>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 16, marginBottom: 20 }}>
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1fr',
+                  gap: 16,
+                  marginBottom: 20,
+                }}
+              >
                 <div>
-                  <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', display: 'block', marginBottom: 6 }}>
+                  <label
+                    style={{
+                      fontSize: 12,
+                      fontWeight: 600,
+                      color: 'var(--text-muted)',
+                      display: 'block',
+                      marginBottom: 6,
+                    }}
+                  >
                     Vehicle Number <span style={{ color: '#DC2626' }}>*</span>
                   </label>
                   <input
                     value={vehicleNumber}
                     onChange={(e) => setVehicleNumber(e.target.value)}
                     placeholder="e.g. RJ14AB1234"
-                    style={{ width: '100%', maxWidth: 300, padding: '10px 12px', border: '1px solid var(--border)', borderRadius: 8, fontSize: 14 }}
+                    style={{
+                      width: '100%',
+                      maxWidth: 300,
+                      padding: '10px 12px',
+                      border: '1px solid var(--border)',
+                      borderRadius: 8,
+                      fontSize: 14,
+                    }}
                   />
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: '1fr 1fr',
+                    gap: 16,
+                  }}
+                >
                   <div>
-                    <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', display: 'block', marginBottom: 6 }}>
-                      Invoice Photo(s) <span style={{ color: '#DC2626' }}>*</span>
+                    <label
+                      style={{
+                        fontSize: 12,
+                        fontWeight: 600,
+                        color: 'var(--text-muted)',
+                        display: 'block',
+                        marginBottom: 6,
+                      }}
+                    >
+                      Invoice Photo(s){' '}
+                      <span style={{ color: '#DC2626' }}>*</span>
                     </label>
                     <input
                       type="file"
                       multiple
                       accept="image/*,application/pdf"
-                      onChange={(e) => setInvoiceFiles(Array.from(e.target.files || []))}
+                      onChange={(e) =>
+                        setInvoiceFiles(Array.from(e.target.files || []))
+                      }
                     />
                     {invoiceFiles.length > 0 && (
-                      <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>{invoiceFiles.length} file(s) selected</div>
+                      <div
+                        style={{
+                          fontSize: 11,
+                          color: 'var(--text-muted)',
+                          marginTop: 4,
+                        }}
+                      >
+                        {invoiceFiles.length} file(s) selected
+                      </div>
                     )}
                   </div>
                   <div>
-                    <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', display: 'block', marginBottom: 6 }}>
-                      Material Photo(s) <span style={{ color: '#DC2626' }}>*</span>
+                    <label
+                      style={{
+                        fontSize: 12,
+                        fontWeight: 600,
+                        color: 'var(--text-muted)',
+                        display: 'block',
+                        marginBottom: 6,
+                      }}
+                    >
+                      Material Photo(s){' '}
+                      <span style={{ color: '#DC2626' }}>*</span>
                     </label>
                     <input
                       type="file"
                       multiple
                       accept="image/*,application/pdf"
-                      onChange={(e) => setMaterialFiles(Array.from(e.target.files || []))}
+                      onChange={(e) =>
+                        setMaterialFiles(Array.from(e.target.files || []))
+                      }
                     />
                     {materialFiles.length > 0 && (
-                      <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>{materialFiles.length} file(s) selected</div>
+                      <div
+                        style={{
+                          fontSize: 11,
+                          color: 'var(--text-muted)',
+                          marginTop: 4,
+                        }}
+                      >
+                        {materialFiles.length} file(s) selected
+                      </div>
                     )}
                   </div>
                 </div>
@@ -213,7 +395,17 @@ export default function NewGateEntryPage() {
               <button
                 onClick={handleSubmit}
                 disabled={submitting}
-                style={{ width: '100%', padding: '12px', background: '#059669', color: '#fff', border: 'none', borderRadius: 8, fontWeight: 600, fontSize: 14, cursor: 'pointer' }}
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  background: '#059669',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: 8,
+                  fontWeight: 600,
+                  fontSize: 14,
+                  cursor: 'pointer',
+                }}
               >
                 {submitting ? 'Submitting…' : 'Submit Gate Entry'}
               </button>

@@ -1,7 +1,10 @@
 import { apiFetch } from './fetch';
 import { saveAuth, clearAuth, getToken, type AuthUser } from '@/lib/auth';
 
-export async function login(email: string, password: string): Promise<{ user: AuthUser; access_token: string }> {
+export async function login(
+  email: string,
+  password: string
+): Promise<{ user: AuthUser; access_token: string }> {
   const data = await apiFetch('/auth/login', {
     method: 'POST',
     body: JSON.stringify({ email, password }),
@@ -15,7 +18,9 @@ export async function logout() {
   if (token) {
     try {
       await apiFetch('/auth/logout', { method: 'POST' });
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
   }
   clearAuth();
 }
@@ -33,9 +38,15 @@ export async function createUser(data: any) {
 }
 
 export async function updateUser(id: string, data: any) {
-  return apiFetch(`/users/${id}`, { method: 'PATCH', body: JSON.stringify(data) });
+  return apiFetch(`/users/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(data),
+  });
 }
 
 export async function changePassword(id: string, password: string) {
-  return apiFetch(`/users/${id}`, { method: 'PATCH', body: JSON.stringify({ password }) });
+  return apiFetch(`/users/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify({ password }),
+  });
 }

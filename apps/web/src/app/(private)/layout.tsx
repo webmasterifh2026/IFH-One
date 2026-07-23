@@ -11,25 +11,25 @@ export default function PrivateLayout({
 }) {
   return (
     <AuthGuard>
-    <div style={{ minHeight: '100vh', background: 'var(--bg)', display: 'flex' }}>
-      <Sidebar />
-      {/* Main area — offset by sidebar on desktop only */}
       <div
-        className="lg:ml-[268px]"
-        style={{
-          flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '100vh',
-          minWidth: 0,
-        }}
+        style={{ minHeight: '100vh', background: 'var(--bg)', display: 'flex' }}
       >
-        <TopHeader />
-        <main style={{ flex: 1, overflow: 'auto' }}>
-          {children}
-        </main>
+        <Sidebar />
+        {/* Main area — offset by sidebar on desktop only */}
+        <div
+          className="lg:ml-[268px]"
+          style={{
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            minHeight: '100vh',
+            minWidth: 0,
+          }}
+        >
+          <TopHeader />
+          <main style={{ flex: 1, overflow: 'auto' }}>{children}</main>
+        </div>
       </div>
-    </div>
     </AuthGuard>
   );
 }

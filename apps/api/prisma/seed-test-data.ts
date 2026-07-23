@@ -30,7 +30,8 @@ async function main() {
       vendorName: 'Acme Supplies Ltd',
       email: '29x.aditya@gmail.com',
       phone: '+91-9876543210',
-      address: '123 Tech Park, Mumbai, MH, India, GST: 27AADCB2230M1Z4, PAN: AADCB2230M',
+      address:
+        '123 Tech Park, Mumbai, MH, India, GST: 27AADCB2230M1Z4, PAN: AADCB2230M',
       status: 'ACTIVE',
     },
     {
@@ -38,7 +39,8 @@ async function main() {
       vendorName: 'Global Hardware Co',
       email: '29x.aditya@gmail.com',
       phone: '+91-9876543211',
-      address: '45 Industrial Estate, Delhi, DL, India, GST: 07AAECE1234B1Z5, PAN: AAECE1234B',
+      address:
+        '45 Industrial Estate, Delhi, DL, India, GST: 07AAECE1234B1Z5, PAN: AAECE1234B',
       status: 'ACTIVE',
     },
     {
@@ -46,7 +48,8 @@ async function main() {
       vendorName: 'Prime Electronics',
       email: '29x.aditya@gmail.com',
       phone: '+91-9876543212',
-      address: '78 Silicon Valley, Bangalore, KA, India, GST: 29AABCP9876C1Z6, PAN: AABCP9876C',
+      address:
+        '78 Silicon Valley, Bangalore, KA, India, GST: 29AABCP9876C1Z6, PAN: AABCP9876C',
       status: 'ACTIVE',
     },
     {
@@ -54,7 +57,8 @@ async function main() {
       vendorName: 'BuildWell Materials',
       email: '29x.aditya@gmail.com',
       phone: '+91-9876543213',
-      address: '90 Builders Lane, Chennai, TN, India, GST: 33AABCD5678E1Z7, PAN: AABCD5678E',
+      address:
+        '90 Builders Lane, Chennai, TN, India, GST: 33AABCD5678E1Z7, PAN: AABCD5678E',
       status: 'ACTIVE',
     },
     {
@@ -62,7 +66,8 @@ async function main() {
       vendorName: 'Eco Power Solutions',
       email: '29x.aditya@gmail.com',
       phone: '+91-9876543214',
-      address: '12 Green Avenue, Pune, MH, India, GST: 27AABCE4321F1Z8, PAN: AABCE4321F',
+      address:
+        '12 Green Avenue, Pune, MH, India, GST: 27AABCE4321F1Z8, PAN: AABCE4321F',
       status: 'ACTIVE',
     },
   ];
@@ -80,7 +85,8 @@ async function main() {
   const items = [
     {
       itemCode: 'ITM-001',
-      description: 'Portland Cement Grade 53 - 50kg Bag (HSN: 2523, Rate: 350, GST: 28%)',
+      description:
+        'Portland Cement Grade 53 - 50kg Bag (HSN: 2523, Rate: 350, GST: 28%)',
       category: 'CIVIL',
       subGroup: 'CEMENT',
       uom: 'Bags',

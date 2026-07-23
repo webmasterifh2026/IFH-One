@@ -5,10 +5,25 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';
 import {
-  ArrowLeft, Plus, Trash2, Copy, ChevronDown, ChevronUp,
-  FileText, Package, ClipboardList, FolderOpen, AlertCircle,
-  CheckCircle2, Loader2, Save, X, RotateCcw, Send,
-  Paperclip, Calendar,
+  ArrowLeft,
+  Plus,
+  Trash2,
+  Copy,
+  ChevronDown,
+  ChevronUp,
+  FileText,
+  Package,
+  ClipboardList,
+  FolderOpen,
+  AlertCircle,
+  CheckCircle2,
+  Loader2,
+  Save,
+  X,
+  RotateCcw,
+  Send,
+  Paperclip,
+  Calendar,
 } from 'lucide-react';
 import { createProcurement } from '@/lib/api/procurement';
 import { apiFetch } from '@/lib/api/fetch';
@@ -34,24 +49,40 @@ const SELECT =
   'w-full h-11 px-4 rounded-xl border border-gray-200 bg-white text-[14px] text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#0F7B45]/20 focus:border-[#0F7B45] transition-all appearance-none cursor-pointer';
 
 const LABEL = 'block text-[13px] font-semibold text-gray-700 mb-2';
-const LABEL_OPT = 'block text-[13px] font-semibold text-gray-700 mb-2 after:content-["(optional)"] after:ml-1.5 after:text-[11px] after:font-normal after:text-gray-400';
+const LABEL_OPT =
+  'block text-[13px] font-semibold text-gray-700 mb-2 after:content-["(optional)"] after:ml-1.5 after:text-[11px] after:font-normal after:text-gray-400';
 
 // ─── Static Reference Data ───────────────────────────────────────────────────
 
 const PROJECTS = [
-  { id: 'PROJ-2026-001', name: 'SSPCL Singrauli', sites: ['Singrauli – Unit 1', 'Singrauli – Unit 2'] },
-  { id: 'PROJ-2026-002', name: 'NTPC Vindhyachal', sites: ['Vindhyachal – Stage IV', 'Vindhyachal – Stage V'] },
-  { id: 'PROJ-2026-003', name: 'Adani Mundra', sites: ['Mundra – Boiler Area', 'Mundra – TG Area'] },
-  { id: 'PROJ-2026-004', name: 'CESC Budge Budge', sites: ['Budge Budge – Unit 1'] },
-  { id: 'PROJ-2026-005', name: 'JSW Ratnagiri', sites: ['Ratnagiri – Phase 1', 'Ratnagiri – Phase 2'] },
+  {
+    id: 'PROJ-2026-001',
+    name: 'SSPCL Singrauli',
+    sites: ['Singrauli – Unit 1', 'Singrauli – Unit 2'],
+  },
+  {
+    id: 'PROJ-2026-002',
+    name: 'NTPC Vindhyachal',
+    sites: ['Vindhyachal – Stage IV', 'Vindhyachal – Stage V'],
+  },
+  {
+    id: 'PROJ-2026-003',
+    name: 'Adani Mundra',
+    sites: ['Mundra – Boiler Area', 'Mundra – TG Area'],
+  },
+  {
+    id: 'PROJ-2026-004',
+    name: 'CESC Budge Budge',
+    sites: ['Budge Budge – Unit 1'],
+  },
+  {
+    id: 'PROJ-2026-005',
+    name: 'JSW Ratnagiri',
+    sites: ['Ratnagiri – Phase 1', 'Ratnagiri – Phase 2'],
+  },
 ];
 
-const APPLICATIONS = [
-  'ESP',
-  'Bag Filter',
-  'Process Bag Filter',
-  'NA',
-];
+const APPLICATIONS = ['ESP', 'Bag Filter', 'Process Bag Filter', 'NA'];
 
 const ITEM_TYPES = [
   'Ready-Made',
@@ -62,22 +93,105 @@ const ITEM_TYPES = [
 ];
 
 const UOMS = [
-  'Nos', 'Set', 'Lot', 'KG', 'MT', 'Ton',
-  'MTR', 'RMT', 'SQM', 'CUM', 'LTR',
-  'Pair', 'Box', 'Roll', 'Length', 'Job',
+  'Nos',
+  'Set',
+  'Lot',
+  'KG',
+  'MT',
+  'Ton',
+  'MTR',
+  'RMT',
+  'SQM',
+  'CUM',
+  'LTR',
+  'Pair',
+  'Box',
+  'Roll',
+  'Length',
+  'Job',
 ];
 
 const SKU_MASTER = [
-  { code: 'SKU-EL-001', name: 'Cable Tray — 100mm Wide, 3mm GI', bbu: 'BBU-001', unit: 'Mtr', technicalSpec: '', approvedMakes: '' },
-  { code: 'SKU-EL-002', name: 'Cable Tray — 200mm Wide, 3mm GI', bbu: 'BBU-002', unit: 'Mtr', technicalSpec: '', approvedMakes: '' },
-  { code: 'SKU-MS-001', name: 'MS Plate — IS 2062 Gr E250, 8mm', bbu: 'BBU-010', unit: 'Kg', technicalSpec: '', approvedMakes: '' },
-  { code: 'SKU-MS-002', name: 'MS Plate — IS 2062 Gr E250, 12mm', bbu: 'BBU-011', unit: 'Kg', technicalSpec: '', approvedMakes: '' },
-  { code: 'SKU-PI-001', name: 'ERW Pipe — 2" Sch 40, IS 1239', bbu: 'BBU-020', unit: 'Mtr', technicalSpec: '', approvedMakes: '' },
-  { code: 'SKU-PI-002', name: 'ERW Pipe — 4" Sch 40, IS 1239', bbu: 'BBU-021', unit: 'Mtr', technicalSpec: '', approvedMakes: '' },
-  { code: 'SKU-VL-001', name: 'Gate Valve — 2" PN16 Cast Steel', bbu: 'BBU-030', unit: 'Nos', technicalSpec: '', approvedMakes: '' },
-  { code: 'SKU-VL-002', name: 'Ball Valve — 1" PN40 SS316', bbu: 'BBU-031', unit: 'Nos', technicalSpec: '', approvedMakes: '' },
-  { code: 'SKU-BO-001', name: 'Fastener Set — M16×60 HT Grade 8.8', bbu: 'BBU-040', unit: 'Set', technicalSpec: '', approvedMakes: '' },
-  { code: 'SKU-BO-002', name: 'Fastener Set — M20×80 HT Grade 8.8', bbu: 'BBU-041', unit: 'Set', technicalSpec: '', approvedMakes: '' },
+  {
+    code: 'SKU-EL-001',
+    name: 'Cable Tray — 100mm Wide, 3mm GI',
+    bbu: 'BBU-001',
+    unit: 'Mtr',
+    technicalSpec: '',
+    approvedMakes: '',
+  },
+  {
+    code: 'SKU-EL-002',
+    name: 'Cable Tray — 200mm Wide, 3mm GI',
+    bbu: 'BBU-002',
+    unit: 'Mtr',
+    technicalSpec: '',
+    approvedMakes: '',
+  },
+  {
+    code: 'SKU-MS-001',
+    name: 'MS Plate — IS 2062 Gr E250, 8mm',
+    bbu: 'BBU-010',
+    unit: 'Kg',
+    technicalSpec: '',
+    approvedMakes: '',
+  },
+  {
+    code: 'SKU-MS-002',
+    name: 'MS Plate — IS 2062 Gr E250, 12mm',
+    bbu: 'BBU-011',
+    unit: 'Kg',
+    technicalSpec: '',
+    approvedMakes: '',
+  },
+  {
+    code: 'SKU-PI-001',
+    name: 'ERW Pipe — 2" Sch 40, IS 1239',
+    bbu: 'BBU-020',
+    unit: 'Mtr',
+    technicalSpec: '',
+    approvedMakes: '',
+  },
+  {
+    code: 'SKU-PI-002',
+    name: 'ERW Pipe — 4" Sch 40, IS 1239',
+    bbu: 'BBU-021',
+    unit: 'Mtr',
+    technicalSpec: '',
+    approvedMakes: '',
+  },
+  {
+    code: 'SKU-VL-001',
+    name: 'Gate Valve — 2" PN16 Cast Steel',
+    bbu: 'BBU-030',
+    unit: 'Nos',
+    technicalSpec: '',
+    approvedMakes: '',
+  },
+  {
+    code: 'SKU-VL-002',
+    name: 'Ball Valve — 1" PN40 SS316',
+    bbu: 'BBU-031',
+    unit: 'Nos',
+    technicalSpec: '',
+    approvedMakes: '',
+  },
+  {
+    code: 'SKU-BO-001',
+    name: 'Fastener Set — M16×60 HT Grade 8.8',
+    bbu: 'BBU-040',
+    unit: 'Set',
+    technicalSpec: '',
+    approvedMakes: '',
+  },
+  {
+    code: 'SKU-BO-002',
+    name: 'Fastener Set — M20×80 HT Grade 8.8',
+    bbu: 'BBU-041',
+    unit: 'Set',
+    technicalSpec: '',
+    approvedMakes: '',
+  },
 ];
 
 const CERTIFICATIONS = [
@@ -89,10 +203,7 @@ const CERTIFICATIONS = [
   'NA',
 ];
 
-const MANUALS_OPTIONS = [
-  'Yes',
-  'No',
-];
+const MANUALS_OPTIONS = ['Yes', 'No'];
 
 const WARRANTY_OPTIONS = [
   'Not Applicable',
@@ -103,11 +214,7 @@ const WARRANTY_OPTIONS = [
   '36 Months',
 ];
 
-const GA_OPTIONS = [
-  'Yes',
-  'No',
-];
-
+const GA_OPTIONS = ['Yes', 'No'];
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -153,7 +260,15 @@ const newItemRow = (): ItemRow => ({
 
 // ─── Toast Component ─────────────────────────────────────────────────────────
 
-function Toast({ type, message, onClose }: { type: 'success' | 'error'; message: string; onClose: () => void }) {
+function Toast({
+  type,
+  message,
+  onClose,
+}: {
+  type: 'success' | 'error';
+  message: string;
+  onClose: () => void;
+}) {
   useEffect(() => {
     const t = setTimeout(onClose, 4000);
     return () => clearTimeout(t);
@@ -162,15 +277,17 @@ function Toast({ type, message, onClose }: { type: 'success' | 'error'; message:
   return (
     <div
       className={`fixed bottom-24 right-6 z-50 flex items-center gap-3 px-5 py-3.5 rounded-2xl shadow-lg border text-[14px] font-semibold transition-all
-        ${type === 'success'
-          ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
-          : 'bg-red-50 border-red-200 text-red-800'
+        ${
+          type === 'success'
+            ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
+            : 'bg-red-50 border-red-200 text-red-800'
         }`}
     >
-      {type === 'success'
-        ? <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-        : <AlertCircle className="w-4 h-4 text-red-500 flex-shrink-0" />
-      }
+      {type === 'success' ? (
+        <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+      ) : (
+        <AlertCircle className="w-4 h-4 text-red-500 flex-shrink-0" />
+      )}
       {message}
       <button onClick={onClose} className="ml-2 opacity-60 hover:opacity-100">
         <X className="w-3.5 h-3.5" />
@@ -203,8 +320,12 @@ function SectionHeader({
             Section {number}
           </span>
         </div>
-        <h2 className="text-[16px] font-semibold text-gray-900 leading-tight">{title}</h2>
-        {subtitle && <p className="text-[12px] text-gray-500 mt-0.5">{subtitle}</p>}
+        <h2 className="text-[16px] font-semibold text-gray-900 leading-tight">
+          {title}
+        </h2>
+        {subtitle && (
+          <p className="text-[12px] text-gray-500 mt-0.5">{subtitle}</p>
+        )}
       </div>
     </div>
   );
@@ -254,9 +375,15 @@ function SelectField({
       >
         <option value="">{placeholder}</option>
         {options.map((opt) =>
-          typeof opt === 'string'
-            ? <option key={opt} value={opt}>{opt}</option>
-            : <option key={opt.value} value={opt.value}>{opt.label}</option>
+          typeof opt === 'string' ? (
+            <option key={opt} value={opt}>
+              {opt}
+            </option>
+          ) : (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          )
         )}
       </select>
       <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -264,16 +391,26 @@ function SelectField({
   );
 }
 
-
 // ─── Main Page ───────────────────────────────────────────────────────────────
 
 export default function CreateIndentPage() {
   const router = useRouter();
   const { user: authUser } = useAuth();
-  const sessionUser = { fullName: authUser?.name ?? '', name: authUser?.name ?? '', email: authUser?.email ?? '' };
+  const sessionUser = {
+    fullName: authUser?.name ?? '',
+    name: authUser?.name ?? '',
+    email: authUser?.email ?? '',
+  };
 
   // ── Live projects master (server-side search) ─────────────────────────────
-  const [liveProjects, setLiveProjects] = useState<Array<{ id: number; projectId: string; projectCode: string; projectName: string }>>([]);
+  const [liveProjects, setLiveProjects] = useState<
+    Array<{
+      id: number;
+      projectId: string;
+      projectCode: string;
+      projectName: string;
+    }>
+  >([]);
   const [projectsLoading, setProjectsLoading] = useState(false);
 
   useEffect(() => {
@@ -283,14 +420,16 @@ export default function CreateIndentPage() {
       try {
         setProjectsLoading(true);
         const raw = await apiFetch('/projects?take=25');
-        const arr: any[] = Array.isArray(raw) ? raw : raw?.data ?? [];
+        const arr: any[] = Array.isArray(raw) ? raw : (raw?.data ?? []);
         if (isMounted) {
-          setLiveProjects(arr.map((p: any) => ({
-            id: p.id ?? 0,
-            projectId: p.projectId ?? p.projectCode ?? '',
-            projectCode: p.projectCode ?? p.projectId ?? '',
-            projectName: p.projectName ?? '',
-          })));
+          setLiveProjects(
+            arr.map((p: any) => ({
+              id: p.id ?? 0,
+              projectId: p.projectId ?? p.projectCode ?? '',
+              projectCode: p.projectCode ?? p.projectId ?? '',
+              projectName: p.projectName ?? '',
+            }))
+          );
         }
       } catch (err) {
         console.error('Failed to load projects:', err);
@@ -308,16 +447,18 @@ export default function CreateIndentPage() {
       try {
         setItemsLoading(true);
         const raw = await apiFetch('/skus?take=25');
-        const arr: any[] = Array.isArray(raw) ? raw : raw?.data ?? [];
+        const arr: any[] = Array.isArray(raw) ? raw : (raw?.data ?? []);
         if (isMounted) {
-          setLiveSKUs(arr.map((i: any) => ({
-            id: i.id ?? '',
-            itemCode: i.itemCode ?? '',
-            description: i.description ?? '',
-            uom: i.uom ?? '',
-            category: i.category ?? '',
-            subGroup: i.subGroup ?? '',
-          })));
+          setLiveSKUs(
+            arr.map((i: any) => ({
+              id: i.id ?? '',
+              itemCode: i.itemCode ?? '',
+              description: i.description ?? '',
+              uom: i.uom ?? '',
+              category: i.category ?? '',
+              subGroup: i.subGroup ?? '',
+            }))
+          );
         }
       } catch (err) {
         console.error('Failed to load items:', err);
@@ -334,95 +475,126 @@ export default function CreateIndentPage() {
     loadProjects();
     loadItems();
 
-    return () => { isMounted = false; };
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const searchProjects = useCallback((q: string) => {
     setProjectsLoading(true);
-    const url = q.trim() ? `/projects/search?q=${encodeURIComponent(q)}&limit=25` : '/projects?take=25';
+    const url = q.trim()
+      ? `/projects/search?q=${encodeURIComponent(q)}&limit=25`
+      : '/projects?take=25';
     apiFetch(url)
       .catch(() => [])
       .then((raw: any) => {
-        const arr: any[] = Array.isArray(raw) ? raw : raw?.items ?? raw?.data ?? [];
-        setLiveProjects(arr.map((p: any) => ({
-          id: p.id ?? 0,
-          projectId: p.projectId ?? p.projectCode ?? '',
-          projectCode: p.projectCode ?? p.projectId ?? '',
-          projectName: p.projectName ?? '',
-        })));
+        const arr: any[] = Array.isArray(raw)
+          ? raw
+          : (raw?.items ?? raw?.data ?? []);
+        setLiveProjects(
+          arr.map((p: any) => ({
+            id: p.id ?? 0,
+            projectId: p.projectId ?? p.projectCode ?? '',
+            projectCode: p.projectCode ?? p.projectId ?? '',
+            projectName: p.projectName ?? '',
+          }))
+        );
       })
       .finally(() => setProjectsLoading(false));
   }, []);
 
   // ── Live items master (server-side search) ────────────────────────────────
-  const [liveSKUs, setLiveSKUs] = useState<Array<{ id: string; itemCode: string; description: string; uom: string; category?: string; subGroup?: string }>>([]);
+  const [liveSKUs, setLiveSKUs] = useState<
+    Array<{
+      id: string;
+      itemCode: string;
+      description: string;
+      uom: string;
+      category?: string;
+      subGroup?: string;
+    }>
+  >([]);
   const [itemsLoading, setItemsLoading] = useState(false);
 
   const searchItems = useCallback((q: string) => {
     setItemsLoading(true);
-    const url = q.trim() ? `/skus/search?q=${encodeURIComponent(q)}&limit=25` : '/skus?take=25';
+    const url = q.trim()
+      ? `/skus/search?q=${encodeURIComponent(q)}&limit=25`
+      : '/skus?take=25';
     apiFetch(url)
       .catch(() => [])
       .then((raw: any) => {
-        const arr: any[] = Array.isArray(raw) ? raw : raw?.data ?? [];
-        setLiveSKUs(arr.map((i: any) => ({
-          id: i.id ?? '',
-          itemCode: i.itemCode ?? '',
-          description: i.description ?? '',
-          uom: i.uom ?? '',
-          category: i.category ?? '',
-          subGroup: i.subGroup ?? '',
-        })));
+        const arr: any[] = Array.isArray(raw) ? raw : (raw?.data ?? []);
+        setLiveSKUs(
+          arr.map((i: any) => ({
+            id: i.id ?? '',
+            itemCode: i.itemCode ?? '',
+            description: i.description ?? '',
+            uom: i.uom ?? '',
+            category: i.category ?? '',
+            subGroup: i.subGroup ?? '',
+          }))
+        );
       })
       .finally(() => setItemsLoading(false));
   }, []);
 
-  const projectOptions = liveProjects.map(p => ({
+  const projectOptions = liveProjects.map((p) => ({
     value: p.projectId || p.projectCode,
     label: p.projectId || p.projectCode,
     sublabel: p.projectName,
   }));
 
-  const itemOptions = liveSKUs.map(i => ({
+  const itemOptions = liveSKUs.map((i) => ({
     value: i.itemCode,
     label: i.itemCode,
     sublabel: i.description,
   }));
 
   // ── Section 1 state ───────────────────────────────────────────────────────
-  const [projectId, setProjectId]       = useState('');
-  const [projectName, setProjectName]   = useState('');
-  const [application, setApplication]   = useState('');
-  const [itemType, setItemType]         = useState('');
+  const [projectId, setProjectId] = useState('');
+  const [projectName, setProjectName] = useState('');
+  const [application, setApplication] = useState('');
+  const [itemType, setItemType] = useState('');
   const [indentRemarks, setIndentRemarks] = useState('');
 
   // ── Section 2 state ───────────────────────────────────────────────────────
   const [items, setItems] = useState<ItemRow[]>([newItemRow()]);
 
   // ── Section 3 state ───────────────────────────────────────────────────────
-  const [requiredDate, setRequiredDate]     = useState('');
+  const [requiredDate, setRequiredDate] = useState('');
   const [paintingSpecRemark, setPaintingSpecRemark] = useState('');
-  const [packingReq, setPackingReq]         = useState('');
+  const [packingReq, setPackingReq] = useState('');
 
   // ── Section 4 state ───────────────────────────────────────────────────────
-  const [sec4Open, setSec4Open]             = useState(true);
-  const [certification, setCertification]   = useState('');
-  const [manuals, setManuals]               = useState('');
-  const [warranty, setWarranty]             = useState('');
-  const [ga, setGa]                         = useState('');
+  const [sec4Open, setSec4Open] = useState(true);
+  const [certification, setCertification] = useState('');
+  const [manuals, setManuals] = useState('');
+  const [warranty, setWarranty] = useState('');
+  const [ga, setGa] = useState('');
 
   // ── Form meta state ───────────────────────────────────────────────────────
-  const [errors, setErrors]         = useState<FormErrors>({});
+  const [errors, setErrors] = useState<FormErrors>({});
   const [submitting, setSubmitting] = useState(false);
   const [savingDraft, setSavingDraft] = useState(false);
-  const [isDirty, setIsDirty]       = useState(false);
-  const [toast, setToast]           = useState<{ type: 'success' | 'error'; message: string } | null>(null);
-  const autoSaveRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const [isDirty, setIsDirty] = useState(false);
+  const [toast, setToast] = useState<{
+    type: 'success' | 'error';
+    message: string;
+  } | null>(null);
+  const autoSaveRef = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined
+  );
 
   // Auto-populate project name when project selected
   useEffect(() => {
-    if (!projectId) { setProjectName(''); return; }
-    const proj = liveProjects.find((p) => (p.projectId || p.projectCode) === projectId);
+    if (!projectId) {
+      setProjectName('');
+      return;
+    }
+    const proj = liveProjects.find(
+      (p) => (p.projectId || p.projectCode) === projectId
+    );
     if (proj) {
       setProjectName(proj.projectName);
     }
@@ -437,14 +609,14 @@ export default function CreateIndentPage() {
       if (projectId) {
         try {
           await handleDraftSave(true);
-        } catch { /* silent */ }
+        } catch {
+          /* silent */
+        }
       }
     }, 30000); // 30s debounce
-  }, [projectId]); // eslint-disable-line
+  }, [projectId]);
 
   useEffect(() => () => clearTimeout(autoSaveRef.current), []);
-
-
 
   // Today's date string for min date
   const today = new Date().toISOString().split('T')[0];
@@ -460,22 +632,29 @@ export default function CreateIndentPage() {
         // Auto-populate from SKU
         if (field === 'skuCode') {
           const sku = liveSKUs.find((s) => s.itemCode === value);
-          if (sku) { 
-            updated.itemName = sku.description || ''; 
-            updated.bbuCode = ''; 
-            updated.uom = sku.uom || ''; 
+          if (sku) {
+            updated.itemName = sku.description || '';
+            updated.bbuCode = '';
+            updated.uom = sku.uom || '';
+            updated.technicalSpec = '';
+          } else if (!value) {
+            updated.itemName = '';
+            updated.bbuCode = '';
+            updated.uom = '';
             updated.technicalSpec = '';
           }
-          else if (!value) { updated.itemName = ''; updated.bbuCode = ''; updated.uom = ''; updated.technicalSpec = ''; }
         }
         // Clear error on change
         if (field in updated.errors) delete updated.errors[field as string];
         return updated;
-      }),
+      })
     );
   };
 
-  const addItem = () => { markDirty(); setItems((prev) => [...prev, newItemRow()]); };
+  const addItem = () => {
+    markDirty();
+    setItems((prev) => [...prev, newItemRow()]);
+  };
 
   const removeItem = (id: string) => {
     if (items.length === 1) return;
@@ -488,7 +667,12 @@ export default function CreateIndentPage() {
     setItems((prev) => {
       const idx = prev.findIndex((i) => i.id === id);
       if (idx === -1) return prev;
-      const copy = { ...prev[idx], id: crypto.randomUUID(), attachment: null, errors: {} };
+      const copy = {
+        ...prev[idx],
+        id: crypto.randomUUID(),
+        attachment: null,
+        errors: {},
+      };
       const next = [...prev];
       next.splice(idx + 1, 0, copy);
       return next;
@@ -499,16 +683,18 @@ export default function CreateIndentPage() {
 
   const validate = (): boolean => {
     const e: FormErrors = {};
-    if (!projectId)       e.projectId       = 'Project is required.';
-    if (!application)     e.application     = 'Application is required.';
-    if (!itemType)        e.itemType        = 'Item type is required.';
-    if (!requiredDate)    e.requiredDate    = 'Required date is required.';
-    if (!paintingSpecRemark.trim()) e.paintingSpecRemark = 'Painting specification remark is required.';
-    if (!packingReq.trim())   e.packingRequirement = 'Packing requirement is required.';
-    if (!certification)  e.certification   = 'Certification is required.';
-    if (!manuals)         e.manuals         = 'Manuals selection is required.';
-    if (!warranty)        e.warrantyGuarantee = 'Warranty & Guarantee is required.';
-    if (!ga)              e.ga              = 'GA selection is required.';
+    if (!projectId) e.projectId = 'Project is required.';
+    if (!application) e.application = 'Application is required.';
+    if (!itemType) e.itemType = 'Item type is required.';
+    if (!requiredDate) e.requiredDate = 'Required date is required.';
+    if (!paintingSpecRemark.trim())
+      e.paintingSpecRemark = 'Painting specification remark is required.';
+    if (!packingReq.trim())
+      e.packingRequirement = 'Packing requirement is required.';
+    if (!certification) e.certification = 'Certification is required.';
+    if (!manuals) e.manuals = 'Manuals selection is required.';
+    if (!warranty) e.warrantyGuarantee = 'Warranty & Guarantee is required.';
+    if (!ga) e.ga = 'GA selection is required.';
 
     const validItems = items.filter((i) => i.skuCode || i.itemName.trim());
     if (validItems.length === 0) e.items = 'At least one item is required.';
@@ -518,15 +704,15 @@ export default function CreateIndentPage() {
     setItems((prev) =>
       prev.map((item) => {
         const ie: Record<string, string> = {};
-        if (!item.skuCode)       ie.skuCode  = 'SKU required';
+        if (!item.skuCode) ie.skuCode = 'SKU required';
         const qty = Number(item.qty);
         if (!Number.isFinite(qty) || qty <= 0) ie.qty = 'Qty > 0';
-        if (!item.uom)           ie.uom      = 'UOM required';
+        if (!item.uom) ie.uom = 'UOM required';
         if (!item.technicalSpec.trim()) ie.technicalSpec = 'Required';
         if (!item.approvedMakes.trim()) ie.approvedMakes = 'Required';
         if (Object.keys(ie).length) itemsValid = false;
         return { ...item, errors: ie };
-      }),
+      })
     );
 
     if (!itemsValid) e.items = 'Please fix item validation errors.';
@@ -566,7 +752,9 @@ export default function CreateIndentPage() {
         technicalSpec: item.technicalSpec.trim() || undefined,
         approvedMakes: item.approvedMakes.trim() || undefined,
         attachmentName: item.attachment ? item.attachment.name : undefined,
-        attachmentUrl: item.attachment ? URL.createObjectURL(item.attachment) : undefined,
+        attachmentUrl: item.attachment
+          ? URL.createObjectURL(item.attachment)
+          : undefined,
       })),
   });
 
@@ -581,7 +769,11 @@ export default function CreateIndentPage() {
         setToast({ type: 'success', message: 'Draft saved successfully.' });
       }
     } catch (err: any) {
-      if (!silent) setToast({ type: 'error', message: err.message || 'Failed to save draft.' });
+      if (!silent)
+        setToast({
+          type: 'error',
+          message: err.message || 'Failed to save draft.',
+        });
       throw err;
     } finally {
       if (!silent) setSavingDraft(false);
@@ -592,12 +784,21 @@ export default function CreateIndentPage() {
 
   const handleReset = () => {
     if (isDirty && !confirm('Discard all changes and reset the form?')) return;
-    setProjectId(''); setProjectName('');
-    setApplication(''); setItemType(''); setIndentRemarks('');
+    setProjectId('');
+    setProjectName('');
+    setApplication('');
+    setItemType('');
+    setIndentRemarks('');
     setItems([newItemRow()]);
-    setRequiredDate(''); setPaintingSpecRemark(''); setPackingReq('');
-    setCertification(''); setManuals(''); setWarranty(''); setGa('');
-    setErrors({}); setIsDirty(false);
+    setRequiredDate('');
+    setPaintingSpecRemark('');
+    setPackingReq('');
+    setCertification('');
+    setManuals('');
+    setWarranty('');
+    setGa('');
+    setErrors({});
+    setIsDirty(false);
   };
 
   // ─── Submit ────────────────────────────────────────────────────────────────
@@ -605,7 +806,10 @@ export default function CreateIndentPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) {
-      setToast({ type: 'error', message: 'Please fix the highlighted errors before submitting.' });
+      setToast({
+        type: 'error',
+        message: 'Please fix the highlighted errors before submitting.',
+      });
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
@@ -616,12 +820,14 @@ export default function CreateIndentPage() {
       setToast({ type: 'success', message: 'Indent submitted successfully.' });
       setTimeout(() => router.push(`/procurement/${procurement.id}`), 800);
     } catch (err: any) {
-      setToast({ type: 'error', message: err.message || 'Submission failed. Please try again.' });
+      setToast({
+        type: 'error',
+        message: err.message || 'Submission failed. Please try again.',
+      });
     } finally {
       setSubmitting(false);
     }
   };
-
 
   // ─── Render ─────────────────────────────────────────────────────────────────
 
@@ -659,7 +865,6 @@ export default function CreateIndentPage() {
 
         <form onSubmit={handleSubmit} noValidate>
           <div className="space-y-6">
-
             {/* ══════════════════════════════════════════════════════════
                 SECTION 1 — REQUEST INFORMATION
             ══════════════════════════════════════════════════════════ */}
@@ -672,16 +877,19 @@ export default function CreateIndentPage() {
               />
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5">
-
                 {/* Filled By */}
                 <div>
                   <label className={LABEL}>Filled By</label>
                   <input
                     readOnly
-                    value={sessionUser.fullName || sessionUser.name || 'Loading…'}
+                    value={
+                      sessionUser.fullName || sessionUser.name || 'Loading…'
+                    }
                     className={INPUT_READONLY}
                   />
-                  <p className="text-[11px] text-gray-400 mt-1">Auto-populated from your account.</p>
+                  <p className="text-[11px] text-gray-400 mt-1">
+                    Auto-populated from your account.
+                  </p>
                 </div>
 
                 {/* Email */}
@@ -692,7 +900,9 @@ export default function CreateIndentPage() {
                     value={sessionUser.email || '—'}
                     className={INPUT_READONLY}
                   />
-                  <p className="text-[11px] text-gray-400 mt-1">Auto-populated from your account.</p>
+                  <p className="text-[11px] text-gray-400 mt-1">
+                    Auto-populated from your account.
+                  </p>
                 </div>
 
                 {/* Project ID */}
@@ -702,8 +912,8 @@ export default function CreateIndentPage() {
                   </label>
                   <ProjectSelect
                     value={projectId}
-                    onChange={(v, opt) => { 
-                      markDirty(); 
+                    onChange={(v, opt) => {
+                      markDirty();
                       setProjectId(v);
                       if (opt) setProjectName(opt.projectName);
                     }}
@@ -731,7 +941,10 @@ export default function CreateIndentPage() {
                   </label>
                   <SelectField
                     value={application}
-                    onChange={(v) => { markDirty(); setApplication(v); }}
+                    onChange={(v) => {
+                      markDirty();
+                      setApplication(v);
+                    }}
                     options={APPLICATIONS}
                     placeholder="Select Application"
                     error={errors.application}
@@ -746,7 +959,10 @@ export default function CreateIndentPage() {
                   </label>
                   <SelectField
                     value={itemType}
-                    onChange={(v) => { markDirty(); setItemType(v); }}
+                    onChange={(v) => {
+                      markDirty();
+                      setItemType(v);
+                    }}
                     options={ITEM_TYPES}
                     placeholder="Select Item Type"
                     error={errors.itemType}
@@ -756,21 +972,20 @@ export default function CreateIndentPage() {
 
                 {/* Remarks */}
                 <div className="sm:col-span-2">
-                  <label className={LABEL_OPT}>
-                    Remarks — Indent Raised
-                  </label>
+                  <label className={LABEL_OPT}>Remarks — Indent Raised</label>
                   <textarea
                     value={indentRemarks}
-                    onChange={(e) => { markDirty(); setIndentRemarks(e.target.value); }}
+                    onChange={(e) => {
+                      markDirty();
+                      setIndentRemarks(e.target.value);
+                    }}
                     placeholder="Additional context, urgency notes, or special instructions for this indent…"
                     rows={3}
                     className={TEXTAREA}
                   />
                 </div>
-
               </div>
             </div>
-
 
             {/* ══════════════════════════════════════════════════════════
                 SECTION 2 — ITEM DETAILS
@@ -806,16 +1021,16 @@ export default function CreateIndentPage() {
                   <thead>
                     <tr className="border-b border-gray-200">
                       {[
-                        { label: 'S.No.',           w: 'w-12'   },
-                        { label: 'SKU Code *',      w: 'w-40'   },
-                        { label: 'Item Description', w: 'w-52'  },
-                        { label: 'BBU Code',         w: 'w-28'  },
-                        { label: 'Qty *',            w: 'w-20'  },
-                        { label: 'UOM *',            w: 'w-28'  },
-                        { label: 'Technical Spec *', w: 'w-44'  },
-                        { label: 'Approved Makes *', w: 'w-36'  },
-                        { label: 'Attachment',       w: 'w-28'  },
-                        { label: 'Action',           w: 'w-24'  },
+                        { label: 'S.No.', w: 'w-12' },
+                        { label: 'SKU Code *', w: 'w-40' },
+                        { label: 'Item Description', w: 'w-52' },
+                        { label: 'BBU Code', w: 'w-28' },
+                        { label: 'Qty *', w: 'w-20' },
+                        { label: 'UOM *', w: 'w-28' },
+                        { label: 'Technical Spec *', w: 'w-44' },
+                        { label: 'Approved Makes *', w: 'w-36' },
+                        { label: 'Attachment', w: 'w-28' },
+                        { label: 'Action', w: 'w-24' },
                       ].map((col) => (
                         <th
                           key={col.label}
@@ -861,7 +1076,6 @@ export default function CreateIndentPage() {
               </div>
             </div>
 
-
             {/* ══════════════════════════════════════════════════════════
                 SECTION 3 — PROCUREMENT REQUIREMENTS
             ══════════════════════════════════════════════════════════ */}
@@ -874,11 +1088,11 @@ export default function CreateIndentPage() {
               />
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5">
-
                 {/* Required Date */}
                 <div className="sm:col-span-2">
                   <label className={LABEL}>
-                    Required Date (for all items) <span className="text-red-500">*</span>
+                    Required Date (for all items){' '}
+                    <span className="text-red-500">*</span>
                   </label>
                   <div className="relative max-w-xs">
                     <Calendar className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
@@ -886,16 +1100,23 @@ export default function CreateIndentPage() {
                       type="date"
                       value={requiredDate}
                       min={today}
-                      onChange={(e) => { markDirty(); setRequiredDate(e.target.value); }}
+                      onChange={(e) => {
+                        markDirty();
+                        setRequiredDate(e.target.value);
+                      }}
                       className={`pl-10 pr-4 ${errors.requiredDate ? INPUT_ERROR : INPUT}`}
                     />
                   </div>
                   {requiredDate && (
                     <p className="text-[12px] text-gray-500 mt-1 font-medium">
                       Required Date:{' '}
-                      {new Date(requiredDate).toLocaleDateString('en-IN', {
-                        day: '2-digit', month: '2-digit', year: 'numeric',
-                      }).replace(/\//g, '-')}
+                      {new Date(requiredDate)
+                        .toLocaleDateString('en-IN', {
+                          day: '2-digit',
+                          month: '2-digit',
+                          year: 'numeric',
+                        })
+                        .replace(/\//g, '-')}
                     </p>
                   )}
                   <FieldError message={errors.requiredDate} />
@@ -904,11 +1125,15 @@ export default function CreateIndentPage() {
                 {/* Painting Specification Remark */}
                 <div>
                   <label className={LABEL}>
-                    Painting Specification Remark <span className="text-red-500">*</span>
+                    Painting Specification Remark{' '}
+                    <span className="text-red-500">*</span>
                   </label>
                   <textarea
                     value={paintingSpecRemark}
-                    onChange={(e) => { markDirty(); setPaintingSpecRemark(e.target.value); }}
+                    onChange={(e) => {
+                      markDirty();
+                      setPaintingSpecRemark(e.target.value);
+                    }}
                     placeholder="e.g., 2 coats Epoxy Primer + 1 coat Enamel finish, DFT 100 microns…"
                     rows={4}
                     className={`${TEXTAREA} ${errors.paintingSpecRemark ? 'border-red-300 focus:ring-red-200 focus:border-red-400' : ''}`}
@@ -923,14 +1148,16 @@ export default function CreateIndentPage() {
                   </label>
                   <textarea
                     value={packingReq}
-                    onChange={(e) => { markDirty(); setPackingReq(e.target.value); }}
+                    onChange={(e) => {
+                      markDirty();
+                      setPackingReq(e.target.value);
+                    }}
                     placeholder="e.g., Export-grade wooden crate, moisture-proof lining, fumigation certificate required…"
                     rows={4}
                     className={`${TEXTAREA} ${errors.packingRequirement ? 'border-red-300 focus:ring-red-200 focus:border-red-400' : ''}`}
                   />
                   <FieldError message={errors.packingRequirement} />
                 </div>
-
               </div>
             </div>
 
@@ -950,27 +1177,33 @@ export default function CreateIndentPage() {
                   </div>
                   <div className="text-left">
                     <div className="flex items-center gap-2">
-                      <span className="text-[11px] font-bold uppercase tracking-[0.15em] text-[#0F7B45]">Section 4</span>
+                      <span className="text-[11px] font-bold uppercase tracking-[0.15em] text-[#0F7B45]">
+                        Section 4
+                      </span>
                     </div>
-                    <p className="text-[16px] font-semibold text-gray-900">Document Requirements</p>
-                    <p className="text-[12px] text-gray-500 mt-0.5">Certificates, manuals, warranty and drawing requirements.</p>
+                    <p className="text-[16px] font-semibold text-gray-900">
+                      Document Requirements
+                    </p>
+                    <p className="text-[12px] text-gray-500 mt-0.5">
+                      Certificates, manuals, warranty and drawing requirements.
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
                   <span className="text-[12px] font-semibold text-gray-500">
                     {sec4Open ? 'Collapse' : 'Expand'}
                   </span>
-                  {sec4Open
-                    ? <ChevronUp className="w-4 h-4 text-gray-400" />
-                    : <ChevronDown className="w-4 h-4 text-gray-400" />
-                  }
+                  {sec4Open ? (
+                    <ChevronUp className="w-4 h-4 text-gray-400" />
+                  ) : (
+                    <ChevronDown className="w-4 h-4 text-gray-400" />
+                  )}
                 </div>
               </button>
 
               {sec4Open && (
                 <div className="px-8 pb-8 border-t border-gray-100">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5 pt-6">
-
                     {/* Certification */}
                     <div>
                       <label className={LABEL}>
@@ -978,7 +1211,10 @@ export default function CreateIndentPage() {
                       </label>
                       <SelectField
                         value={certification}
-                        onChange={(v) => { markDirty(); setCertification(v); }}
+                        onChange={(v) => {
+                          markDirty();
+                          setCertification(v);
+                        }}
                         options={CERTIFICATIONS}
                         placeholder="Select Certification"
                         error={errors.certification}
@@ -993,7 +1229,10 @@ export default function CreateIndentPage() {
                       </label>
                       <SelectField
                         value={manuals}
-                        onChange={(v) => { markDirty(); setManuals(v); }}
+                        onChange={(v) => {
+                          markDirty();
+                          setManuals(v);
+                        }}
                         options={MANUALS_OPTIONS}
                         placeholder="Select Manual Requirement"
                         error={errors.manuals}
@@ -1004,11 +1243,15 @@ export default function CreateIndentPage() {
                     {/* Warranty & Guarantee */}
                     <div>
                       <label className={LABEL}>
-                        Warranty & Guarantee <span className="text-red-500">*</span>
+                        Warranty & Guarantee{' '}
+                        <span className="text-red-500">*</span>
                       </label>
                       <SelectField
                         value={warranty}
-                        onChange={(v) => { markDirty(); setWarranty(v); }}
+                        onChange={(v) => {
+                          markDirty();
+                          setWarranty(v);
+                        }}
                         options={WARRANTY_OPTIONS}
                         placeholder="Select Warranty Terms"
                         error={errors.warrantyGuarantee}
@@ -1023,23 +1266,24 @@ export default function CreateIndentPage() {
                       </label>
                       <SelectField
                         value={ga}
-                        onChange={(v) => { markDirty(); setGa(v); }}
+                        onChange={(v) => {
+                          markDirty();
+                          setGa(v);
+                        }}
                         options={GA_OPTIONS}
                         placeholder="Select GA Requirement"
                         error={errors.ga}
                       />
                       <FieldError message={errors.ga} />
                     </div>
-
                   </div>
                 </div>
               )}
             </div>
-
-          </div>{/* end space-y-6 */}
+          </div>
+          {/* end space-y-6 */}
         </form>
       </div>
-
 
       {/* ── Sticky Action Bar ─────────────────────────────────────────────── */}
       <div className="fixed bottom-0 left-[260px] right-0 z-40 bg-white border-t border-gray-200 shadow-[0_-4px_16px_0_rgba(0,0,0,0.06)]">
@@ -1071,10 +1315,11 @@ export default function CreateIndentPage() {
               disabled={submitting || savingDraft}
               className="inline-flex items-center gap-2 h-11 px-5 rounded-xl bg-gray-100 border border-gray-200 text-[14px] font-semibold text-gray-700 hover:bg-gray-200 transition-colors disabled:opacity-50"
             >
-              {savingDraft
-                ? <Loader2 className="w-4 h-4 animate-spin" />
-                : <Save className="w-4 h-4" />
-              }
+              {savingDraft ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Save className="w-4 h-4" />
+              )}
               {savingDraft ? 'Saving…' : 'Save Draft'}
             </button>
 
@@ -1085,10 +1330,11 @@ export default function CreateIndentPage() {
               disabled={submitting || savingDraft}
               className="inline-flex items-center gap-2 h-11 px-7 rounded-xl bg-[#0F7B45] text-white text-[14px] font-semibold hover:bg-[#0A5C34] transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
             >
-              {submitting
-                ? <Loader2 className="w-4 h-4 animate-spin" />
-                : <Send className="w-4 h-4" />
-              }
+              {submitting ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Send className="w-4 h-4" />
+              )}
               {submitting ? 'Submitting…' : 'Submit Indent'}
             </button>
           </div>
@@ -1107,17 +1353,29 @@ export default function CreateIndentPage() {
   );
 }
 
-
 // ─── Item Table Row Component ────────────────────────────────────────────────
 
-const ALLOWED_TYPES = ['application/pdf', 'application/msword',
+const ALLOWED_TYPES = [
+  'application/pdf',
+  'application/msword',
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
   'application/vnd.ms-excel',
   'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-  'image/png', 'image/jpeg'];
+  'image/png',
+  'image/jpeg',
+];
 
 function ItemTableRow({
-  item, index, isOnly, onUpdate, onRemove, onDuplicate, skuMaster, itemOptions, itemsLoading, searchItems,
+  item,
+  index,
+  isOnly,
+  onUpdate,
+  onRemove,
+  onDuplicate,
+  skuMaster,
+  itemOptions,
+  itemsLoading,
+  searchItems,
 }: {
   item: ItemRow;
   index: number;
@@ -1125,7 +1383,14 @@ function ItemTableRow({
   onUpdate: (id: string, field: keyof ItemRow, value: any) => void;
   onRemove: (id: string) => void;
   onDuplicate: (id: string) => void;
-  skuMaster: Array<{ id: string; itemCode: string; description: string; uom: string; category?: string; subGroup?: string }>;
+  skuMaster: Array<{
+    id: string;
+    itemCode: string;
+    description: string;
+    uom: string;
+    category?: string;
+    subGroup?: string;
+  }>;
   itemOptions: { value: string; label: string; sublabel: string }[];
   itemsLoading: boolean;
   searchItems: (q: string) => void;
@@ -1136,16 +1401,20 @@ function ItemTableRow({
     'w-full h-9 px-2.5 rounded-lg border text-[13px] text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 transition-all';
 
   const cell = (hasError?: boolean) =>
-    `${cellInput} ${hasError
-      ? 'border-red-300 bg-red-50/30 focus:ring-red-200 focus:border-red-400'
-      : 'border-gray-200 bg-white focus:ring-[#0F7B45]/20 focus:border-[#0F7B45]'
+    `${cellInput} ${
+      hasError
+        ? 'border-red-300 bg-red-50/30 focus:ring-red-200 focus:border-red-400'
+        : 'border-gray-200 bg-white focus:ring-[#0F7B45]/20 focus:border-[#0F7B45]'
     }`;
 
   const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     if (!ALLOWED_TYPES.includes(file.type)) {
-      onUpdate(item.id, 'errors', { ...item.errors, attachment: 'Invalid file type' });
+      onUpdate(item.id, 'errors', {
+        ...item.errors,
+        attachment: 'Invalid file type',
+      });
       return;
     }
     if (file.size > 10 * 1024 * 1024) {
@@ -1157,7 +1426,6 @@ function ItemTableRow({
 
   return (
     <tr className="group border-b border-gray-100 hover:bg-gray-50/40 transition-colors align-top">
-
       {/* S.No. */}
       <td className="px-3 py-3">
         <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-gray-100 text-[11px] font-bold text-gray-500">
@@ -1180,7 +1448,9 @@ function ItemTableRow({
           error={!!item.errors.skuCode}
         />
         {item.errors.skuCode && (
-          <p className="text-[10px] text-red-600 mt-1 font-medium">{item.errors.skuCode}</p>
+          <p className="text-[10px] text-red-600 mt-1 font-medium">
+            {item.errors.skuCode}
+          </p>
         )}
       </td>
 
@@ -1218,7 +1488,9 @@ function ItemTableRow({
           className={cell(!!item.errors.qty)}
         />
         {item.errors.qty && (
-          <p className="text-[10px] text-red-600 mt-1 font-medium">{item.errors.qty}</p>
+          <p className="text-[10px] text-red-600 mt-1 font-medium">
+            {item.errors.qty}
+          </p>
         )}
       </td>
 
@@ -1231,12 +1503,18 @@ function ItemTableRow({
             className={`${cell(!!item.errors.uom)} appearance-none pr-7`}
           >
             <option value="">UOM…</option>
-            {UOMS.map((u) => <option key={u} value={u}>{u}</option>)}
+            {UOMS.map((u) => (
+              <option key={u} value={u}>
+                {u}
+              </option>
+            ))}
           </select>
           <ChevronDown className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-gray-400" />
         </div>
         {item.errors.uom && (
-          <p className="text-[10px] text-red-600 mt-1 font-medium">{item.errors.uom}</p>
+          <p className="text-[10px] text-red-600 mt-1 font-medium">
+            {item.errors.uom}
+          </p>
         )}
       </td>
 
@@ -1247,13 +1525,16 @@ function ItemTableRow({
           onChange={(e) => onUpdate(item.id, 'technicalSpec', e.target.value)}
           placeholder="Technical spec…"
           rows={2}
-          className={`${cellInput} ${item.errors.technicalSpec
-            ? 'border-red-300 bg-red-50/30 focus:ring-red-200 focus:border-red-400'
-            : 'border-gray-200 bg-white focus:ring-[#0F7B45]/20 focus:border-[#0F7B45]'
+          className={`${cellInput} ${
+            item.errors.technicalSpec
+              ? 'border-red-300 bg-red-50/30 focus:ring-red-200 focus:border-red-400'
+              : 'border-gray-200 bg-white focus:ring-[#0F7B45]/20 focus:border-[#0F7B45]'
           } py-2 resize-none min-h-[36px]`}
         />
         {item.errors.technicalSpec && (
-          <p className="text-[10px] text-red-600 mt-0.5 font-medium">{item.errors.technicalSpec}</p>
+          <p className="text-[10px] text-red-600 mt-0.5 font-medium">
+            {item.errors.technicalSpec}
+          </p>
         )}
       </td>
 
@@ -1264,13 +1545,16 @@ function ItemTableRow({
           onChange={(e) => onUpdate(item.id, 'approvedMakes', e.target.value)}
           placeholder="e.g., L&T / Siemens / ABB"
           rows={2}
-          className={`${cellInput} ${item.errors.approvedMakes
-            ? 'border-red-300 bg-red-50/30 focus:ring-red-200 focus:border-red-400'
-            : 'border-gray-200 bg-white focus:ring-[#0F7B45]/20 focus:border-[#0F7B45]'
+          className={`${cellInput} ${
+            item.errors.approvedMakes
+              ? 'border-red-300 bg-red-50/30 focus:ring-red-200 focus:border-red-400'
+              : 'border-gray-200 bg-white focus:ring-[#0F7B45]/20 focus:border-[#0F7B45]'
           } py-2 resize-none min-h-[36px]`}
         />
         {item.errors.approvedMakes && (
-          <p className="text-[10px] text-red-600 mt-0.5 font-medium">{item.errors.approvedMakes}</p>
+          <p className="text-[10px] text-red-600 mt-0.5 font-medium">
+            {item.errors.approvedMakes}
+          </p>
         )}
       </td>
 
@@ -1285,7 +1569,10 @@ function ItemTableRow({
         />
         {item.attachment ? (
           <div className="flex flex-col gap-1">
-            <span className="text-[11px] font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-1 rounded-lg truncate max-w-[90px]" title={item.attachment.name}>
+            <span
+              className="text-[11px] font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-1 rounded-lg truncate max-w-[90px]"
+              title={item.attachment.name}
+            >
               {item.attachment.name}
             </span>
             <button
@@ -1307,7 +1594,9 @@ function ItemTableRow({
           </button>
         )}
         {item.errors.attachment && (
-          <p className="text-[10px] text-red-600 mt-1 font-medium">{item.errors.attachment}</p>
+          <p className="text-[10px] text-red-600 mt-1 font-medium">
+            {item.errors.attachment}
+          </p>
         )}
       </td>
 

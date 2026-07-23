@@ -1,10 +1,10 @@
-import type { Metadata } from "next";
-import "./globals.css";
-import { Providers } from "@/components/providers";
+import type { Metadata } from 'next';
+import './globals.css';
+import { Providers } from '@/components/providers';
 
 export const metadata: Metadata = {
-  title: "IFH One",
-  description: "Enterprise Procurement Management System",
+  title: 'IFH One',
+  description: 'Enterprise Procurement Management System',
 };
 
 export default function RootLayout({

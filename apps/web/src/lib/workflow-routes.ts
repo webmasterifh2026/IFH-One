@@ -1,10 +1,19 @@
 /** Stage-to-route mapping for workflow modules */
-export const WORKFLOW_ROUTES: Record<number, { list: string; detail?: (id: string) => string }> = {
+export const WORKFLOW_ROUTES: Record<
+  number,
+  { list: string; detail?: (id: string) => string }
+> = {
   0: { list: '/indents', detail: (id) => `/procurement/${id}` },
-  1: { list: '/indent-verification', detail: (id) => `/indent-verification/${id}` },
+  1: {
+    list: '/indent-verification',
+    detail: (id) => `/indent-verification/${id}`,
+  },
   2: { list: '/store-check', detail: (id) => `/store-check/${id}` },
   3: { list: '/rfq', detail: (id) => `/procurement/${id}` },
-  4: { list: '/techno-commercial-evaluation', detail: (id) => `/procurement/${id}` },
+  4: {
+    list: '/techno-commercial-evaluation',
+    detail: (id) => `/procurement/${id}`,
+  },
   5: { list: '/negotiation', detail: (id) => `/procurement/${id}` },
   6: { list: '/purchase-orders', detail: (id) => `/procurement/${id}` },
   7: { list: '/po-approval-l1', detail: (id) => `/procurement/${id}` },

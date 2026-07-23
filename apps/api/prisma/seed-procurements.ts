@@ -4,10 +4,14 @@ const prisma = new PrismaClient();
 
 async function main() {
   console.log('Seeding procurement data...');
-  const adminRole = await prisma.role.findFirst({ where: { name: 'SUPER_ADMIN' } });
-  let admin = await prisma.user.findFirst({ where: { userRoles: { some: { roleId: adminRole?.id } } } });
+  const adminRole = await prisma.role.findFirst({
+    where: { name: 'SUPER_ADMIN' },
+  });
+  let admin = await prisma.user.findFirst({
+    where: { userRoles: { some: { roleId: adminRole?.id } } },
+  });
   if (!admin) admin = await prisma.user.findFirst();
-  
+
   if (!admin) {
     console.log('No user found to assign as creator.');
     return;
@@ -22,12 +26,29 @@ async function main() {
   const appTypes = ['Capex', 'Opex', 'Raw Material', 'Consumables', 'Services'];
 
   const stagesDef = [
-    'Indent Creation', 'Indent Verification', 'Store Check', 'RFQ Float',
-    'Techno-Comm Eval', 'Negotiation', 'Purchase Orders', 'PO Approval L1',
-    'PO Approval L2', 'Vendor Acceptance', 'Vendor Follow-Up', 'Material Receipt',
-    'Material Inspection', 'Secondary Inspection', 'Final Inspection', 'Debit Note',
-    'Bill to Accounts', 'Bill to Purchase', 'Bill Creation', 'Tally Entry',
-    'Bill Approval L1', 'Bill Approval L2', 'Payment Advice'
+    'Indent Creation',
+    'Indent Verification',
+    'Store Check',
+    'RFQ Float',
+    'Techno-Comm Eval',
+    'Negotiation',
+    'Purchase Orders',
+    'PO Approval L1',
+    'PO Approval L2',
+    'Vendor Acceptance',
+    'Vendor Follow-Up',
+    'Material Receipt',
+    'Material Inspection',
+    'Secondary Inspection',
+    'Final Inspection',
+    'Debit Note',
+    'Bill to Accounts',
+    'Bill to Purchase',
+    'Bill Creation',
+    'Tally Entry',
+    'Bill Approval L1',
+    'Bill Approval L2',
+    'Payment Advice',
   ];
 
   for (let i = 1; i <= 12; i++) {
@@ -56,10 +77,11 @@ async function main() {
         status: status,
         departmentId: depts.length > 0 ? depts[i % depts.length].id : null,
         vendorId: vendors.length > 0 ? vendors[i % vendors.length].id : null,
-        vendorName: vendors.length > 0 ? vendors[i % vendors.length].vendorName : null,
+        vendorName:
+          vendors.length > 0 ? vendors[i % vendors.length].vendorName : null,
         createdAt: createdAt,
-        updatedAt: new Date()
-      }
+        updatedAt: new Date(),
+      },
     });
 
     // Create 3 items
@@ -69,8 +91,8 @@ async function main() {
           procurementId: p.id,
           itemCode: `ITM-${j}00${i}`,
           itemName: `Industrial Component ${j} - Type ${i}`,
-          quantity: 10 + j * 5
-        }
+          quantity: 10 + j * 5,
+        },
       });
     }
 
@@ -83,11 +105,16 @@ async function main() {
           procurementId: p.id,
           stageNumber: s,
           stageName: stageName,
-          status: isCurrent && (status === 'IN_PROGRESS' || status === 'HOLD') ? 'PENDING' : 'APPROVED',
+          status:
+            isCurrent && (status === 'IN_PROGRESS' || status === 'HOLD')
+              ? 'PENDING'
+              : 'APPROVED',
           startedAt: createdAt,
-          completedAt: isCurrent ? null : new Date(createdAt.getTime() + 1000 * 60 * 60 * s),
-          assignedToId: admin.id
-        }
+          completedAt: isCurrent
+            ? null
+            : new Date(createdAt.getTime() + 1000 * 60 * 60 * s),
+          assignedToId: admin.id,
+        },
       });
 
       // Add history
@@ -99,8 +126,8 @@ async function main() {
             action: 'APPROVED',
             description: `${stageName} approved by System Admin`,
             performedById: admin.id,
-            createdAt: new Date(createdAt.getTime() + 1000 * 60 * 60 * s)
-          }
+            createdAt: new Date(createdAt.getTime() + 1000 * 60 * 60 * s),
+          },
         });
       }
     }
@@ -110,7 +137,7 @@ async function main() {
 }
 
 main()
-  .catch(e => {
+  .catch((e) => {
     console.error(e);
     process.exit(1);
   })

@@ -22,7 +22,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { buildApiUrl } from '@/lib/api/fetch';
 
 const PING_PATH = '/health/ping';
-const RECONNECT_INTERVAL_MS = 8_000;  // probe every 8s when offline
+const RECONNECT_INTERVAL_MS = 8_000; // probe every 8s when offline
 const PING_TIMEOUT_MS = 5_000;
 
 type BackendStatus = {
@@ -36,7 +36,10 @@ async function pingBackend(): Promise<boolean> {
   const controller = new AbortController();
   const tid = setTimeout(() => controller.abort(), PING_TIMEOUT_MS);
   try {
-    const res = await fetch(url, { signal: controller.signal, cache: 'no-store' });
+    const res = await fetch(url, {
+      signal: controller.signal,
+      cache: 'no-store',
+    });
     return res.ok;
   } catch {
     return false;

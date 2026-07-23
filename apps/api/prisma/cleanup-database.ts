@@ -6,14 +6,14 @@
  * - Roles, Permissions (RBAC configuration)
  * - StageConfiguration (workflow configuration)
  * - SystemHealth (system configuration)
- * 
+ *
  * Deletes:
  * - All procurements, RFQs, RFQFloat, TCE, Negotiations
  * - All gate entries, GRNs
  * - All vendors, projects, SKUs, departments
  * - All logs, notifications, sessions
  * - All attachments, history, remarks
- * 
+ *
  * Usage: npx ts-node prisma/cleanup-database.ts
  */
 
@@ -23,15 +23,21 @@ const prisma = new PrismaClient();
 
 async function main() {
   console.log('🧹 Starting Complete Database Cleanup...');
-  console.log('⚠️  This will delete ALL transactional data except Super Admin and RBAC config\n');
+  console.log(
+    '⚠️  This will delete ALL transactional data except Super Admin and RBAC config\n',
+  );
 
   try {
     // Delete in reverse dependency order to avoid FK constraint violations
-    
+
     // 1. RFQ Float Workflow (v2.11.0)
     console.log('📋 Cleaning RFQ Float Workflow...');
-    const rfqFloatActivityLogs = await prisma.rFQFloatActivityLog.deleteMany({});
-    console.log(`  ✅ RFQFloatActivityLog: ${rfqFloatActivityLogs.count} deleted`);
+    const rfqFloatActivityLogs = await prisma.rFQFloatActivityLog.deleteMany(
+      {},
+    );
+    console.log(
+      `  ✅ RFQFloatActivityLog: ${rfqFloatActivityLogs.count} deleted`,
+    );
 
     const rfqFloatEmailLogs = await prisma.rFQFloatEmailLog.deleteMany({});
     console.log(`  ✅ RFQFloatEmailLog: ${rfqFloatEmailLogs.count} deleted`);
@@ -62,11 +68,17 @@ async function main() {
 
     // 2. Vendor RFQ Portal
     console.log('\n📋 Cleaning Vendor RFQ Portal...');
-    const vendorQuotationAttachments = await prisma.vendorQuotationAttachment.deleteMany({});
-    console.log(`  ✅ VendorQuotationAttachment: ${vendorQuotationAttachments.count} deleted`);
+    const vendorQuotationAttachments =
+      await prisma.vendorQuotationAttachment.deleteMany({});
+    console.log(
+      `  ✅ VendorQuotationAttachment: ${vendorQuotationAttachments.count} deleted`,
+    );
 
-    const vendorQuotationLineItems = await prisma.vendorQuotationLineItem.deleteMany({});
-    console.log(`  ✅ VendorQuotationLineItem: ${vendorQuotationLineItems.count} deleted`);
+    const vendorQuotationLineItems =
+      await prisma.vendorQuotationLineItem.deleteMany({});
+    console.log(
+      `  ✅ VendorQuotationLineItem: ${vendorQuotationLineItems.count} deleted`,
+    );
 
     const negotiationRounds = await prisma.negotiationRound.deleteMany({});
     console.log(`  ✅ NegotiationRound: ${negotiationRounds.count} deleted`);
@@ -74,8 +86,12 @@ async function main() {
     const vendorQuotations = await prisma.vendorQuotation.deleteMany({});
     console.log(`  ✅ VendorQuotation: ${vendorQuotations.count} deleted`);
 
-    const vendorFormAccessLogs = await prisma.vendorFormAccessLog.deleteMany({});
-    console.log(`  ✅ VendorFormAccessLog: ${vendorFormAccessLogs.count} deleted`);
+    const vendorFormAccessLogs = await prisma.vendorFormAccessLog.deleteMany(
+      {},
+    );
+    console.log(
+      `  ✅ VendorFormAccessLog: ${vendorFormAccessLogs.count} deleted`,
+    );
 
     const vendorRFQForms = await prisma.vendorRFQForm.deleteMany({});
     console.log(`  ✅ VendorRFQForm: ${vendorRFQForms.count} deleted`);
@@ -106,13 +122,18 @@ async function main() {
     // 4. Procurement Module
     console.log('\n📋 Cleaning Procurement Module...');
     const procurementHistories = await prisma.procurementHistory.deleteMany({});
-    console.log(`  ✅ ProcurementHistory: ${procurementHistories.count} deleted`);
+    console.log(
+      `  ✅ ProcurementHistory: ${procurementHistories.count} deleted`,
+    );
 
     const procurementRemarks = await prisma.procurementRemark.deleteMany({});
     console.log(`  ✅ ProcurementRemark: ${procurementRemarks.count} deleted`);
 
-    const procurementAttachments = await prisma.procurementAttachment.deleteMany({});
-    console.log(`  ✅ ProcurementAttachment: ${procurementAttachments.count} deleted`);
+    const procurementAttachments =
+      await prisma.procurementAttachment.deleteMany({});
+    console.log(
+      `  ✅ ProcurementAttachment: ${procurementAttachments.count} deleted`,
+    );
 
     const emailLogs = await prisma.emailLog.deleteMany({});
     console.log(`  ✅ EmailLog: ${emailLogs.count} deleted`);
@@ -175,7 +196,9 @@ async function main() {
     console.log(`  ✅ SearchAnalytics: ${searchAnalytics.count} deleted`);
 
     const recentlyViewedItems = await prisma.recentlyViewedItem.deleteMany({});
-    console.log(`  ✅ RecentlyViewedItem: ${recentlyViewedItems.count} deleted`);
+    console.log(
+      `  ✅ RecentlyViewedItem: ${recentlyViewedItems.count} deleted`,
+    );
 
     const importHistories = await prisma.importHistory.deleteMany({});
     console.log(`  ✅ ImportHistory: ${importHistories.count} deleted`);
@@ -190,20 +213,22 @@ async function main() {
     console.log(`  ✅ Session: ${sessions.count} deleted`);
 
     const passwordResetTokens = await prisma.passwordResetToken.deleteMany({});
-    console.log(`  ✅ PasswordResetToken: ${passwordResetTokens.count} deleted`);
+    console.log(
+      `  ✅ PasswordResetToken: ${passwordResetTokens.count} deleted`,
+    );
 
     // 8. Delete all users except Super Admin
     console.log('\n📋 Cleaning Users (keeping Super Admin)...');
-    
+
     // First, delete all user roles for non-super-admin users
     const userRoles = await prisma.userRole.deleteMany({
       where: {
         user: {
           email: {
-            not: 'admin@if-himenviro.in'
-          }
-        }
-      }
+            not: 'admin@if-himenviro.in',
+          },
+        },
+      },
     });
     console.log(`  ✅ UserRole: ${userRoles.count} deleted`);
 
@@ -211,9 +236,9 @@ async function main() {
     const users = await prisma.user.deleteMany({
       where: {
         email: {
-          not: 'admin@if-himenviro.in'
-        }
-      }
+          not: 'admin@if-himenviro.in',
+        },
+      },
     });
     console.log(`  ✅ User: ${users.count} deleted (Super Admin preserved)`);
 
@@ -233,18 +258,20 @@ async function main() {
               include: {
                 rolePermissions: {
                   include: {
-                    permission: true
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
+                    permission: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     });
 
     if (superAdmin) {
-      console.log(`  ✅ Super Admin found: ${superAdmin.fullName} (${superAdmin.email})`);
+      console.log(
+        `  ✅ Super Admin found: ${superAdmin.fullName} (${superAdmin.email})`,
+      );
       console.log(`  ✅ User Roles: ${superAdmin.userRoles.length}`);
       console.log(`  ✅ Status: ${superAdmin.status}`);
     } else {
@@ -254,7 +281,7 @@ async function main() {
     const roleCount = await prisma.role.count();
     const permissionCount = await prisma.permission.count();
     const stageConfigCount = await prisma.stageConfiguration.count();
-    
+
     console.log(`  ✅ Roles: ${roleCount}`);
     console.log(`  ✅ Permissions: ${permissionCount}`);
     console.log(`  ✅ Stage Configurations: ${stageConfigCount}`);
@@ -289,7 +316,6 @@ async function main() {
     console.log('   - Super Admin account preserved');
     console.log('   - RBAC configuration preserved');
     console.log('   - Database ready for fresh testing');
-
   } catch (error) {
     console.error('\n❌ Error during cleanup:', error);
     process.exit(1);
@@ -301,7 +327,7 @@ async function main() {
 async function resetSequences() {
   // Reset sequences for tables with serial/uuid columns
   // Note: UUIDs don't need sequence reset, but if there are any serial columns, reset them here
-  
+
   const sequences = [
     'procurement_reference_no_seq',
     'rfq_rfq_number_seq',
@@ -312,7 +338,9 @@ async function resetSequences() {
 
   for (const seq of sequences) {
     try {
-      await prisma.$executeRawUnsafe(`ALTER SEQUENCE IF EXISTS ${seq} RESTART WITH 1`);
+      await prisma.$executeRawUnsafe(
+        `ALTER SEQUENCE IF EXISTS ${seq} RESTART WITH 1`,
+      );
     } catch (error) {
       // Sequence might not exist, that's okay
     }

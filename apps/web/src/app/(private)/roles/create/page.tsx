@@ -27,7 +27,11 @@ export default function CreateRolePage() {
     try {
       await apiFetch('/roles', {
         method: 'POST',
-        body: JSON.stringify({ name: name.trim().toUpperCase(), description: description.trim(), status }),
+        body: JSON.stringify({
+          name: name.trim().toUpperCase(),
+          description: description.trim(),
+          status,
+        }),
       });
 
       router.push('/roles');
@@ -56,7 +60,8 @@ export default function CreateRolePage() {
             Create New Role
           </h1>
           <p className="text-[15px] text-gray-500 mt-1.5 font-medium">
-            Define a new role with a name and description. You can assign permissions after creation.
+            Define a new role with a name and description. You can assign
+            permissions after creation.
           </p>
         </div>
 
@@ -71,7 +76,9 @@ export default function CreateRolePage() {
 
             {/* Role Name */}
             <div>
-              <label className="block text-[13px] font-semibold text-gray-700 mb-2">Role Name</label>
+              <label className="block text-[13px] font-semibold text-gray-700 mb-2">
+                Role Name
+              </label>
               <input
                 type="text"
                 value={name}
@@ -80,13 +87,16 @@ export default function CreateRolePage() {
                 className="w-full h-11 px-4 rounded-xl border border-gray-200 bg-white text-[14px] text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0F7B45]/20 focus:border-[#0F7B45] transition-all"
               />
               <p className="text-[12px] text-gray-400 mt-1.5">
-                Will be converted to uppercase. Must be unique across the system.
+                Will be converted to uppercase. Must be unique across the
+                system.
               </p>
             </div>
 
             {/* Description */}
             <div>
-              <label className="block text-[13px] font-semibold text-gray-700 mb-2">Description</label>
+              <label className="block text-[13px] font-semibold text-gray-700 mb-2">
+                Description
+              </label>
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
@@ -98,7 +108,9 @@ export default function CreateRolePage() {
 
             {/* Status */}
             <div>
-              <label className="block text-[13px] font-semibold text-gray-700 mb-2">Status</label>
+              <label className="block text-[13px] font-semibold text-gray-700 mb-2">
+                Status
+              </label>
               <select
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}

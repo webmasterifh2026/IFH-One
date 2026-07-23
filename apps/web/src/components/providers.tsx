@@ -17,9 +17,9 @@ function makeQueryClient() {
   return new QueryClient({
     defaultOptions: {
       queries: {
-        staleTime: 5 * 60_000,       // 5 min default
-        gcTime: 10 * 60_000,         // 10 min cache retention
-        retry: 2,                    // 2 retries (overridden per-query in useQueries.ts)
+        staleTime: 5 * 60_000, // 5 min default
+        gcTime: 10 * 60_000, // 10 min cache retention
+        retry: 2, // 2 retries (overridden per-query in useQueries.ts)
         retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10_000), // 1s, 2s, 4s… cap 10s
         refetchOnWindowFocus: false, // don't refetch on tab switch
       },

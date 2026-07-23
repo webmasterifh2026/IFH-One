@@ -37,22 +37,30 @@ const log = new Logger('QA-Seed');
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 async function delay(ms: number) {
-  return new Promise(r => setTimeout(r, ms));
+  return new Promise((r) => setTimeout(r, ms));
 }
 
-async function getUserId(prisma: PrismaService, email: string): Promise<string> {
-  const user = await prisma.user.findUnique({ where: { email }, select: { id: true } });
+async function getUserId(
+  prisma: PrismaService,
+  email: string,
+): Promise<string> {
+  const user = await prisma.user.findUnique({
+    where: { email },
+    select: { id: true },
+  });
   if (!user) throw new Error(`User not found: ${email}`);
   return user.id;
 }
 
-async function getProjectId(prisma: PrismaService): Promise<{ id: string; name: string }> {
+async function getProjectId(
+  prisma: PrismaService,
+): Promise<{ id: string; name: string }> {
   // Projects live in a raw pg table `projects_db`, not a Prisma model.
   // Use a raw query via PrismaService.$queryRawUnsafe.
   try {
-    const rows = await (prisma as any).$queryRawUnsafe(
+    const rows = (await (prisma as any).$queryRawUnsafe(
       'SELECT project_id_, project_name FROM projects_db ORDER BY project_name ASC LIMIT 1',
-    ) as Array<{ project_id_: string; project_name: string }>;
+    )) as Array<{ project_id_: string; project_name: string }>;
 
     if (rows && rows.length > 0) {
       return { id: rows[0].project_id_, name: rows[0].project_name };
@@ -75,7 +83,10 @@ async function getProjectId(prisma: PrismaService): Promise<{ id: string; name: 
   return { id: 'IFH-QA-2026', name: 'IFH QA Test Project 2026' };
 }
 
-async function getVendor(prisma: PrismaService, idx: number): Promise<{ vendorId?: string; vendorName: string }> {
+async function getVendor(
+  prisma: PrismaService,
+  idx: number,
+): Promise<{ vendorId?: string; vendorName: string }> {
   try {
     const vendor = await prisma.vendor.findFirst({
       where: { status: 'ACTIVE' },
@@ -83,7 +94,9 @@ async function getVendor(prisma: PrismaService, idx: number): Promise<{ vendorId
       orderBy: { vendorName: 'asc' },
     });
     if (vendor) return { vendorId: vendor.id, vendorName: vendor.vendorName };
-  } catch { /* fall through */ }
+  } catch {
+    /* fall through */
+  }
   return {
     vendorName: [
       'Tata Steel Supplies Pvt Ltd',
@@ -108,17 +121,27 @@ async function action(
     metadata?: Record<string, any>;
   } = {},
 ) {
-  await svc.stageAction(id, {
-    action: act,
-    remarks: opts.remarks,
-    vendorId: opts.vendorId,
-    vendorName: opts.vendorName,
-    assignedToId: opts.assignedToId,
-    metadata: opts.metadata,
-  }, userId);
+  await svc.stageAction(
+    id,
+    {
+      action: act,
+      remarks: opts.remarks,
+      vendorId: opts.vendorId,
+      vendorName: opts.vendorName,
+      assignedToId: opts.assignedToId,
+      metadata: opts.metadata,
+    },
+    userId,
+  );
 }
 
-async function remark(svc: ProcurementService, id: string, comment: string, userId: string, stageNumber?: number) {
+async function remark(
+  svc: ProcurementService,
+  id: string,
+  comment: string,
+  userId: string,
+  stageNumber?: number,
+) {
   await svc.addRemark(id, { comment, stageNumber }, userId);
 }
 
@@ -147,8 +170,8 @@ interface TCDef {
     technicalSpec: string;
     approvedMakes: string;
   }>;
-  storeAvailable: boolean;         // TC-04 closes here
-  inspectionResults: ('PASS'|'FAIL')[];  // [insp1, insp2?, insp3?]
+  storeAvailable: boolean; // TC-04 closes here
+  inspectionResults: ('PASS' | 'FAIL')[]; // [insp1, insp2?, insp3?]
 }
 
 const TEST_CASES: TCDef[] = [
@@ -159,9 +182,12 @@ const TEST_CASES: TCDef[] = [
     application: 'ESP',
     itemType: 'Ready-Made',
     priority: 'HIGH',
-    description: 'Procurement of mechanical spare parts for rotary equipment maintenance at ESP unit. Critical spares required for scheduled plant turnaround.',
-    paintingSpecRemark: '2 coats Epoxy Primer + 1 coat Enamel finish, DFT ≥ 100 microns, RAL 7001',
-    packingRequirement: 'Export-grade wooden crating, moisture-proof inner liner, each item tagged with item code',
+    description:
+      'Procurement of mechanical spare parts for rotary equipment maintenance at ESP unit. Critical spares required for scheduled plant turnaround.',
+    paintingSpecRemark:
+      '2 coats Epoxy Primer + 1 coat Enamel finish, DFT ≥ 100 microns, RAL 7001',
+    packingRequirement:
+      'Export-grade wooden crating, moisture-proof inner liner, each item tagged with item code',
     certification: 'TC',
     manuals: 'Yes',
     warrantyGuarantee: '18 Months',
@@ -169,30 +195,46 @@ const TEST_CASES: TCDef[] = [
     items: [
       {
         itemName: 'Deep Groove Ball Bearing 6205ZZ',
-        description: 'Deep groove ball bearing, 6205ZZ, 25×52×15mm, ABEC-5 grade, grease packed, sealed both sides',
-        unit: 'pcs', quantity: 24, estimatedRate: 420,
-        technicalSpec: 'ID: 25mm, OD: 52mm, Width: 15mm, Dynamic Load: 14.8 kN, Static Load: 7.8 kN, Max RPM: 14000',
+        description:
+          'Deep groove ball bearing, 6205ZZ, 25×52×15mm, ABEC-5 grade, grease packed, sealed both sides',
+        unit: 'pcs',
+        quantity: 24,
+        estimatedRate: 420,
+        technicalSpec:
+          'ID: 25mm, OD: 52mm, Width: 15mm, Dynamic Load: 14.8 kN, Static Load: 7.8 kN, Max RPM: 14000',
         approvedMakes: 'SKF / FAG / NSK / NTN',
       },
       {
         itemName: 'Mechanical Seal 40mm',
-        description: 'Mechanical seal for centrifugal pump, 40mm shaft diameter, SiC-SiC-FKM, PN16 rated',
-        unit: 'set', quantity: 6, estimatedRate: 3200,
-        technicalSpec: 'Shaft: 40mm, Temp: -20°C to +150°C, Pressure: 16 bar, Material: SiC faces, FKM elastomers',
+        description:
+          'Mechanical seal for centrifugal pump, 40mm shaft diameter, SiC-SiC-FKM, PN16 rated',
+        unit: 'set',
+        quantity: 6,
+        estimatedRate: 3200,
+        technicalSpec:
+          'Shaft: 40mm, Temp: -20°C to +150°C, Pressure: 16 bar, Material: SiC faces, FKM elastomers',
         approvedMakes: 'John Crane / EagleBurgmann / Flowserve',
       },
       {
         itemName: 'V-Belt B-Section B68',
-        description: 'Classical V-belt, B-section, B68 profile, oil and heat resistant, matched set',
-        unit: 'pcs', quantity: 12, estimatedRate: 280,
-        technicalSpec: 'Section: B, Outside Length: 1727mm, Top Width: 17mm, Depth: 11mm, Load Rating: 800W',
+        description:
+          'Classical V-belt, B-section, B68 profile, oil and heat resistant, matched set',
+        unit: 'pcs',
+        quantity: 12,
+        estimatedRate: 280,
+        technicalSpec:
+          'Section: B, Outside Length: 1727mm, Top Width: 17mm, Depth: 11mm, Load Rating: 800W',
         approvedMakes: 'Gates / Optibelt / Fenner / Dunlop',
       },
       {
         itemName: 'Coupling Rubber Element Grid Spring',
-        description: 'Flexible coupling rubber element / grid spring for Size-7 jaw coupling',
-        unit: 'nos', quantity: 8, estimatedRate: 950,
-        technicalSpec: 'Coupling size 7, Shore hardness 70A, Max torque 180Nm, Bore range 28-60mm',
+        description:
+          'Flexible coupling rubber element / grid spring for Size-7 jaw coupling',
+        unit: 'nos',
+        quantity: 8,
+        estimatedRate: 950,
+        technicalSpec:
+          'Coupling size 7, Shore hardness 70A, Max torque 180Nm, Bore range 28-60mm',
         approvedMakes: 'KTR / Lovejoy / Fenner / Rexnord',
       },
     ],
@@ -207,9 +249,12 @@ const TEST_CASES: TCDef[] = [
     application: 'Bag Filter',
     itemType: 'Market Item',
     priority: 'URGENT',
-    description: 'Procurement of electrical control panel spare components for Bag Filter control system. Required immediately due to failure of existing components.',
-    paintingSpecRemark: 'Electrostatic powder coating, RAL 7032 pebble grey, thickness ≥ 60 microns, salt spray test 500 hrs',
-    packingRequirement: 'Anti-static bubble wrap, individual poly bags, moisture absorber sachets, fragile labels',
+    description:
+      'Procurement of electrical control panel spare components for Bag Filter control system. Required immediately due to failure of existing components.',
+    paintingSpecRemark:
+      'Electrostatic powder coating, RAL 7032 pebble grey, thickness ≥ 60 microns, salt spray test 500 hrs',
+    packingRequirement:
+      'Anti-static bubble wrap, individual poly bags, moisture absorber sachets, fragile labels',
     certification: 'TC',
     manuals: 'Yes',
     warrantyGuarantee: '12 Months',
@@ -217,37 +262,57 @@ const TEST_CASES: TCDef[] = [
     items: [
       {
         itemName: 'Circuit Breaker MCB 16A 3P',
-        description: 'Miniature circuit breaker, 16A, 3-pole, C-curve, 10kA breaking capacity, 230/400V AC',
-        unit: 'pcs', quantity: 10, estimatedRate: 780,
-        technicalSpec: 'In: 16A, Poles: 3P, Curve: C, Ics: 10kA, Voltage: 230/400V AC 50Hz, Breaking capacity: 10kA',
+        description:
+          'Miniature circuit breaker, 16A, 3-pole, C-curve, 10kA breaking capacity, 230/400V AC',
+        unit: 'pcs',
+        quantity: 10,
+        estimatedRate: 780,
+        technicalSpec:
+          'In: 16A, Poles: 3P, Curve: C, Ics: 10kA, Voltage: 230/400V AC 50Hz, Breaking capacity: 10kA',
         approvedMakes: 'ABB / Schneider Electric / Siemens / Legrand',
       },
       {
         itemName: 'Contactor 40A 3P+NO',
-        description: 'Electromagnetic contactor, 40A, 3-pole + 1NO auxiliary contact, 230V AC coil',
-        unit: 'pcs', quantity: 6, estimatedRate: 1850,
-        technicalSpec: 'AC-3 rating: 40A/18.5kW@415V, Coil: 230V AC 50Hz, Aux: 1NO, Mounting: DIN rail',
+        description:
+          'Electromagnetic contactor, 40A, 3-pole + 1NO auxiliary contact, 230V AC coil',
+        unit: 'pcs',
+        quantity: 6,
+        estimatedRate: 1850,
+        technicalSpec:
+          'AC-3 rating: 40A/18.5kW@415V, Coil: 230V AC 50Hz, Aux: 1NO, Mounting: DIN rail',
         approvedMakes: 'Siemens / ABB / Schneider / L&T',
       },
       {
         itemName: 'PLC Module CPU Siemens S7-200',
-        description: 'PLC CPU module Siemens S7-200 compatible, 14DI/10DO, 24V DC supply, RS485 comms',
-        unit: 'nos', quantity: 2, estimatedRate: 28500,
-        technicalSpec: 'CPU: S7-200 compatible, DI: 14×24VDC, DO: 10×24VDC 0.5A, Supply: 24V DC, Comm: RS485 + MPI',
+        description:
+          'PLC CPU module Siemens S7-200 compatible, 14DI/10DO, 24V DC supply, RS485 comms',
+        unit: 'nos',
+        quantity: 2,
+        estimatedRate: 28500,
+        technicalSpec:
+          'CPU: S7-200 compatible, DI: 14×24VDC, DO: 10×24VDC 0.5A, Supply: 24V DC, Comm: RS485 + MPI',
         approvedMakes: 'Siemens OEM / Approved Equivalent',
       },
       {
         itemName: 'Digital Panel Meter 96×96',
-        description: 'Digital panel meter, 96×96mm, 4-digit LED, 4-20mA input, loop powered',
-        unit: 'pcs', quantity: 4, estimatedRate: 2400,
-        technicalSpec: 'Display: 4-digit 7-segment LED, Input: 4-20mA, Supply: Loop powered, Size: 96×96mm panel cutout 92×92mm',
+        description:
+          'Digital panel meter, 96×96mm, 4-digit LED, 4-20mA input, loop powered',
+        unit: 'pcs',
+        quantity: 4,
+        estimatedRate: 2400,
+        technicalSpec:
+          'Display: 4-digit 7-segment LED, Input: 4-20mA, Supply: Loop powered, Size: 96×96mm panel cutout 92×92mm',
         approvedMakes: 'Yokogawa / M-System / Precision Digital / DEIF',
       },
       {
         itemName: 'Control Cable 2C×1.5sqmm',
-        description: 'Multicore control cable, 2 core × 1.5mm², 1100V grade, FRLS sheath',
-        unit: 'm', quantity: 500, estimatedRate: 45,
-        technicalSpec: '2C×1.5sqmm, Conductor: Annealed copper, Insulation: XLPE, Sheath: FRLS PVC, Voltage: 1100V, Armour: GI wire',
+        description:
+          'Multicore control cable, 2 core × 1.5mm², 1100V grade, FRLS sheath',
+        unit: 'm',
+        quantity: 500,
+        estimatedRate: 45,
+        technicalSpec:
+          '2C×1.5sqmm, Conductor: Annealed copper, Insulation: XLPE, Sheath: FRLS PVC, Voltage: 1100V, Armour: GI wire',
         approvedMakes: 'Polycab / Havells / Finolex / KEI',
       },
     ],
@@ -262,9 +327,11 @@ const TEST_CASES: TCDef[] = [
     application: 'Process Bag Filter',
     itemType: 'Market Item',
     priority: 'NORMAL',
-    description: 'Quarterly procurement of industrial consumables including welding electrodes, grinding discs and safety PPE for plant maintenance activities.',
+    description:
+      'Quarterly procurement of industrial consumables including welding electrodes, grinding discs and safety PPE for plant maintenance activities.',
     paintingSpecRemark: 'Not applicable — consumable items',
-    packingRequirement: 'Standard manufacturer packaging, palletised delivery, pallet wrap with moisture protection',
+    packingRequirement:
+      'Standard manufacturer packaging, palletised delivery, pallet wrap with moisture protection',
     certification: 'MTC',
     manuals: 'No',
     warrantyGuarantee: '6 Months',
@@ -272,28 +339,40 @@ const TEST_CASES: TCDef[] = [
     items: [
       {
         itemName: 'Welding Electrode E6013 3.15mm',
-        description: 'Mild steel welding electrode E6013, 3.15mm diameter, rutile coated, 5kg box',
-        unit: 'kg', quantity: 200, estimatedRate: 95,
-        technicalSpec: 'Grade: E6013, Dia: 3.15mm, Current: AC/DC+, Deposit: 100%, Tensile: 490MPa, Elongation: 22%',
+        description:
+          'Mild steel welding electrode E6013, 3.15mm diameter, rutile coated, 5kg box',
+        unit: 'kg',
+        quantity: 200,
+        estimatedRate: 95,
+        technicalSpec:
+          'Grade: E6013, Dia: 3.15mm, Current: AC/DC+, Deposit: 100%, Tensile: 490MPa, Elongation: 22%',
         approvedMakes: 'ESAB / Lincoln Electric / Ador / Honeywell',
       },
       {
         itemName: 'Grinding Disc 230mm×6mm',
-        description: 'Grinding disc for angle grinder, 230mm OD, 6mm thickness, 22.23mm bore, Type 27',
-        unit: 'pcs', quantity: 150, estimatedRate: 65,
-        technicalSpec: 'Size: 230×6×22.23mm, Type: 27, Grade: A 30 R BF, Max RPM: 6600, Bond: Resinoid',
+        description:
+          'Grinding disc for angle grinder, 230mm OD, 6mm thickness, 22.23mm bore, Type 27',
+        unit: 'pcs',
+        quantity: 150,
+        estimatedRate: 65,
+        technicalSpec:
+          'Size: 230×6×22.23mm, Type: 27, Grade: A 30 R BF, Max RPM: 6600, Bond: Resinoid',
         approvedMakes: 'Norton / 3M / Bosch / Tyrolit',
       },
       {
         itemName: 'Cutting Disc 230mm×2mm',
-        description: 'Cutting disc for angle grinder, 230mm OD, 2mm thickness, 22.23mm bore, Type 41',
-        unit: 'pcs', quantity: 200, estimatedRate: 42,
-        technicalSpec: 'Size: 230×2×22.23mm, Type: 41, Grade: A 36 T BF, Max RPM: 6600, Bond: Resinoid',
+        description:
+          'Cutting disc for angle grinder, 230mm OD, 2mm thickness, 22.23mm bore, Type 41',
+        unit: 'pcs',
+        quantity: 200,
+        estimatedRate: 42,
+        technicalSpec:
+          'Size: 230×2×22.23mm, Type: 41, Grade: A 36 T BF, Max RPM: 6600, Bond: Resinoid',
         approvedMakes: 'Norton / Flexovit / Klingspor / Pferd',
       },
     ],
     storeAvailable: false,
-    inspectionResults: ['FAIL', 'PASS'],  // Insp-1 fails (wrong spec), Insp-2 passes
+    inspectionResults: ['FAIL', 'PASS'], // Insp-1 fails (wrong spec), Insp-2 passes
   },
 
   // ── TC-04: Instrumentation — Store Available ──────────────────────────────
@@ -303,9 +382,12 @@ const TEST_CASES: TCDef[] = [
     application: 'ESP',
     itemType: 'Ready-Made',
     priority: 'NORMAL',
-    description: 'Procurement request for differential pressure transmitters. Store check confirms sufficient stock available — procurement closed without external sourcing.',
-    paintingSpecRemark: 'Not applicable — precision instrument, no site painting',
-    packingRequirement: 'OEM packaging retained, calibration certificate attached, transit protection foam inserts',
+    description:
+      'Procurement request for differential pressure transmitters. Store check confirms sufficient stock available — procurement closed without external sourcing.',
+    paintingSpecRemark:
+      'Not applicable — precision instrument, no site painting',
+    packingRequirement:
+      'OEM packaging retained, calibration certificate attached, transit protection foam inserts',
     certification: 'Data Sheet',
     manuals: 'Yes',
     warrantyGuarantee: '24 Months',
@@ -313,20 +395,28 @@ const TEST_CASES: TCDef[] = [
     items: [
       {
         itemName: 'Differential Pressure Transmitter 0-500mbar',
-        description: 'Smart differential pressure transmitter, 0-500mbar range, HART 4-20mA, SS diaphragm, IP67',
-        unit: 'nos', quantity: 4, estimatedRate: 18500,
-        technicalSpec: 'Range: 0-500mbar, Output: 4-20mA HART, Supply: 24VDC, Accuracy: ±0.075%, Diaphragm: SS316L, Protection: IP67',
+        description:
+          'Smart differential pressure transmitter, 0-500mbar range, HART 4-20mA, SS diaphragm, IP67',
+        unit: 'nos',
+        quantity: 4,
+        estimatedRate: 18500,
+        technicalSpec:
+          'Range: 0-500mbar, Output: 4-20mA HART, Supply: 24VDC, Accuracy: ±0.075%, Diaphragm: SS316L, Protection: IP67',
         approvedMakes: 'Endress+Hauser / Yokogawa / Rosemount / ABB',
       },
       {
         itemName: 'Temperature Transmitter PT100 4-20mA',
-        description: 'Head-mount temperature transmitter, 2-wire, 4-20mA, PT100 input, -200 to +850°C range',
-        unit: 'nos', quantity: 6, estimatedRate: 4200,
-        technicalSpec: 'Sensor: PT100, Range: -200 to +850°C, Output: 4-20mA 2-wire, Accuracy: ±0.1°C, Ambient: -40 to +85°C',
+        description:
+          'Head-mount temperature transmitter, 2-wire, 4-20mA, PT100 input, -200 to +850°C range',
+        unit: 'nos',
+        quantity: 6,
+        estimatedRate: 4200,
+        technicalSpec:
+          'Sensor: PT100, Range: -200 to +850°C, Output: 4-20mA 2-wire, Accuracy: ±0.1°C, Ambient: -40 to +85°C',
         approvedMakes: 'Endress+Hauser / Wika / Jumo / Pyromation',
       },
     ],
-    storeAvailable: true,   // ← workflow closes at stage 2
+    storeAvailable: true, // ← workflow closes at stage 2
     inspectionResults: [],
   },
 
@@ -337,9 +427,12 @@ const TEST_CASES: TCDef[] = [
     application: 'NA',
     itemType: 'Tailor-Made',
     priority: 'URGENT',
-    description: 'Procurement of fire fighting safety equipment — portable extinguishers and breathing apparatus. All three inspection rounds failed due to non-conformances. Debit note raised and procurement closed.',
-    paintingSpecRemark: 'Signal red RAL 3001, 3 coat system, min 150 microns DFT, UV resistant topcoat',
-    packingRequirement: 'Each unit individually packed, shrink wrapped, barcode label, batch certification attached',
+    description:
+      'Procurement of fire fighting safety equipment — portable extinguishers and breathing apparatus. All three inspection rounds failed due to non-conformances. Debit note raised and procurement closed.',
+    paintingSpecRemark:
+      'Signal red RAL 3001, 3 coat system, min 150 microns DFT, UV resistant topcoat',
+    packingRequirement:
+      'Each unit individually packed, shrink wrapped, barcode label, batch certification attached',
     certification: 'TC',
     manuals: 'Yes',
     warrantyGuarantee: '12 Months',
@@ -347,28 +440,40 @@ const TEST_CASES: TCDef[] = [
     items: [
       {
         itemName: 'ABC Dry Powder Fire Extinguisher 9KG',
-        description: 'Portable ABC dry powder fire extinguisher, 9kg capacity, ISI marked, wall bracket included',
-        unit: 'nos', quantity: 20, estimatedRate: 2800,
-        technicalSpec: 'Type: ABC dry powder, Capacity: 9kg, Discharge time: ≥13s, Range: 4-6m, Working pressure: 14.7 bar, IS:2878',
+        description:
+          'Portable ABC dry powder fire extinguisher, 9kg capacity, ISI marked, wall bracket included',
+        unit: 'nos',
+        quantity: 20,
+        estimatedRate: 2800,
+        technicalSpec:
+          'Type: ABC dry powder, Capacity: 9kg, Discharge time: ≥13s, Range: 4-6m, Working pressure: 14.7 bar, IS:2878',
         approvedMakes: 'Ceasefire / Kanex / Safex / Eureka',
       },
       {
         itemName: 'Self Contained Breathing Apparatus SCBA',
-        description: 'Open circuit SCBA set with positive pressure, 6.8L composite cylinder, 30-min rated',
-        unit: 'set', quantity: 5, estimatedRate: 45000,
-        technicalSpec: 'Duration: 30 min, Cylinder: 6.8L 300bar composite, Pressure: positive pressure, NIOSH/EN137 approved',
+        description:
+          'Open circuit SCBA set with positive pressure, 6.8L composite cylinder, 30-min rated',
+        unit: 'set',
+        quantity: 5,
+        estimatedRate: 45000,
+        technicalSpec:
+          'Duration: 30 min, Cylinder: 6.8L 300bar composite, Pressure: positive pressure, NIOSH/EN137 approved',
         approvedMakes: 'MSA Safety / 3M Scott / Honeywell / Drager',
       },
       {
         itemName: 'Full Face Respirator with Cartridge A2P3',
-        description: 'Full-face respiratory mask with combined organic vapour + particulate cartridge A2P3',
-        unit: 'set', quantity: 15, estimatedRate: 3600,
-        technicalSpec: 'Protection: A2P3, Face seal: silicone, Lens: polycarbonate scratch resistant, EN136/EN14387 certified',
+        description:
+          'Full-face respiratory mask with combined organic vapour + particulate cartridge A2P3',
+        unit: 'set',
+        quantity: 15,
+        estimatedRate: 3600,
+        technicalSpec:
+          'Protection: A2P3, Face seal: silicone, Lens: polycarbonate scratch resistant, EN136/EN14387 certified',
         approvedMakes: '3M / Honeywell / Drager / JSP',
       },
     ],
     storeAvailable: false,
-    inspectionResults: ['FAIL', 'FAIL', 'FAIL'],  // All 3 fail → debit note
+    inspectionResults: ['FAIL', 'FAIL', 'FAIL'], // All 3 fail → debit note
   },
 ];
 
@@ -417,32 +522,37 @@ async function runTestCase(
 
     // ── Stage 0: Indent Creation ────────────────────────────────────────────
     log.log(`[${tc.id}] Creating indent…`);
-    const proc = await svc.create({
-      title: tc.name,
-      description: tc.description,
-      projectId: project.id,
-      projectName: project.name,
-      application: tc.application,
-      itemType: tc.itemType,
-      priority: tc.priority,
-      requiredDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-      paintingSpecRemark: tc.paintingSpecRemark,
-      packingRequirement: tc.packingRequirement,
-      certification: tc.certification,
-      manuals: tc.manuals,
-      warrantyGuarantee: tc.warrantyGuarantee,
-      ga: tc.ga,
-      items: tc.items.map(i => ({
-        itemCode: i.itemCode,
-        itemName: i.itemName,
-        description: i.description,
-        unit: i.unit,
-        quantity: i.quantity,
-        technicalSpec: i.technicalSpec,
-        approvedMakes: i.approvedMakes,
-      })),
-      submit: true,
-    }, users.pramod);
+    const proc = await svc.create(
+      {
+        title: tc.name,
+        description: tc.description,
+        projectId: project.id,
+        projectName: project.name,
+        application: tc.application,
+        itemType: tc.itemType,
+        priority: tc.priority,
+        requiredDate: new Date(
+          Date.now() + 30 * 24 * 60 * 60 * 1000,
+        ).toISOString(),
+        paintingSpecRemark: tc.paintingSpecRemark,
+        packingRequirement: tc.packingRequirement,
+        certification: tc.certification,
+        manuals: tc.manuals,
+        warrantyGuarantee: tc.warrantyGuarantee,
+        ga: tc.ga,
+        items: tc.items.map((i) => ({
+          itemCode: i.itemCode,
+          itemName: i.itemName,
+          description: i.description,
+          unit: i.unit,
+          quantity: i.quantity,
+          technicalSpec: i.technicalSpec,
+          approvedMakes: i.approvedMakes,
+        })),
+        submit: true,
+      },
+      users.pramod,
+    );
 
     result.referenceNo = (proc as any).referenceNo;
     result.stagesCompleted.push('S0: Indent Creation');
@@ -450,17 +560,31 @@ async function runTestCase(
     await delay(200);
 
     // Add post-creation remark
-    await remark(svc, (proc as any).id, `${tc.id} — Indent created by QA test runner. All ${tc.items.length} line items verified against SKU master.`, users.pramod);
+    await remark(
+      svc,
+      (proc as any).id,
+      `${tc.id} — Indent created by QA test runner. All ${tc.items.length} line items verified against SKU master.`,
+      users.pramod,
+    );
 
     // ── Stage 1: Indent Verification ───────────────────────────────────────
     log.log(`[${tc.id}] Stage 1: Indent Verification…`);
-    await remark(svc, (proc as any).id, `Indent verified. Project: ${project.name}. Application: ${tc.application}. Priority: ${tc.priority}. All ${tc.items.length} items technically sound. Budget within approved limits. Documents complete — Cert: ${tc.certification}, Manuals: ${tc.manuals}, GA: ${tc.ga}.`, users.pramod, 1);
+    await remark(
+      svc,
+      (proc as any).id,
+      `Indent verified. Project: ${project.name}. Application: ${tc.application}. Priority: ${tc.priority}. All ${tc.items.length} items technically sound. Budget within approved limits. Documents complete — Cert: ${tc.certification}, Manuals: ${tc.manuals}, GA: ${tc.ga}.`,
+      users.pramod,
+      1,
+    );
     await action(svc, (proc as any).id, 'APPROVE', users.pramod, {
       remarks: `Verified by Pramod Kumar. All technical specifications reviewed and approved. ${tc.id} — proceeding to store check.`,
       metadata: {
         verifiedBy: 'Pramod Kumar',
         verificationDate: new Date().toISOString(),
-        indentValue: tc.items.reduce((s, i) => s + i.quantity * i.estimatedRate, 0),
+        indentValue: tc.items.reduce(
+          (s, i) => s + i.quantity * i.estimatedRate,
+          0,
+        ),
         itemsVerified: tc.items.length,
       },
     });
@@ -489,7 +613,9 @@ async function runTestCase(
 
     if (tc.storeAvailable) {
       result.finalStatus = 'CLOSED_STORE_AVAILABLE';
-      result.notes.push('TC-04: Procurement closed at store check — material available in store.');
+      result.notes.push(
+        'TC-04: Procurement closed at store check — material available in store.',
+      );
       result.durationMs = Date.now() - t0;
       return result;
     }
@@ -497,9 +623,13 @@ async function runTestCase(
     // ── Stage 3: Float RFQ ─────────────────────────────────────────────────
     log.log(`[${tc.id}] Stage 3: Float RFQ…`);
     const rfqNo = `RFQ-2026-${tc.id.replace('-', '')}-001`;
-    await remark(svc, (proc as any).id,
+    await remark(
+      svc,
+      (proc as any).id,
       `RFQ ${rfqNo} floated to approved vendors. Vendors contacted: ${vendor.vendorName} + 2 others. Submission deadline: 5 working days. Technical specifications attached.`,
-      users.pramod, 3);
+      users.pramod,
+      3,
+    );
     await action(svc, (proc as any).id, 'APPROVE', users.pramod, {
       remarks: `RFQ floated. RFQ No: ${rfqNo}. Vendors selected from approved vendor list. Deadline set for ${new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toLocaleDateString()}.`,
       vendorId: vendor.vendorId,
@@ -507,8 +637,14 @@ async function runTestCase(
       metadata: {
         rfqNumber: rfqNo,
         rfqDate: new Date().toISOString(),
-        vendorsContacted: [vendor.vendorName, 'Alternative Vendor 1', 'Alternative Vendor 2'],
-        submissionDeadline: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(),
+        vendorsContacted: [
+          vendor.vendorName,
+          'Alternative Vendor 1',
+          'Alternative Vendor 2',
+        ],
+        submissionDeadline: new Date(
+          Date.now() + 5 * 24 * 60 * 60 * 1000,
+        ).toISOString(),
         rfqType: 'OPEN',
         paymentTerms: 'As Per PO Terms',
         deliveryTerms: 'FOR Destination',
@@ -520,9 +656,13 @@ async function runTestCase(
     // ── Stage 4: Receive Techno Commercial Offer ────────────────────────────
     log.log(`[${tc.id}] Stage 4: Techno Commercial Offer…`);
     const offerRef = `OFF-${vendor.vendorName.split(' ')[0].toUpperCase()}-2026-001`;
-    await remark(svc, (proc as any).id,
+    await remark(
+      svc,
+      (proc as any).id,
       `Offer received from ${vendor.vendorName}. Ref: ${offerRef}. Technical offer reviewed by engineering — conforming to specs. Comparison sheet prepared with 3 vendors.`,
-      users.pramod, 4);
+      users.pramod,
+      4,
+    );
     await action(svc, (proc as any).id, 'APPROVE', users.pramod, {
       remarks: `Techno-commercial offer received and evaluated. Offer Ref: ${offerRef}. Best offer: ${vendor.vendorName}. Comparison sheet attached. Engineering clearance obtained.`,
       vendorId: vendor.vendorId,
@@ -532,9 +672,13 @@ async function runTestCase(
         offerDate: new Date().toISOString(),
         comparisonSheetUrl: '/documents/comparison-sheet.xlsx',
         technicalOfferUrl: '/documents/technical-offer.pdf',
-        engineeringRemark: 'Technical specs fully compliant. No deviations noted.',
+        engineeringRemark:
+          'Technical specs fully compliant. No deviations noted.',
         selectedVendor: vendor.vendorName,
-        offeredPrice: tc.items.reduce((s, i) => s + i.quantity * i.estimatedRate * 0.95, 0),
+        offeredPrice: tc.items.reduce(
+          (s, i) => s + i.quantity * i.estimatedRate * 0.95,
+          0,
+        ),
       },
     });
     result.stagesCompleted.push('S4: Techno Commercial Offer — APPROVED');
@@ -542,10 +686,17 @@ async function runTestCase(
 
     // ── Stage 5: Negotiation & Decision ────────────────────────────────────
     log.log(`[${tc.id}] Stage 5: Negotiation…`);
-    const negotiatedValue = tc.items.reduce((s, i) => s + i.quantity * i.estimatedRate * 0.92, 0);
-    await remark(svc, (proc as any).id,
+    const negotiatedValue = tc.items.reduce(
+      (s, i) => s + i.quantity * i.estimatedRate * 0.92,
+      0,
+    );
+    await remark(
+      svc,
+      (proc as any).id,
       `Negotiation completed with ${vendor.vendorName}. Final price agreed at ₹${negotiatedValue.toFixed(2)}. Delivery: 3 weeks FOB Mumbai. Payment: 30 days from delivery.`,
-      users.pramod, 5);
+      users.pramod,
+      5,
+    );
     await action(svc, (proc as any).id, 'APPROVE', users.pramod, {
       remarks: `Vendor finalized: ${vendor.vendorName}. Negotiated discount: 8%. Final value: ₹${negotiatedValue.toFixed(2)}. Delivery period: 21 days. Payment: 30 days.`,
       vendorId: vendor.vendorId,
@@ -556,7 +707,8 @@ async function runTestCase(
         finalVendor: vendor.vendorName,
         deliveryPeriod: '21 days',
         paymentTerms: '30 days from delivery',
-        commercialRemarks: 'Price negotiated down from quoted price. Satisfactory terms agreed.',
+        commercialRemarks:
+          'Price negotiated down from quoted price. Satisfactory terms agreed.',
         decisionDate: new Date().toISOString(),
       },
     });
@@ -566,9 +718,13 @@ async function runTestCase(
     // ── Stage 6: PO Creation ────────────────────────────────────────────────
     log.log(`[${tc.id}] Stage 6: PO Creation…`);
     const poNo = `PO-2026-${tc.id.replace('-', '')}-001`;
-    await remark(svc, (proc as any).id,
+    await remark(
+      svc,
+      (proc as any).id,
       `Purchase Order ${poNo} created for ${vendor.vendorName}. PO value: ₹${negotiatedValue.toFixed(2)}. Delivery: 21 days to plant. All terms as negotiated.`,
-      users.pramod, 6);
+      users.pramod,
+      6,
+    );
     await action(svc, (proc as any).id, 'SUBMIT', users.pramod, {
       remarks: `PO ${poNo} prepared and submitted for approval. Vendor: ${vendor.vendorName}. Total value: ₹${negotiatedValue.toFixed(2)} incl. taxes.`,
       vendorId: vendor.vendorId,
@@ -636,9 +792,13 @@ async function runTestCase(
 
     // ── Stage 10: Follow-up for Delivery ───────────────────────────────────
     log.log(`[${tc.id}] Stage 10: Follow-up…`);
-    await remark(svc, (proc as any).id,
+    await remark(
+      svc,
+      (proc as any).id,
       `Follow-up call made to ${vendor.vendorName} on ${new Date().toLocaleDateString()}. Shipment on schedule. Dispatch expected in 3 days. Lorry receipt to be shared.`,
-      users.priyanka, 10);
+      users.priyanka,
+      10,
+    );
     await action(svc, (proc as any).id, 'SUBMIT', users.priyanka, {
       remarks: `Delivery follow-up complete. Material dispatched by ${vendor.vendorName}. LR Number: LR-2026-${Math.floor(Math.random() * 9000 + 1000)}. Expected delivery: ${deliveryDate.toLocaleDateString()}.`,
       metadata: {
@@ -656,9 +816,13 @@ async function runTestCase(
     // ── Stage 11: Material Receipt ─────────────────────────────────────────
     log.log(`[${tc.id}] Stage 11: Material Receipt…`);
     const grnNo = `GRN-2026-${tc.id.replace('-', '')}-001`;
-    await remark(svc, (proc as any).id,
+    await remark(
+      svc,
+      (proc as any).id,
       `Material received at plant gate. GRN: ${grnNo}. All ${tc.items.length} line items received. Initial visual inspection — packaging intact. DC and invoice attached.`,
-      users.shiv, 11);
+      users.shiv,
+      11,
+    );
     await action(svc, (proc as any).id, 'SUBMIT', users.shivam, {
       remarks: `Material received. GRN ${grnNo} raised. Quantity as per PO. Delivery Challan No: DC-${Math.floor(Math.random() * 9000 + 1000)}. Material moved to inspection bay.`,
       metadata: {
@@ -687,13 +851,18 @@ async function runTestCase(
     for (let i = 0; i < tc.inspectionResults.length; i++) {
       const inspResult = tc.inspectionResults[i];
       const stageNum = inspStages[i];
-      const inspLabel = ['Material Inspection 1', 'Material Inspection 2', 'Material Inspection 3'][i];
+      const inspLabel = [
+        'Material Inspection 1',
+        'Material Inspection 2',
+        'Material Inspection 3',
+      ][i];
       log.log(`[${tc.id}] Stage ${stageNum}: ${inspLabel} — ${inspResult}…`);
 
       const inspAction = inspResult === 'PASS' ? 'PASS' : 'FAIL';
-      const inspRemark = inspResult === 'PASS'
-        ? `${inspLabel} PASSED. All ${tc.items.length} items inspected. Dimensions, markings, material certs verified. No non-conformances. Clearance for billing.`
-        : `${inspLabel} FAILED. Non-conformances identified: ${['Incorrect dimension', 'Surface defect', 'Missing certification'][i % 3]}. ${i < 2 ? 'Re-inspection ordered.' : 'All 3 inspections failed — debit note to be raised.'}`;
+      const inspRemark =
+        inspResult === 'PASS'
+          ? `${inspLabel} PASSED. All ${tc.items.length} items inspected. Dimensions, markings, material certs verified. No non-conformances. Clearance for billing.`
+          : `${inspLabel} FAILED. Non-conformances identified: ${['Incorrect dimension', 'Surface defect', 'Missing certification'][i % 3]}. ${i < 2 ? 'Re-inspection ordered.' : 'All 3 inspections failed — debit note to be raised.'}`;
 
       await remark(svc, (proc as any).id, inspRemark, users.saurabh, stageNum);
       await action(svc, (proc as any).id, inspAction, users.saurabh, {
@@ -704,14 +873,22 @@ async function runTestCase(
           inspectionResult: inspResult,
           inspectionRound: i + 1,
           reportUrl: `/documents/inspection-report-${i + 1}.pdf`,
-          conformances: inspResult === 'PASS' ? tc.items.map(item => ({
-            item: item.itemName,
-            dimensions: 'Conforming',
-            markings: 'Correct',
-            certification: 'Verified',
-            result: 'PASS',
-          })) : undefined,
-          nonConformances: inspResult === 'FAIL' ? [`Round ${i + 1} failure: ${['Incorrect material grade', 'Dimensional deviation >2%', 'Surface corrosion, unacceptable'][i % 3]}`] : undefined,
+          conformances:
+            inspResult === 'PASS'
+              ? tc.items.map((item) => ({
+                  item: item.itemName,
+                  dimensions: 'Conforming',
+                  markings: 'Correct',
+                  certification: 'Verified',
+                  result: 'PASS',
+                }))
+              : undefined,
+          nonConformances:
+            inspResult === 'FAIL'
+              ? [
+                  `Round ${i + 1} failure: ${['Incorrect material grade', 'Dimensional deviation >2%', 'Surface corrosion, unacceptable'][i % 3]}`,
+                ]
+              : undefined,
         },
       });
       result.stagesCompleted.push(`S${stageNum}: ${inspLabel} — ${inspResult}`);
@@ -722,13 +899,19 @@ async function runTestCase(
     }
 
     // ── Stage 15: Debit Note (only for all-fail case) ──────────────────────
-    const allFailed = tc.inspectionResults.length > 0 && tc.inspectionResults.every(r => r === 'FAIL');
+    const allFailed =
+      tc.inspectionResults.length > 0 &&
+      tc.inspectionResults.every((r) => r === 'FAIL');
     if (allFailed) {
       log.log(`[${tc.id}] Stage 15: Debit Note (all inspections failed)…`);
       const debitNoteNo = `DN-2026-${tc.id.replace('-', '')}-001`;
-      await remark(svc, (proc as any).id,
+      await remark(
+        svc,
+        (proc as any).id,
         `Debit note ${debitNoteNo} raised. All 3 inspection rounds failed. Total debit value: ₹${negotiatedValue.toFixed(2)}. Vendor: ${vendor.vendorName}. Reason: Non-conforming material supplied.`,
-        users.atul, 15);
+        users.atul,
+        15,
+      );
       await action(svc, (proc as any).id, 'SUBMIT', users.atul, {
         remarks: `Debit Note ${debitNoteNo} raised and submitted. Non-conforming material. Full order value debited from vendor account. Vendor notified. Material to be returned.`,
         metadata: {
@@ -743,7 +926,9 @@ async function runTestCase(
       });
       result.stagesCompleted.push(`S15: Debit Note — ${debitNoteNo}`);
       result.finalStatus = 'REJECTED_DEBIT_NOTE';
-      result.notes.push(`TC-05: All 3 inspections failed. Debit note ${debitNoteNo} raised. Procurement closed via rejection.`);
+      result.notes.push(
+        `TC-05: All 3 inspections failed. Debit note ${debitNoteNo} raised. Procurement closed via rejection.`,
+      );
       result.durationMs = Date.now() - t0;
       return result;
     }
@@ -751,9 +936,13 @@ async function runTestCase(
     // ── Stage 16: Bill to Accounts ─────────────────────────────────────────
     log.log(`[${tc.id}] Stage 16: Bill to Accounts…`);
     const invoiceNo = `INV-${vendor.vendorName.slice(0, 4).toUpperCase()}-2026-${Math.floor(Math.random() * 9000 + 1000)}`;
-    await remark(svc, (proc as any).id,
+    await remark(
+      svc,
+      (proc as any).id,
       `Invoice ${invoiceNo} received from ${vendor.vendorName}. Dispatched to Accounts for verification. GRN attached. PO match confirmed.`,
-      users.pankaj, 16);
+      users.pankaj,
+      16,
+    );
     await action(svc, (proc as any).id, 'SUBMIT', users.anushka, {
       remarks: `Bill ${invoiceNo} dispatched to accounts dept. Three-way match: PO ✓, GRN ✓, Invoice ✓. No discrepancies found.`,
       metadata: {
@@ -780,7 +969,8 @@ async function runTestCase(
         technicalCompliance: 'CONFIRMED',
         quantityMatch: 'CONFIRMED',
         priceMatch: 'CONFIRMED',
-        purchaseRemark: 'All terms as per PO. Approved for accounts processing.',
+        purchaseRemark:
+          'All terms as per PO. Approved for accounts processing.',
       },
     });
     result.stagesCompleted.push('S17: Bill to Purchase — APPROVED');
@@ -798,7 +988,13 @@ async function runTestCase(
         gstRate: '18%',
         gstAmount: negotiatedValue * 0.18,
         totalAmount: negotiatedValue * 1.18,
-        grnChecklist: ['GRN signed', 'DC verified', 'Invoice checked', 'PO matched', 'Quality clearance'],
+        grnChecklist: [
+          'GRN signed',
+          'DC verified',
+          'Invoice checked',
+          'PO matched',
+          'Quality clearance',
+        ],
         invoiceUrl: '/documents/invoice.pdf',
       },
     });
@@ -857,8 +1053,9 @@ async function runTestCase(
     });
     result.stagesCompleted.push(`S22: Payment/Advice — UTR: ${utrNo}`);
     result.finalStatus = 'COMPLETED';
-    result.notes.push(`Full procurement lifecycle completed. Total value: ₹${(negotiatedValue * 1.18).toFixed(2)}.`);
-
+    result.notes.push(
+      `Full procurement lifecycle completed. Total value: ₹${(negotiatedValue * 1.18).toFixed(2)}.`,
+    );
   } catch (err: any) {
     result.pass = false;
     result.finalStatus = 'ERROR';
@@ -878,23 +1075,25 @@ async function main() {
   log.log(' 5 complete end-to-end procurement test cases');
   log.log('═══════════════════════════════════════════════════════════════\n');
 
-  const app = await NestFactory.createApplicationContext(AppModule, { logger: ['error', 'warn'] });
+  const app = await NestFactory.createApplicationContext(AppModule, {
+    logger: ['error', 'warn'],
+  });
   const svc = app.get(ProcurementService);
   const prisma = app.get(PrismaService);
 
   // ── Resolve user IDs ────────────────────────────────────────────────────
   const userEmails = {
-    pramod:   'pramod.kumar@if-himenviro.in',
-    shiv:     'shiv.sharma@if-himenviro.in',
-    pankaj:   'pankaj.kumar@if-himenviro.in',
-    ankur:    'ankur.gupta@if-himenviro.in',
-    neetu:    'neetu.singh@if-himenviro.in',
+    pramod: 'pramod.kumar@if-himenviro.in',
+    shiv: 'shiv.sharma@if-himenviro.in',
+    pankaj: 'pankaj.kumar@if-himenviro.in',
+    ankur: 'ankur.gupta@if-himenviro.in',
+    neetu: 'neetu.singh@if-himenviro.in',
     priyanka: 'priyanka.pal@if-himenviro.in',
-    shivam:   'shivam.namdev@if-himenviro.in',
-    anushka:  'anushka.kamboj@if-himenviro.in',
-    saurabh:  'saurabh@if-himenviro.in',
-    atul:     'atul.tyagi@if-himenviro.in',
-    neha:     'neha.mishra@if-himenviro.in',
+    shivam: 'shivam.namdev@if-himenviro.in',
+    anushka: 'anushka.kamboj@if-himenviro.in',
+    saurabh: 'saurabh@if-himenviro.in',
+    atul: 'atul.tyagi@if-himenviro.in',
+    neha: 'neha.mishra@if-himenviro.in',
   };
 
   log.log('Resolving user IDs…');
@@ -927,15 +1126,21 @@ async function main() {
   log.log(`  ✓ Project: ${project.id} — ${project.name}`);
 
   // ── Run all 5 test cases sequentially ─────────────────────────────────
-  log.log('\n─────────────────────────────────────────────────────────────────');
+  log.log(
+    '\n─────────────────────────────────────────────────────────────────',
+  );
   for (let i = 0; i < TEST_CASES.length; i++) {
     const tc = TEST_CASES[i];
     log.log(`\n▶  Running ${tc.id}: ${tc.name}`);
-    log.log(`   Items: ${tc.items.length} | Store Available: ${tc.storeAvailable} | Inspection path: ${tc.inspectionResults.join('→') || 'N/A'}`);
+    log.log(
+      `   Items: ${tc.items.length} | Store Available: ${tc.storeAvailable} | Inspection path: ${tc.inspectionResults.join('→') || 'N/A'}`,
+    );
 
     const result = await runTestCase(tc, svc, prisma, users, project, i);
     qaResults.push(result);
-    log.log(`   ${result.pass ? '✅' : '❌'} ${result.tcId} — ${result.finalStatus} — ${(result.durationMs / 1000).toFixed(1)}s`);
+    log.log(
+      `   ${result.pass ? '✅' : '❌'} ${result.tcId} — ${result.finalStatus} — ${(result.durationMs / 1000).toFixed(1)}s`,
+    );
     log.log(`   Ref: ${result.referenceNo}`);
     log.log(`   Stages: ${result.stagesCompleted.length}`);
 
@@ -943,7 +1148,9 @@ async function main() {
   }
 
   // ── Print QA Summary ───────────────────────────────────────────────────
-  log.log('\n\n═══════════════════════════════════════════════════════════════');
+  log.log(
+    '\n\n═══════════════════════════════════════════════════════════════',
+  );
   log.log('  QA SUMMARY REPORT — IFH One v2.5.5');
   log.log('═══════════════════════════════════════════════════════════════\n');
 
@@ -964,13 +1171,16 @@ async function main() {
     if (r.bugs.length) {
       log.log(`│  ⚠ Bugs:`);
       for (const b of r.bugs) log.log(`│    ! ${b}`);
-      allBugs.push(...r.bugs.map(b => `${r.tcId}: ${b}`));
+      allBugs.push(...r.bugs.map((b) => `${r.tcId}: ${b}`));
     }
     log.log('└─────────────────────────────────────────────────────────────');
-    if (r.pass) passCount++; else failCount++;
+    if (r.pass) passCount++;
+    else failCount++;
   }
 
-  log.log(`\n TOTAL: ${qaResults.length} | PASS: ${passCount} | FAIL: ${failCount}`);
+  log.log(
+    `\n TOTAL: ${qaResults.length} | PASS: ${passCount} | FAIL: ${failCount}`,
+  );
 
   if (allBugs.length > 0) {
     log.log('\n BUGS FOUND:');
@@ -980,7 +1190,9 @@ async function main() {
   }
 
   // ── Validate final DB state ────────────────────────────────────────────
-  log.log('\n─── Final DB Validation ──────────────────────────────────────────');
+  log.log(
+    '\n─── Final DB Validation ──────────────────────────────────────────',
+  );
   const [total, completed, rejected, onHold, inProgress] = await Promise.all([
     prisma.procurement.count(),
     prisma.procurement.count({ where: { status: 'COMPLETED' } }),
@@ -1007,7 +1219,7 @@ async function main() {
   await app.close();
 }
 
-main().catch(err => {
+main().catch((err) => {
   console.error('QA Seed failed:', err);
   process.exit(1);
 });

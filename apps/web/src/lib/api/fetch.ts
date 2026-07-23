@@ -18,7 +18,7 @@
 function emitBackendStatus(online: boolean) {
   if (typeof window === 'undefined') return;
   window.dispatchEvent(
-    new CustomEvent('backend:status', { detail: { online } }),
+    new CustomEvent('backend:status', { detail: { online } })
   );
 }
 
@@ -76,7 +76,7 @@ function sleep(ms: number): Promise<void> {
 async function fetchOnce(
   url: string,
   options: RequestInit,
-  timeoutMs = 30_000,
+  timeoutMs = 30_000
 ): Promise<Response> {
   const controller = new AbortController();
   const tid = setTimeout(() => controller.abort(), timeoutMs);
@@ -90,7 +90,7 @@ async function fetchOnce(
 // ─── Main export ───────────────────────────────────────────────────────────
 export async function apiFetch(
   path: string,
-  options: RequestInit & { timeoutMs?: number } = {},
+  options: RequestInit & { timeoutMs?: number } = {}
 ): Promise<any> {
   const url = buildApiUrl(path);
   const token = getToken();
@@ -160,7 +160,7 @@ export async function apiFetch(
       // Abort = timeout
       if (lastError.name === 'AbortError') {
         lastError = new Error(
-          'Request timed out. The server is taking too long to respond.',
+          'Request timed out. The server is taking too long to respond.'
         );
         // Timeouts are retried like network errors
       }
@@ -175,7 +175,7 @@ export async function apiFetch(
         emitBackendStatus(false);
         throw new Error(
           'Unable to connect to the server. ' +
-            'The backend may be starting up — please wait a moment and try again.',
+            'The backend may be starting up — please wait a moment and try again.'
         );
       }
 

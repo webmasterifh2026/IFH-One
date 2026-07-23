@@ -77,7 +77,9 @@ export function DataTable({
 
       const aStr = aValue.toString().toLowerCase();
       const bStr = bValue.toString().toLowerCase();
-      return sortDirection === 'asc' ? aStr.localeCompare(bStr) : bStr.localeCompare(aStr);
+      return sortDirection === 'asc'
+        ? aStr.localeCompare(bStr)
+        : bStr.localeCompare(aStr);
     });
 
     return sorted;
@@ -109,7 +111,8 @@ export function DataTable({
   };
 
   const getSortIcon = (key: string) => {
-    if (sortKey !== key) return <ChevronsUpDown className="w-4 h-4 opacity-40" />;
+    if (sortKey !== key)
+      return <ChevronsUpDown className="w-4 h-4 opacity-40" />;
     if (sortDirection === 'asc') return <ChevronUp className="w-4 h-4" />;
     return <ChevronDown className="w-4 h-4" />;
   };
@@ -130,7 +133,9 @@ export function DataTable({
         <div className="text-center py-12">
           <Filter className="w-12 h-12 text-gray-300 mx-auto mb-4" />
           <p className="text-gray-500 font-medium">No records found</p>
-          <p className="text-gray-400 text-sm mt-1">Try adjusting your filters or search</p>
+          <p className="text-gray-400 text-sm mt-1">
+            Try adjusting your filters or search
+          </p>
         </div>
       </EnterpriseCard>
     );
@@ -156,7 +161,9 @@ export function DataTable({
                   </div>
                 </th>
               ))}
-              <th className="px-6 py-3 text-left font-semibold text-gray-700">Actions</th>
+              <th className="px-6 py-3 text-left font-semibold text-gray-700">
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -168,7 +175,9 @@ export function DataTable({
               >
                 {columns.map((column) => (
                   <td key={column.key} className="px-6 py-4">
-                    {column.render ? column.render(row[column.key], row) : row[column.key]}
+                    {column.render
+                      ? column.render(row[column.key], row)
+                      : row[column.key]}
                   </td>
                 ))}
                 <td className="px-6 py-4">
@@ -185,7 +194,8 @@ export function DataTable({
       {/* Pagination */}
       <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 bg-gray-50/50">
         <div className="text-sm text-gray-600">
-          Showing {(currentPage - 1) * pageSize + 1} to {Math.min(currentPage * pageSize, sortedData.length)} of{' '}
+          Showing {(currentPage - 1) * pageSize + 1} to{' '}
+          {Math.min(currentPage * pageSize, sortedData.length)} of{' '}
           {sortedData.length} records
         </div>
         <div className="flex items-center gap-2">
@@ -201,7 +211,12 @@ export function DataTable({
             {Array.from({ length: totalPages }, (_, i) => i + 1)
               .filter((page) => {
                 const distance = Math.abs(page - currentPage);
-                return distance === 0 || distance === 1 || page === 1 || page === totalPages;
+                return (
+                  distance === 0 ||
+                  distance === 1 ||
+                  page === 1 ||
+                  page === totalPages
+                );
               })
               .map((page, idx, arr) => (
                 <div key={page}>

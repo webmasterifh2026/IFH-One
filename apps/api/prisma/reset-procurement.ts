@@ -56,8 +56,12 @@ async function main() {
 
   console.log('');
   console.log('✨ Procurement module database reset complete!');
-  console.log('📊 All procurement indents, workflows, history, SLA, and notifications have been cleared.');
-  console.log('📊 Users, roles, vendors, projects, SKUs, departments remain intact.');
+  console.log(
+    '📊 All procurement indents, workflows, history, SLA, and notifications have been cleared.',
+  );
+  console.log(
+    '📊 Users, roles, vendors, projects, SKUs, departments remain intact.',
+  );
 }
 
 main()

@@ -43,7 +43,15 @@ export default function GateEntryQueuePage() {
         actions={
           <Link
             href="/gate-entry/new"
-            style={{ padding: '10px 18px', background: 'var(--primary)', color: '#fff', borderRadius: 8, fontWeight: 600, fontSize: 13, textDecoration: 'none' }}
+            style={{
+              padding: '10px 18px',
+              background: 'var(--primary)',
+              color: '#fff',
+              borderRadius: 8,
+              fontWeight: 600,
+              fontSize: 13,
+              textDecoration: 'none',
+            }}
           >
             + New Gate Entry
           </Link>
@@ -51,13 +59,27 @@ export default function GateEntryQueuePage() {
       />
 
       <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
-        {['', 'GATE_ENTRY', 'QUANTITY_VERIFIED', 'QUALITY_VERIFIED', 'ALLOCATED', 'GRN_GENERATED'].map((s) => (
+        {[
+          '',
+          'GATE_ENTRY',
+          'QUANTITY_VERIFIED',
+          'QUALITY_VERIFIED',
+          'ALLOCATED',
+          'GRN_GENERATED',
+        ].map((s) => (
           <button
             key={s || 'all'}
             onClick={() => setStatusFilter(s)}
             style={{
-              padding: '6px 14px', borderRadius: 999, fontSize: 12, fontWeight: 600, cursor: 'pointer',
-              border: statusFilter === s ? '1px solid var(--primary)' : '1px solid var(--border)',
+              padding: '6px 14px',
+              borderRadius: 999,
+              fontSize: 12,
+              fontWeight: 600,
+              cursor: 'pointer',
+              border:
+                statusFilter === s
+                  ? '1px solid var(--primary)'
+                  : '1px solid var(--border)',
               background: statusFilter === s ? 'var(--primary)' : 'var(--card)',
               color: statusFilter === s ? '#fff' : 'var(--text-secondary)',
             }}
@@ -82,15 +104,44 @@ export default function GateEntryQueuePage() {
             </thead>
             <tbody>
               {loading && (
-                <tr><td colSpan={6} style={{ padding: 24, textAlign: 'center', color: 'var(--text-muted)' }}>Loading…</td></tr>
+                <tr>
+                  <td
+                    colSpan={6}
+                    style={{
+                      padding: 24,
+                      textAlign: 'center',
+                      color: 'var(--text-muted)',
+                    }}
+                  >
+                    Loading…
+                  </td>
+                </tr>
               )}
               {!loading && entries.length === 0 && (
-                <tr><td colSpan={6} style={{ padding: 24, textAlign: 'center', color: 'var(--text-muted)' }}>No gate entries found</td></tr>
+                <tr>
+                  <td
+                    colSpan={6}
+                    style={{
+                      padding: 24,
+                      textAlign: 'center',
+                      color: 'var(--text-muted)',
+                    }}
+                  >
+                    No gate entries found
+                  </td>
+                </tr>
               )}
               {entries.map((e) => (
                 <tr key={e.id}>
                   <td>
-                    <Link href={`/gate-entry/${e.id}`} style={{ color: 'var(--primary)', fontWeight: 600, textDecoration: 'none' }}>
+                    <Link
+                      href={`/gate-entry/${e.id}`}
+                      style={{
+                        color: 'var(--primary)',
+                        fontWeight: 600,
+                        textDecoration: 'none',
+                      }}
+                    >
                       {e.entryNumber}
                     </Link>
                   </td>
@@ -98,11 +149,23 @@ export default function GateEntryQueuePage() {
                   <td>{e.vehicleNumber}</td>
                   <td>{e.vendorName || '—'}</td>
                   <td>
-                    <span style={{ fontSize: 11, fontWeight: 700, color: STATUS_COLORS[e.status] }}>
+                    <span
+                      style={{
+                        fontSize: 11,
+                        fontWeight: 700,
+                        color: STATUS_COLORS[e.status],
+                      }}
+                    >
                       {STATUS_LABELS[e.status] || e.status}
                     </span>
                   </td>
-                  <td>{new Date(e.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</td>
+                  <td>
+                    {new Date(e.createdAt).toLocaleDateString('en-IN', {
+                      day: 'numeric',
+                      month: 'short',
+                      year: 'numeric',
+                    })}
+                  </td>
                 </tr>
               ))}
             </tbody>

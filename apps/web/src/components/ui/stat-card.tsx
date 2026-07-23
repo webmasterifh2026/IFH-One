@@ -9,7 +9,13 @@ interface StatCardProps {
   icon: ElementType;
 }
 
-export function StatCard({ title, value, trend, trendDirection = 'neutral', icon: Icon }: StatCardProps) {
+export function StatCard({
+  title,
+  value,
+  trend,
+  trendDirection = 'neutral',
+  icon: Icon,
+}: StatCardProps) {
   return (
     <EnterpriseCard className="flex flex-col">
       <div className="flex items-center gap-3 mb-3">
@@ -19,20 +25,51 @@ export function StatCard({ title, value, trend, trendDirection = 'neutral', icon
         >
           <Icon style={{ width: 17, height: 17, color: 'var(--primary)' }} />
         </div>
-        <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', letterSpacing: '0.07em', textTransform: 'uppercase' }}>
+        <span
+          style={{
+            fontSize: 10,
+            fontWeight: 700,
+            color: 'var(--text-muted)',
+            letterSpacing: '0.07em',
+            textTransform: 'uppercase',
+          }}
+        >
           {title}
         </span>
       </div>
       <div className="flex items-end gap-3">
-        <span style={{ fontSize: 28, fontWeight: 700, color: 'var(--text-primary)', lineHeight: 1, letterSpacing: '-0.02em', fontFamily: 'var(--font-sans)' }}>
+        <span
+          style={{
+            fontSize: 28,
+            fontWeight: 700,
+            color: 'var(--text-primary)',
+            lineHeight: 1,
+            letterSpacing: '-0.02em',
+            fontFamily: 'var(--font-sans)',
+          }}
+        >
           {value}
         </span>
         {trend && (
-          <span style={{
-            fontSize: 12, fontWeight: 500, marginBottom: 2,
-            color: trendDirection === 'up' ? '#16A34A' : trendDirection === 'down' ? '#DC2626' : 'var(--text-muted)',
-          }}>
-            {trendDirection === 'up' ? '↑' : trendDirection === 'down' ? '↓' : ''} {trend}
+          <span
+            style={{
+              fontSize: 12,
+              fontWeight: 500,
+              marginBottom: 2,
+              color:
+                trendDirection === 'up'
+                  ? '#16A34A'
+                  : trendDirection === 'down'
+                    ? '#DC2626'
+                    : 'var(--text-muted)',
+            }}
+          >
+            {trendDirection === 'up'
+              ? '↑'
+              : trendDirection === 'down'
+                ? '↓'
+                : ''}{' '}
+            {trend}
           </span>
         )}
       </div>

@@ -23,7 +23,9 @@ async function main() {
   });
 
   if (!requester) {
-    console.error('❌ Test user not found. Please ensure admin@ifh.com exists.');
+    console.error(
+      '❌ Test user not found. Please ensure admin@ifh.com exists.',
+    );
     process.exit(1);
   }
 
@@ -98,7 +100,8 @@ async function main() {
       history: {
         create: {
           action: 'SUBMITTED',
-          description: 'Indent submitted for verification: Mechanical Seals and Gaskets Procurement',
+          description:
+            'Indent submitted for verification: Mechanical Seals and Gaskets Procurement',
           performedById: requester.id,
           stageNumber: 1,
         },
@@ -162,7 +165,8 @@ async function main() {
       history: {
         create: {
           action: 'SUBMITTED',
-          description: 'Indent submitted for verification: Electrical Cable Procurement',
+          description:
+            'Indent submitted for verification: Electrical Cable Procurement',
           performedById: requester.id,
           stageNumber: 1,
         },
@@ -226,7 +230,8 @@ async function main() {
       history: {
         create: {
           action: 'SUBMITTED',
-          description: 'Indent submitted for verification: Plumbing Fittings Procurement',
+          description:
+            'Indent submitted for verification: Plumbing Fittings Procurement',
           performedById: requester.id,
           stageNumber: 1,
         },

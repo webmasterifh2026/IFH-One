@@ -212,7 +212,13 @@ const STAGE_CONFIGS: StageConfig[] = [
     number: 22,
     name: 'Payment Advice',
     tatHours: 4,
-    doerNames: ['Neha Mishra', 'Vanshika Mathur', 'Md. Aftab Moin', 'MOHAMMAD AZAD', 'Akshit Chaudhary'],
+    doerNames: [
+      'Neha Mishra',
+      'Vanshika Mathur',
+      'Md. Aftab Moin',
+      'MOHAMMAD AZAD',
+      'Akshit Chaudhary',
+    ],
     escalationL1DelayHours: 0,
     escalationL2DelayHours: 1,
     escalationL3DelayHours: 2,
@@ -233,7 +239,9 @@ async function main() {
           },
         });
         if (!user) {
-          console.warn(`⚠️  User "${name}" not found for Stage ${config.number}`);
+          console.warn(
+            `⚠️  User "${name}" not found for Stage ${config.number}`,
+          );
         }
         return user;
       }),
