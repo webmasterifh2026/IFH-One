@@ -2,9 +2,6 @@
   "version": 2,
   "framework": "nextjs",
   "rootDirectory": "apps/web",
-  "buildCommand": "next build",
-  "installCommand": "npm install --legacy-peer-deps",
-  "outputDirectory": ".next",
   "env": {
     "NEXT_PUBLIC_APP_NAME": "IFH One"
   }
