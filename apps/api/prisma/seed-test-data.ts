@@ -28,7 +28,7 @@ async function main() {
     {
       vendorCode: 'V-001',
       vendorName: 'Acme Supplies Ltd',
-      email: '291.aditya@gmail.com',
+      email: '29x.aditya@gmail.com',
       phone: '+91-9876543210',
       address: '123 Tech Park, Mumbai, MH, India, GST: 27AADCB2230M1Z4, PAN: AADCB2230M',
       status: 'ACTIVE',
@@ -36,7 +36,7 @@ async function main() {
     {
       vendorCode: 'V-002',
       vendorName: 'Global Hardware Co',
-      email: '292.aditya@gmail.com',
+      email: '29x.aditya@gmail.com',
       phone: '+91-9876543211',
       address: '45 Industrial Estate, Delhi, DL, India, GST: 07AAECE1234B1Z5, PAN: AAECE1234B',
       status: 'ACTIVE',
@@ -44,7 +44,7 @@ async function main() {
     {
       vendorCode: 'V-003',
       vendorName: 'Prime Electronics',
-      email: '293.aditya@gmail.com',
+      email: '29x.aditya@gmail.com',
       phone: '+91-9876543212',
       address: '78 Silicon Valley, Bangalore, KA, India, GST: 29AABCP9876C1Z6, PAN: AABCP9876C',
       status: 'ACTIVE',
@@ -52,7 +52,7 @@ async function main() {
     {
       vendorCode: 'V-004',
       vendorName: 'BuildWell Materials',
-      email: '294.aditya@gmail.com',
+      email: '29x.aditya@gmail.com',
       phone: '+91-9876543213',
       address: '90 Builders Lane, Chennai, TN, India, GST: 33AABCD5678E1Z7, PAN: AABCD5678E',
       status: 'ACTIVE',
@@ -60,7 +60,7 @@ async function main() {
     {
       vendorCode: 'V-005',
       vendorName: 'Eco Power Solutions',
-      email: '295.aditya@gmail.com',
+      email: '29x.aditya@gmail.com',
       phone: '+91-9876543214',
       address: '12 Green Avenue, Pune, MH, India, GST: 27AABCE4321F1Z8, PAN: AABCE4321F',
       status: 'ACTIVE',
