@@ -1,0 +1,12 @@
+# Global Code Owners
+*       @webmasterifh2026
+
+# Applications
+/apps/api/   @webmasterifh2026
+/apps/web/   @webmasterifh2026
+
+# Packages
+/packages/   @webmasterifh2026
+
+# CI/CD Workflows
+/.github/workflows/   @webmasterifh2026

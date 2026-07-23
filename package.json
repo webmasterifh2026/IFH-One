@@ -16,7 +16,11 @@
     "start:api": "npm --workspace apps/api run start:prod",
     "lint": "turbo run lint",
     "test": "turbo run test",
+    "type-check": "turbo run type-check",
     "prepare": "echo skip husky"
+  },
+  "engines": {
+    "node": ">=22.0.0"
   },
   "devDependencies": {
     "turbo": "^1.13.3"
