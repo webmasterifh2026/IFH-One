@@ -11,6 +11,7 @@ import {
   Briefcase, FileCheck, Workflow, Mail, Globe, MapPin, SearchCode, Command
 } from 'lucide-react';
 import { isAuthenticated } from '@/lib/auth';
+import { APP_VERSION } from '@/config/version';
 
 /* ────────────────────────── Hooks & Components ────────────────────────── */
 function useReveal() {
@@ -207,7 +208,7 @@ export default function LandingPage() {
                  onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
                  onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}>
               <div style={{ background: '#DCFCE7', color: '#0F7B45', fontSize: 12, fontWeight: 800, padding: '4px 10px', borderRadius: 99, letterSpacing: '0.05em' }}>NEW</div>
-              <span style={{ color: '#0F172A', fontSize: 14, fontWeight: 600, letterSpacing: '0.01em' }}>IFH One v1.7 is now live</span>
+              <span style={{ color: '#0F172A', fontSize: 14, fontWeight: 600, letterSpacing: '0.01em' }}>Version v{APP_VERSION} is now live</span>
               <ArrowRight style={{ width: 16, height: 16, color: '#64748B' }} />
             </div>
 

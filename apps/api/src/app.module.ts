@@ -30,6 +30,7 @@ import { AuditModule } from './audit/audit.module';
 import { EmailModule } from './common/email/email.module';
 import { PrismaModule } from './common/prisma/prisma.module';
 import { HealthModule } from './health/health.module';
+import { VersionModule } from './version/version.module';
 import { VendorRfqPortalModule } from './vendor-rfq-portal/vendor-rfq-portal.module';
 import { RfqFloatModule } from './rfq-float/rfq-float.module';
 
@@ -67,6 +68,7 @@ import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
     AuditModule,
     PrismaModule,
     HealthModule,
+    VersionModule,
     VendorRfqPortalModule,
     RfqFloatModule,
   ],

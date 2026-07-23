@@ -5,6 +5,7 @@ import { Eye, EyeOff, LogIn, Layers, ChevronRight, Shield, Zap, BarChart3 } from
 import Link from 'next/link';
 import { login } from '@/lib/api/auth';
 import { isAuthenticated } from '@/lib/auth';
+import { APP_VERSION } from '@/config/version';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -84,8 +85,8 @@ export default function LoginPage() {
               <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', fontWeight: 500 }}>{f.text}</span>
             </div>
           ))}
-          <div style={{ marginTop: 20, fontSize: 11, color: 'rgba(255,255,255,0.25)' }}>
-            &copy; 2026 Intensiv-Filter Himenviro &middot; IFH One v1.9.1
+          <div style={{ marginTop: 20, fontSize: 11, color: 'rgba(255,255,255,0.4)', fontWeight: 500 }}>
+            &copy; 2026 Intensiv-Filter Himenviro &middot; Version v{APP_VERSION}
           </div>
         </div>
       </div>

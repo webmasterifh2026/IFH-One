@@ -17,6 +17,8 @@ import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 import { json, urlencoded } from 'express';
 import helmet from 'helmet';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import packageJson from '../package.json';
 
 const ALWAYS_ALLOWED_ORIGINS = [
   'http://localhost:3000',
@@ -99,6 +101,18 @@ async function bootstrap() {
     }),
   );
 
+  // ── Swagger / OpenAPI Documentation ─────────────────────────────────────────
+  const swaggerConfig = new DocumentBuilder()
+    .setTitle('IFH One API')
+    .setDescription(
+      'Enterprise Procurement Management System API Documentation',
+    )
+    .setVersion(`v${packageJson.version}`)
+    .addBearerAuth()
+    .build();
+  const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);
+  SwaggerModule.setup('api/docs', app, swaggerDocument);
+
   // ── Exception filter ────────────────────────────────────────────────────────
   app.useGlobalFilters(new AllExceptionsFilter());
 
@@ -112,7 +126,7 @@ async function bootstrap() {
     res.end(
       JSON.stringify({
         status: 'ok',
-        version: 'v2.10.0',
+        version: packageJson.version,
         ts: new Date().toISOString(),
         uptime: Math.floor(process.uptime()),
         env: process.env.NODE_ENV ?? 'unknown',

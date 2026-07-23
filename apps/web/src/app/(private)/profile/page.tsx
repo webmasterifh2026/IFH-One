@@ -9,6 +9,7 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 import { apiFetch } from '@/lib/api/fetch';
 import { PageHeader } from '@/components/ui/page-header';
+import { APP_VERSION, BUILD_DATE, GIT_COMMIT, ENVIRONMENT } from '@/config/version';
 
 const ProfileCharts = dynamic(() => import('@/components/profile/ProfileCharts'), {
   ssr: false,
@@ -578,9 +579,14 @@ export default function ProfilePage() {
                 ))}
               </div>
               <div style={{ marginTop: 32, padding: 16, background: 'var(--surface2)', borderRadius: 8, textAlign: 'center' }}>
-                <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase' }}>System Information</div>
+                <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>System Information</div>
                 <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', marginTop: 4 }}>IFH One Enterprise ERP</div>
-                <div style={{ fontSize: 13, color: 'var(--text-muted)', marginTop: 2 }}>Version 2.10.0</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--primary)', marginTop: 2 }}>Version v{APP_VERSION}</div>
+                <div style={{ display: 'flex', justifyContent: 'center', gap: 16, marginTop: 8, fontSize: 11, color: 'var(--text-muted)' }}>
+                  <span>Build Date: {BUILD_DATE}</span>
+                  <span>Commit: {GIT_COMMIT.substring(0, 7)}</span>
+                  <span>Env: {ENVIRONMENT}</span>
+                </div>
               </div>
             </div>
           )}

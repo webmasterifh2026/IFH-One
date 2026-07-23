@@ -13,6 +13,7 @@ import { type DashboardStats } from '@/lib/api/procurement';
 import { WORKFLOW_ROUTES } from '@/lib/workflow-routes';
 import { useDashboardStats } from '@/hooks/useQueries';
 import { useBackendStatus } from '@/hooks/useBackendStatus';
+import { APP_VERSION } from '@/config/version';
 
 function KpiTile({ label, value, icon: Icon, href, color = '#0F7B45' }: {
   label: string; value: string | number; icon: React.ComponentType<{ style?: React.CSSProperties }>;
@@ -350,7 +351,7 @@ export default function DashboardPage() {
       {/* ── Footer ── */}
       <div style={{ marginTop: 32, textAlign: 'center' }}>
         <span style={{ fontSize: 11, color: 'var(--text-faint)', fontWeight: 500 }}>
-          IFH One · Enterprise Procurement Management System · V2.10.0
+          IFH One · Enterprise Procurement Management System · v{APP_VERSION}
         </span>
       </div>
     </div>

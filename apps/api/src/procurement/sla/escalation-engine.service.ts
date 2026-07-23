@@ -395,7 +395,7 @@ export class EscalationEngineService {
     </tr>
     <tr>
       <td style="background: #f9fafb; padding: 16px; text-align: center; font-size: 12px; color: #9ca3af;">
-        IFH One Procurement ERP v2.5.0 — Automated Escalation Engine<br/>Please do not reply.
+        IFH One Procurement ERP v3.0.2 — Automated Escalation Engine<br/>Please do not reply.
       </td>
     </tr>
   </table>

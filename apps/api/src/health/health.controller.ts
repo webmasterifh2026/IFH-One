@@ -8,6 +8,8 @@ import {
 } from '@nestjs/terminus';
 import { PrismaService } from '../common/prisma/prisma.service';
 
+import packageJson from '../../package.json';
+
 @Controller('health')
 export class HealthController {
   constructor(
@@ -24,14 +26,18 @@ export class HealthController {
   @Public()
   @Get()
   @HealthCheck()
-  check() {
-    return this.health.check([
+  async check() {
+    const result = await this.health.check([
       () =>
         this.prisma.pingCheck('database', this.prismaService as any, {
           timeout: 10000,
         }),
       () => this.memory.checkHeap('memory_heap', 150 * 1024 * 1024),
     ]);
+    return {
+      ...result,
+      version: process.env.APP_VERSION || packageJson.version || '3.0.2',
+    };
   }
 
   /**
@@ -48,7 +54,7 @@ export class HealthController {
       status: 'ok',
       ts: new Date().toISOString(),
       uptime: Math.floor(process.uptime()),
-      version: process.env.npm_package_version ?? 'unknown',
+      version: process.env.APP_VERSION || packageJson.version || '3.0.2',
     };
   }
 }

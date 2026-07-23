@@ -402,7 +402,7 @@ export class ReminderEngineService {
     </tr>
     <tr>
       <td style="background: #f9fafb; padding: 16px; text-align: center; font-size: 12px; color: #9ca3af;">
-        This is an automated reminder from IFH One Procurement ERP v2.5.0.<br/>Please do not reply.
+        This is an automated reminder from IFH One Procurement ERP v3.0.2.<br/>Please do not reply.
       </td>
     </tr>
   </table>
