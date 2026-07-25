@@ -836,6 +836,20 @@ async function main() {
       password: 'sk@2026',
       role: '',
     },
+    {
+      emp: 'EMP-098',
+      name: 'Deepak Bhakt',
+      email: 'deepak.bhakt@intensiv-filter-himenviro.com',
+      password: 'db@2026',
+      role: '',
+    },
+    {
+      emp: 'EMP-099',
+      name: 'Akshit Chaudhary',
+      email: 'akshit.chaudhary@if-himenviro.in',
+      password: 'ac@2026',
+      role: '',
+    },
   ];
 
   let created = 0;
