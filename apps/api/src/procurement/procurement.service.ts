@@ -2144,6 +2144,22 @@ export class ProcurementService {
     const failed: { id: string; referenceNo?: string; reason: string }[] = [];
     const blocked: { id: string; reason: string }[] = [];
 
+    // Validate assignedToId values up front so a stale/invalid user reference
+    // fails with a clear message instead of a raw FK constraint error.
+    const assignedToIds = Array.from(
+      new Set(dto.updates.map((u) => u.assignedToId).filter(Boolean)),
+    ) as string[];
+    const validUsers = assignedToIds.length
+      ? await this.prisma.user.findMany({
+          where: { id: { in: assignedToIds } },
+          select: { id: true },
+        })
+      : [];
+    const validUserIds = new Set(validUsers.map((u) => u.id));
+    const invalidAssignedToIds = new Set(
+      assignedToIds.filter((id) => !validUserIds.has(id)),
+    );
+
     // Extract item IDs from the DTO (the DTO calls it procurementId, but it's really the itemId from the frontend)
     const itemIds = dto.updates.map((u) => u.procurementId);
 
@@ -2171,6 +2187,14 @@ export class ProcurementService {
       const item = itemMap.get(update.procurementId);
       if (!item) {
         failed.push({ id: update.procurementId, reason: 'Item not found' });
+        continue;
+      }
+      if (update.assignedToId && invalidAssignedToIds.has(update.assignedToId)) {
+        failed.push({
+          id: update.procurementId,
+          referenceNo: item.procurement?.referenceNo,
+          reason: 'Assigned user no longer exists — please reselect a responsible person',
+        });
         continue;
       }
 
